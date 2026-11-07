@@ -17,11 +17,21 @@ npm start               # API en http://localhost:7071
 
 El beta acepta el usuario `[RUC]MODDATOS` / `MODDATOS` y un certificado autofirmado (la API lo genera).
 
+### En la nube gratis (Render)
+
+Así está publicada la de pruebas: **https://granate-api.onrender.com** (`/health`, `/padron/estado`).
+
+1. Render → *New → Web Service* → *Public Git Repository* → `https://github.com/ItzElysium/granate`.
+2. *Root Directory* `api` · *Build* `npm install` · *Start* `npm start` · *Health Check Path* `/health` · instancia *Free*.
+3. Variables: `SUNAT_AMBIENTE=beta`, `PADRON_REPO=ItzElysium/granate`, `NODE_VERSION=22`.
+
+El plan gratis se duerme tras 15 min sin uso (despierta en ~1 min) y borra su disco al dormir: al despertar vuelve a bajar el padrón (~305 MB, 1–2 min) y la bitácora empieza de cero. La web ya lo maneja: despierta la API al abrirse y reintenta sola mientras el padrón carga. Para clientes reales usa un plan con disco persistente.
+
 ## 2. Conectar la web
 
-1. Publica `web/granate.html` en tu dominio (dentro de claude.ai la web no puede llamar a otros dominios).
-2. *Integración SUNAT → Tu API Granate → URL* (y la clave si definiste `GRANATE_API_KEY`) → *Probar conexión*.
-3. Elige *API propia → SUNAT real* y el ambiente.
+1. La web publicada en GitHub Pages lee la URL de la API de `web/granate-config.js` (`window.GRANATE_API_DEFAULT`): cámbiala ahí, sin recompilar.
+2. Cada usuario puede usar otra en *Integración SUNAT → Tu API Granate → URL* (y la clave si definiste `GRANATE_API_KEY`) → *Probar conexión*. Dentro de claude.ai la web no puede llamar a otros dominios.
+3. Para emitir al SUNAT real, elige *API propia → SUNAT real* y el ambiente.
 
 ## 3. Contrato
 
