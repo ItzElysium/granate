@@ -1,0 +1,96 @@
+# Robot: actualiza el padrón RUC de SUNAT todos los días y lo publica como Release.
+# La API de Granate descarga la última versión sola (ver api/padron.js).
+name: Padrón SUNAT diario
+
+on:
+  schedule:
+    - cron: "37 8 * * *"      # 03:37 en Lima. SUNAT publica el padrón de madrugada.
+  workflow_dispatch:
+    inputs:
+      forzar:
+        description: "Reconstruir aunque SUNAT no haya cambiado el archivo"
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+concurrency:
+  group: padron-sunat
+  cancel-in-progress: false
+
+jobs:
+  padron:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    env:
+      URL_PADRON: https://www2.sunat.gob.pe/padron_reducido_ruc.zip
+      URL_UBIGEO: https://raw.githubusercontent.com/jmcastagnetto/ubigeo-peru-aumentado/main/ubigeo_distrito.csv
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: ¿SUNAT publicó un archivo nuevo?
+        id: check
+        run: |
+          set -euo pipefail
+          LM=$(curl -sSIL --retry 5 --retry-delay 20 "$URL_PADRON" | grep -i '^last-modified:' | tail -1 | cut -d' ' -f2- | tr -d '\r')
+          echo "Last-Modified de SUNAT: $LM"
+          echo "fuente_fecha=$LM" >> "$GITHUB_OUTPUT"
+          PREV=$(gh release view --json body --jq .body 2>/dev/null | grep -o 'fuente_fecha=.*' | cut -d= -f2- || true)
+          echo "Última publicada: ${PREV:-ninguna}"
+          if [ "${{ inputs.forzar }}" != "true" ] && [ -n "$LM" ] && [ "$LM" = "$PREV" ]; then
+            echo "Sin cambios en SUNAT: no se reconstruye."; echo "cambio=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "cambio=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Descargar padrón y ubigeos
+        if: steps.check.outputs.cambio == 'true'
+        run: |
+          set -euo pipefail
+          curl -sSfL --retry 5 --retry-delay 30 --max-time 1800 -o padron.zip "$URL_PADRON"
+          unzip -tq padron.zip
+          unzip -oq padron.zip
+          curl -sSfL --retry 3 -o ubigeo_distrito.csv "$URL_UBIGEO"
+          ls -lh padron.zip padron_reducido_ruc.txt
+
+      - uses: actions/setup-python@v5
+        if: steps.check.outputs.cambio == 'true'
+        with:
+          python-version: "3.12"
+
+      - name: Construir padron.db
+        if: steps.check.outputs.cambio == 'true'
+        run: |
+          python padron/build_padron.py --padron padron_reducido_ruc.txt --ubigeo ubigeo_distrito.csv \
+            --out padron.db --fuente-fecha "${{ steps.check.outputs.fuente_fecha }}"
+          python - <<'PY'
+          import json, sqlite3
+          db = sqlite3.connect("padron.db")
+          meta = dict(db.execute("select k, v from meta"))
+          assert int(meta["registros"]) > 1_000_000, "padrón incompleto"
+          assert db.execute("select razon from c where ruc=20131312955").fetchone(), "no encuentro a SUNAT: archivo dañado"
+          json.dump(meta, open("padron.json", "w"), ensure_ascii=False, indent=2)
+          print(meta)
+          PY
+          gzip -6 -c padron.db > padron.db.gz
+          ls -lh padron.db padron.db.gz
+
+      - name: Publicar Release
+        if: steps.check.outputs.cambio == 'true'
+        run: |
+          set -euo pipefail
+          TAG="padron-$(date -u +%Y%m%d-%H%M)"
+          REG=$(python -c "import json;print(json.load(open('padron.json'))['registros'])")
+          gh release create "$TAG" padron.db.gz padron.json --latest \
+            --title "Padrón SUNAT $(date -u +%d/%m/%Y)" \
+            --notes "Contribuyentes activos o suspendidos: ${REG}
+          fuente_fecha=${{ steps.check.outputs.fuente_fecha }}"
+
+      - name: Conservar solo las 3 últimas publicaciones
+        if: steps.check.outputs.cambio == 'true'
+        run: |
+          gh release list --limit 50 --json tagName --jq '.[].tagName' | grep '^padron-' | tail -n +4 | while read -r t; do
+            gh release delete "$t" --yes --cleanup-tag
+          done

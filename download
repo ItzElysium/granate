@@ -1,0 +1,9 @@
+node_modules/
+api/data/
+*.db
+*.db.gz
+*.pem
+*.pfx
+.env
+padron_reducido_ruc.*
+padron.zip
