@@ -96,4 +96,74 @@ async function emitir({ xml, ruc, tipo, serie, numero, ambiente = 'beta', usuari
   return { estado: n >= 100 && n < 2000 ? 'ERROR' : 'RECHAZADO', codigo, descripcion, detalle: faultstring, observaciones: [], hash, xmlFirmado: firmado, http: res.status };
 }
 
-module.exports = { emitir, firmarXML, leerCDR, ENDPOINTS };
+/* =====================================================================
+   Guía de remisión remitente (09) · API REST de SUNAT (OAuth2)
+   No hay ambiente beta: se usa con las «Credenciales de API SUNAT» de producción.
+   ===================================================================== */
+const crypto = require('crypto');
+const GRE = {
+  token: process.env.SUNAT_GRE_TOKEN_URL || 'https://api-seguridad.sunat.gob.pe/v1/clientessol',
+  api: process.env.SUNAT_GRE_API_URL || 'https://api-cpe.sunat.gob.pe/v1',
+};
+const esperar = ms => new Promise(r => setTimeout(r, ms));
+let tokenCache = { k: '', token: '', vence: 0 };
+async function tokenGRE({ clientId, clientSecret, usuario, clave, timeoutMs = 20000 }) {
+  const k = `${clientId}|${usuario}`;
+  if (tokenCache.k === k && Date.now() < tokenCache.vence) return tokenCache.token;
+  const body = new URLSearchParams({ grant_type: 'password', scope: 'https://api-cpe.sunat.gob.pe', client_id: clientId, client_secret: clientSecret, username: usuario, password: clave });
+  const ctl = new AbortController(), to = setTimeout(() => ctl.abort(), timeoutMs);
+  let r; try { r = await fetch(`${GRE.token}/${encodeURIComponent(clientId)}/oauth2/token/`, { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body, signal: ctl.signal }); } finally { clearTimeout(to); }
+  const j = await r.json().catch(() => ({}));
+  if (!r.ok || !j.access_token) throw Object.assign(new Error(`Token GRE rechazado: ${j.error_description || j.msg || j.error || `HTTP ${r.status}`}`), { status: 401 });
+  // el token dura poco: se reutiliza hasta un minuto antes de vencer
+  tokenCache = { k, token: j.access_token, vence: Date.now() + Math.max(30, (Number(j.expires_in) || 300) - 60) * 1000 };
+  return j.access_token;
+}
+async function consultarTicketGRE({ ticket, token }) {
+  const r = await fetch(`${GRE.api}/contribuyente/gem/comprobantes/envios/${encodeURIComponent(ticket)}`, { headers: { Authorization: `Bearer ${token}` } });
+  const j = await r.json().catch(() => ({}));
+  if (!r.ok) throw Object.assign(new Error(j.msg || `Consulta de ticket: HTTP ${r.status}`), { status: r.status });
+  return j;
+}
+async function resultadoTicket(j, base) {
+  const cod = String(j.codRespuesta ?? '');
+  if (cod === '98') return { estado: 'EN_PROCESO', codigo: '98', descripcion: 'SUNAT aún procesa la guía.' };
+  if (j.arcCdr) {
+    const cdr = await leerCDR(j.arcCdr);
+    const n = Number(cdr.codigo);
+    return { estado: n === 0 ? (cdr.observaciones.length ? 'OBSERVADO' : 'ACEPTADO') : n >= 4000 ? 'OBSERVADO' : 'RECHAZADO', codigo: cdr.codigo, descripcion: cdr.descripcion, observaciones: cdr.observaciones, cdrZipBase64: j.arcCdr };
+  }
+  if (cod === '99') return { estado: 'RECHAZADO', codigo: String(j.error?.numError || '99'), descripcion: j.error?.desError || 'La guía tiene errores.' };
+  return { estado: 'ERROR', codigo: cod || '—', descripcion: `Respuesta de SUNAT no reconocida para ${base}.` };
+}
+/**
+ * Firma, comprime y envía la GRE; luego consulta el ticket hasta tener la constancia.
+ * Si SUNAT sigue procesando, devuelve EN_PROCESO con el ticket: se vuelve a consultar, nunca se reenvía con otro número.
+ */
+async function emitirGRE({ xml, ruc, serie, numero, keyPem, certPem, clientId, clientSecret, usuarioSol, claveSol, ticketPrevio, intentos = 6, esperaMs = 2000 }) {
+  if (!clientId || !clientSecret || !usuarioSol || !claveSol) throw Object.assign(new Error('Faltan SUNAT_GRE_CLIENT_ID, SUNAT_GRE_CLIENT_SECRET, SUNAT_USUARIO_SOL o SUNAT_CLAVE_SOL.'), { status: 412 });
+  const base = `${ruc}-09-${serie}-${numero}`;
+  const token = await tokenGRE({ clientId, clientSecret, usuario: `${ruc}${usuarioSol}`, clave: claveSol });
+  let ticket = ticketPrevio, firmado = '', hash = '';
+  if (!ticket) {
+    ({ xml: firmado, hash } = firmarXML(xml, { keyPem, certPem }));
+    const z = new JSZip(); z.file(`${base}.xml`, firmado);
+    const buf = await z.generateAsync({ type: 'nodebuffer', compression: 'DEFLATE' });
+    const r = await fetch(`${GRE.api}/contribuyente/gem/comprobantes/${base}`, { method: 'POST', headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ archivo: { nomArchivo: `${base}.zip`, arcGreZip: buf.toString('base64'), hashZip: crypto.createHash('sha256').update(buf).digest('hex') } }) });
+    const j = await r.json().catch(() => ({}));
+    if (!r.ok || !j.numTicket) {
+      const e0 = (j.errors && j.errors[0]) || {};
+      return { estado: r.status >= 500 ? 'ERROR' : 'RECHAZADO', codigo: String(e0.cod || j.cod || r.status), descripcion: e0.msg || j.msg || `SUNAT respondió ${r.status}`, observaciones: [], hash, xmlFirmado: firmado };
+    }
+    ticket = j.numTicket;
+  }
+  for (let i = 0; i < intentos; i++) {
+    await esperar(i === 0 ? 800 : esperaMs);
+    const res = await resultadoTicket(await consultarTicketGRE({ ticket, token }), base);
+    if (res.estado !== 'EN_PROCESO') return { ...res, ticket, hash, xmlFirmado: firmado };
+  }
+  return { estado: 'EN_PROCESO', codigo: '98', descripcion: 'SUNAT aún procesa la guía.', ticket, hash, xmlFirmado: firmado };
+}
+
+module.exports = { emitir, emitirGRE, consultarTicketGRE, tokenGRE, firmarXML, leerCDR, ENDPOINTS, GRE };
