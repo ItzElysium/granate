@@ -705,6 +705,8 @@ details.more>.inner{padding:0 18px 18px}
 .sf-ic{width:30px;height:30px;border-radius:8px;background:var(--granate-50);color:var(--granate);display:grid;place-items:center;flex:none}
 .sf-main{flex:1;min-width:0}.sf-main b{display:block;font-size:var(--fs-sm)}.sf-main small{display:block;font-size:var(--fs-xs);color:var(--text-3);line-height:1.35}
 .sf-act{display:flex;gap:2px;flex:none}
+.combo-note.warn{display:flex;gap:6px;align-items:flex-start;color:var(--warn-ink,#8a5a00);background:var(--warn-50,#fff7e6);margin:0 8px 6px;border-radius:8px;padding:8px 10px}
+.combo-note.warn svg{flex:none;margin-top:1px}
 
 </style>
 <script src="granate-config.js"></script>
@@ -832,6 +834,8 @@ const SUNAT_EP = [
 ];
 
 /* ---------- validaciones ---------- */
+// dígito verificador del RUC (módulo 11 de SUNAT) para los 10 primeros dígitos
+function dvRUC(base10) { const w = [5, 4, 3, 2, 7, 6, 5, 4, 3, 2]; let s = 0; for (let i = 0; i < 10; i++) s += Number(base10[i]) * w[i]; let c = 11 - (s % 11); if (c === 10) c = 0; if (c === 11) c = 1; return String(c); }
 function validRUC(r) {
   r = String(r || '').trim();
   if (!/^(10|15|16|17|20)\d{9}$/.test(r)) return false;
@@ -2416,13 +2420,19 @@ function fromPadron(r) {
 }
 let padronT = null, padronSeq = 0;
 function queryPadron() {
-  clearTimeout(padronT); E.padronRes = [];
-  const q = E.cliQ.trim();
+  clearTimeout(padronT); E.padronRes = []; E.padronAviso = '';
+  const q = E.cliQ.trim().replace(/[\s.-]/g, '').length && /^[\d\s.-]+$/.test(E.cliQ.trim()) ? E.cliQ.trim().replace(/[\s.-]/g, '') : E.cliQ.trim();
   let path = '';
   if (/^\d{11}$/.test(q) && validRUC(q)) path = `/padron/ruc/${q}`;
+  else if (/^\d{11}$/.test(q)) { // RUC mal digitado: avisamos y buscamos el que tiene el dígito verificador correcto
+    const fix = q.slice(0, 10) + dvRUC(q.slice(0, 10));
+    E.padronAviso = /^(10|15|16|17|20)/.test(q) ? `El RUC ${q} no es válido: el último dígito no cuadra con los anteriores.${fix !== q ? ` Buscamos ${fix}:` : ''}` : `El RUC ${q} no es válido: debe empezar con 10, 15, 16, 17 o 20.`;
+    if (/^(10|15|16|17|20)/.test(q)) path = `/padron/ruc/${fix}`;
+  }
   else if (/^\d{8}$/.test(q)) path = `/padron/ruc/${q}`;
-  else if (!/^\d+$/.test(q) && q.replace(/\s/g, '').length >= 3) path = `/padron/buscar?q=${encodeURIComponent(q)}&limite=6`;
-  if (!path) { E.padronState = ''; return; }
+  else if (/^\d+$/.test(q)) { if (q.length >= 9) E.padronAviso = `Para buscar en el padrón SUNAT escribe el RUC completo (11 dígitos) o el DNI (8 dígitos). Llevas ${q.length}.`; }
+  else if (q.replace(/\s/g, '').length >= 3) path = `/padron/buscar?q=${encodeURIComponent(q)}&limite=6`;
+  if (!path) { E.padronState = E.padronAviso ? 'aviso' : ''; return; }
   if (!padronURL()) { E.padronState = 'off'; return; }
   E.padronState = 'loading';
   const seq = ++padronSeq;
@@ -2430,8 +2440,8 @@ function queryPadron() {
     const r = await padronGet(path);
     if (seq !== padronSeq || !E) return;
     if (r.ok) { E.padronRes = r.data.datos ? r.data.datos : [r.data]; E.padronState = E.padronRes.length ? '' : 'msg:Sin coincidencias entre las empresas activas del padrón.'; }
-    else E.padronState = 'msg:' + (r.status === 404 && /^\d{8}$/.test(q) ? 'Este DNI no tiene RUC activo. Para boletas puedes registrarlo como cliente con DNI.' : r.mensaje);
-    if (r.cargando) { E.pRetry = E.pRetryQ === q ? (E.pRetry || 0) + 1 : 1; E.pRetryQ = q; if (E.pRetry <= 12) setTimeout(() => { if (seq === padronSeq && E && E.cliQ.trim() === q) { queryPadron(); renderCombo(); } }, 10000); }
+    else E.padronState = 'msg:' + (r.status === 404 && /^\d{8}$/.test(q) ? 'Este DNI no tiene RUC activo. Para boletas puedes registrarlo como cliente con DNI.' : r.status === 404 && E.padronAviso ? 'Tampoco figura en el padrón. Revisa el número con tu cliente.' : r.mensaje);
+    if (r.cargando) { E.pRetry = E.pRetryQ === q ? (E.pRetry || 0) + 1 : 1; E.pRetryQ = q; if (E.pRetry <= 12) setTimeout(() => { if (seq === padronSeq && E) { queryPadron(); renderCombo(); } }, 10000); }
     if (document.activeElement?.id === 'cli-q') renderCombo();
   }, 260);
 }
@@ -2492,7 +2502,7 @@ function renderCombo() {
   const res = (q ? all.filter(c => c.nombre.toLowerCase().includes(q) || (c.numDoc || '').startsWith(q)) : all.sort((a, b) => a.nombre.localeCompare(b.nombre))).slice(0, q ? 5 : 7);
   const locales = new Set(res.map(c => c.numDoc));
   const pres = (E.padronRes || []).filter(r => !locales.has(r.ruc)), st = E.padronState || '';
-  const sec = st || pres.length ? `<div class="combo-sec">${icon('shield', 'sm')}Padrón SUNAT${st === 'loading' ? (apiDespertando() ? ' · despertando tu API (hasta 1 min)…' : ' · buscando…') : ''}</div>`
+  const sec = st || pres.length ? `<div class="combo-sec">${icon('shield', 'sm')}Padrón SUNAT${st === 'loading' ? (apiDespertando() ? ' · despertando tu API (hasta 1 min)…' : ' · buscando…') : ''}</div>${E.padronAviso ? `<div class="combo-note warn">${icon('alert', 'sm')} ${esc(E.padronAviso)}</div>` : ''}`
     + pres.map((r, i) => `<button class="combo-opt ${res.length + i === comboIdx ? 'act' : ''}" role="option" data-act="cli-padron" data-i="${E.padronRes.indexOf(r)}"><span class="avatar dark">${icon('building', 'sm')}</span><span style="min-width:0;flex:1"><b>${esc(r.razonSocial)}</b><small class="num">RUC ${r.ruc}${r.distrito ? ` · ${esc(r.distrito)}` : ''}</small></span>${r.apto ? '' : padronChip(padronDe(r))}</button>`).join('')
     + (st === 'off' ? `<div class="combo-note">Conecta tu API Granate en «Integración SUNAT» para buscar por RUC, DNI o razón social en el padrón oficial.</div>` : st.startsWith('msg:') ? `<div class="combo-note">${esc(st.slice(4))}</div>` : '') : '';
   list.innerHTML = res.map((c, i) => `<button class="combo-opt ${i === comboIdx ? 'act' : ''}" role="option" data-act="cli-pick" data-id="${c.id}"><span class="avatar">${esc(initials(c.nombre))}</span><span><b>${esc(c.nombre)}</b><small class="num">${DOCID[c.tipoDoc]} ${esc(c.numDoc)}</small></span></button>`).join('')
