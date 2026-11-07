@@ -998,7 +998,7 @@ function validarDoc(doc, cfg, toPEN) {
     if (!['bienes', 'servicios'].includes(doc.operacion)) e.push('Elige si estás facturando bienes o servicios.');
     const guias = doc.guias || [];
     const exigeGuia = doc.operacion === 'bienes' && (doc.tipo === '01' || cfg.reglas?.guiaBoleta);
-    if (exigeGuia && !guias.length) e.push(`Venta de bienes: vincula la guía de remisión remitente (es obligatoria${doc.tipo === '03' ? ' según tus reglas' : ''}).`);
+    if (exigeGuia && !guias.length && !doc.guiaPosterior) e.push(`Venta de bienes: vincula la guía de remisión remitente o marca «Emitir la guía después de facturar» (es obligatoria${doc.tipo === '03' ? ' según tus reglas' : ''}).`);
     guias.forEach(g => { if (!GUIA_RE.test(guiaId(g))) e.push(`La guía ${g.serie}-${g.numero} no tiene un número válido (serie de 4 caracteres y correlativo).`); });
   }
   const sp = spot(doc, cfg.tipoCambio);
@@ -1556,7 +1556,7 @@ function vInicio() {
         <span class="t-desc">Facturas y boletas de bienes o servicios, con guía y detracción validadas antes de enviar a SUNAT.</span>
         ${porEnviar || rech ? meta('alert', [porEnviar ? `${porEnviar} por enviar a SUNAT` : '', rech ? `${rech} rechazado${rech > 1 ? 's' : ''}` : ''].filter(Boolean).join(' · ')) : meta('check', 'Todo enviado a SUNAT')}
       </button>
-      <div class="tile-foot"><button class="btn sm on-dark" data-act="new" data-tipo="03">${icon('plus', 'sm')}Boleta</button><button class="btn sm on-dark" data-act="go" data-r="comprobantes">${icon('receipt', 'sm')}Comprobantes</button></div>
+      <div class="tile-foot"><button class="btn sm on-dark" data-act="cot-pick" ${cotsFacturables().length ? '' : 'disabled title="No tienes cotizaciones por facturar"'}>${icon('quote', 'sm')}Desde cotización${cotsFacturables().length ? ` <span class="num">(${cotsFacturables().length})</span>` : ''}</button><button class="btn sm on-dark" data-act="new" data-tipo="03">${icon('plus', 'sm')}Boleta</button><button class="btn sm on-dark" data-act="go" data-r="comprobantes">${icon('receipt', 'sm')}Comprobantes</button></div>
     </section>
     <section class="tile rep">
       <button class="tile-main" data-act="go" data-r="reportes" aria-label="Reportes: ver ventas, conversión y cobranza">
@@ -1586,6 +1586,7 @@ function pendientes() {
   const t = todayISO(), todo = [];
   const cred = allDocs().filter(d => d.tipo === '01' && d.formaPago === 'Credito' && d.estado === 'aceptado' && !d.cobrado);
   sunatDocs().filter(d => d.estado === 'rechazado').forEach(d => todo.push({ ic: 'x', cls: 'bad', t: `${docNum(d)} fue rechazado`, s: `${d.cliente?.nombre || ''} · corrige y emite uno nuevo`, b: `<button class="btn sm" data-act="fix" data-id="${d.id}">Corregir</button>` }));
+  cpes().filter(d => guiaPendiente(d)).forEach(d => todo.push({ ic: 'truck', cls: 'warn', t: `Emitir la guía de ${docNum(d)}`, s: `${d.cliente?.nombre || ''} · factura de bienes sin guía de remisión`, b: `<button class="btn sm primary" data-act="gre-de-fac" data-id="${d.id}">${icon('truck', 'sm')}Emitir guía</button>` }));
   sunatDocs().filter(d => d.estado === 'pendiente').forEach(d => todo.push({ ic: 'clock', cls: 'warn', t: `Enviar ${docNum(d)} a SUNAT`, s: `${d.cliente?.nombre || ''}${d.tipo === '09' ? ' · guía de remisión' : ` · ${money(totalOf(d), d.moneda)}`}`, b: `<button class="btn sm primary" data-act="send" data-id="${d.id}">${icon('send', 'sm')}Enviar</button>` }));
   allDocs().filter(d => d.tipo === 'NV' && d.estado === 'emitida').forEach(d => todo.push({ ic: 'tag', cls: 'warn', t: `${docNum(d)} sin comprobante`, s: `${d.cliente?.nombre || ''} · ${money(totalOf(d), d.moneda)} · emite la boleta o factura`, b: `<button class="btn sm dark" data-act="convert" data-id="${d.id}">Convertir</button>` }));
   cots().filter(d => d.estado === 'aprobada').forEach(d => todo.push({ ic: 'coins', cls: '', t: `Facturar ${docNum(d)} (aprobada)`, s: `${d.cliente?.nombre || ''} · ${money(totalOf(d), d.moneda)}`, b: `<button class="btn sm dark" data-act="convert" data-id="${d.id}">Facturar</button>` }));
@@ -1708,7 +1709,7 @@ function vComprobantes() {
     <div class="chips" role="group" aria-label="Estado SUNAT">${F.map(([k, l]) => `<button class="chip" data-act="cpef" data-f="${k}" aria-pressed="${UI.cpeF === k}">${l}<span class="count">${cnt(k)}</span></button>`).join('')}</div>
     <div class="search">${icon('search')}<input class="input" id="q-cpe" data-search="cpeQ" placeholder="Buscar cliente o número" value="${esc(UI.cpeQ)}" aria-label="Buscar comprobantes"></div></div>
   <section class="panel">${rows.length ? `<div class="table-wrap"><table class="t"><thead><tr><th>Número</th><th>Cliente</th><th class="hide-sm">Emisión</th><th class="hide-md">Pago</th><th class="num">Total</th><th>SUNAT</th><th class="act"><span class="sr">Acciones</span></th></tr></thead><tbody>
-    ${rows.map(d => `<tr data-act="open" data-id="${d.id}"><td class="docid">${docNum(d)}<small style="display:block;font-weight:400;color:var(--text-3);font-size:var(--fs-xs)">${TIPOS[d.tipo].corto}</small></td><td class="who">${esc(d.cliente?.nombre || '—')}<small>${DOCID[d.cliente?.tipoDoc] || ''} ${esc(d.cliente?.numDoc || '')}</small></td><td class="hide-sm tnum">${fmtDay(d.fecha)}</td><td class="hide-md">${pay(d)}</td><td class="num"><b>${d.tipo === '07' ? '−' : ''}${money(totalOf(d), d.moneda)}</b>${d.totales?.detraccion ? `<small class="faint" style="display:block">Detr. ${money0(d.totales.detraccion)}</small>` : ''}</td><td>${docPill(d)}</td><td class="act">${d.estado === 'pendiente' ? `<button class="btn sm primary" data-act="send" data-id="${d.id}">${icon('send', 'sm')}Enviar</button>` : d.estado === 'borrador' ? `<button class="btn sm" data-act="edit" data-id="${d.id}">Editar</button>` : d.tipo === 'NV' && d.estado === 'emitida' ? `<button class="btn sm dark" data-act="convert" data-id="${d.id}">Convertir</button>` : ''}</td></tr>`).join('')}
+    ${rows.map(d => `<tr data-act="open" data-id="${d.id}"><td class="docid">${docNum(d)}<small style="display:block;font-weight:400;color:var(--text-3);font-size:var(--fs-xs)">${TIPOS[d.tipo].corto}${guiaPendiente(d) ? ' · <span style="color:var(--warn-ink, #8a5a00);font-weight:600">guía pendiente</span>' : ''}</small></td><td class="who">${esc(d.cliente?.nombre || '—')}<small>${DOCID[d.cliente?.tipoDoc] || ''} ${esc(d.cliente?.numDoc || '')}</small></td><td class="hide-sm tnum">${fmtDay(d.fecha)}</td><td class="hide-md">${pay(d)}</td><td class="num"><b>${d.tipo === '07' ? '−' : ''}${money(totalOf(d), d.moneda)}</b>${d.totales?.detraccion ? `<small class="faint" style="display:block">Detr. ${money0(d.totales.detraccion)}</small>` : ''}</td><td>${docPill(d)}</td><td class="act">${d.estado === 'pendiente' ? `<button class="btn sm primary" data-act="send" data-id="${d.id}">${icon('send', 'sm')}Enviar</button>` : d.estado === 'borrador' ? `<button class="btn sm" data-act="edit" data-id="${d.id}">Editar</button>` : d.tipo === 'NV' && d.estado === 'emitida' ? `<button class="btn sm dark" data-act="convert" data-id="${d.id}">Convertir</button>` : ''}</td></tr>`).join('')}
   </tbody></table></div>` : (list.length ? emptyHTML('search', 'Sin resultados', 'Prueba con otro filtro o término de búsqueda.') : emptyHTML('receipt', 'Aún no emites comprobantes', 'Convierte una cotización aprobada o crea una factura desde cero.', `<button class="btn primary" data-act="new" data-tipo="01">${icon('plus')}Nueva factura</button>`))}</section>`;
 }
 
@@ -2007,7 +2008,11 @@ function startConvert(id, tipo) {
     base.items = c.items.map(it => { const p = [...DB.cols.productos.values()].find(x => x.codigo && x.codigo === it.codigo); return { id: uid(), codigo: it.codigo, desc: it.desc, unidad: it.unidad, cant: it.cant, precio: p ? p.precio : 0, afect: p?.afect || '10' }; });
     base.operacion = 'bienes'; base.guias = [{ id: c.id, serie: c.serie, numero: c.numero }]; base.moneda = 'PEN'; base.incluyeIGV = false; delete base.origenId; base.greId = c.id;
   }
-  openEditor(newDoc(tipo, base), true, 'card');
+  const nd = newDoc(tipo, base);
+  // facturación rápida: si son bienes, la guía se emite después desde la factura (queda como pendiente hasta emitirla)
+  if (c.tipo !== '09' && nd.operacion === 'bienes' && !(nd.guias || []).length) nd.guiaPosterior = true;
+  openEditor(nd, true, 'card');
+  if (c.tipo === 'COT') setTimeout(() => toast(`Datos de ${docNum(c)} cargados: revisa y emite.`), 200);
 }
 function startNota(id, tipo = '07') {
   const f = getDoc(id); if (!f) return;
@@ -2046,6 +2051,7 @@ function vEditor() {
   <div class="page-head"><div><button class="btn ghost sm" data-act="back">${icon('back', 'sm')}Volver</button><h1 style="margin-top:8px">${title}</h1><p class="sub num">${sub}</p></div>
     ${E.isNew && !isNota && !d.origenId && !d.greId ? `<div class="seg brand" role="group" aria-label="Tipo de documento">${['COT', '01', '03', 'NV'].map(t => `<button data-act="ed-tipo" data-v="${t}" aria-pressed="${d.tipo === t}">${t === 'NV' ? 'N. venta' : TIPOS[t].corto}</button>`).join('')}</div>` : ''}</div>
   ${!isCot && !isNV && !empresaLista(cfg) ? `<div class="alert brand" style="margin-bottom:14px">${icon('building')}<div>Para emitir necesitas los datos de tu empresa. <button class="linkbtn" data-act="go" data-r="sunat">Completar en Integración SUNAT</button></div></div>` : ''}
+  ${isVenta && E.isNew && !origen && !d.greId && cotsFacturables().length ? `<div class="alert brand" style="margin-bottom:14px;align-items:center">${icon('quote')}<div style="flex:1"><b>¿Ya lo cotizaste?</b> Jala cliente, productos y precios de una cotización y factura en segundos.</div><button class="btn primary sm" data-act="cot-pick">${icon('download', 'sm')}Jalar de cotización</button></div>` : ''}
   ${origen ? `<div class="alert info" style="margin-bottom:14px">${icon(origen.tipo === 'NV' ? 'tag' : 'quote')}<div>Generada desde ${origen.tipo === 'NV' ? 'la nota de venta' : 'la cotización'} <b>${docNum(origen)}</b>. Al emitir, pasará a «${origen.tipo === 'NV' ? 'Convertida' : 'Facturada'}».</div></div>` : ''}
   ${isNV ? `<div class="alert warn" style="margin-bottom:14px">${icon('tag')}<div><b>Documento interno, no se declara a SUNAT.</b> Al concretar la venta conviértelo en boleta o factura desde el detalle.</div></div>` : ''}
   <div class="seg ed-tabs" role="group" aria-label="Vista">${[['datos', 'Datos'], ['preview', 'Vista previa']].map(([k, l]) => `<button data-act="ed-tab" data-v="${k}" aria-pressed="${E.tab === k}">${l}</button>`).join('')}</div>
@@ -2092,7 +2098,7 @@ function extraHTML(N) {
   const d = E.doc; if (d.tipo === '01') autoSpot(d);
   const sp = spot(d, DB.cfg.tipoCambio); E.spotSobre = sp.sobre;
   const parts = [];
-  if (d.operacion === 'bienes') parts.push(`<section class="sec ${!(d.guias || []).length && (d.tipo === '01' || DB.cfg.reglas.guiaBoleta) ? 'sec-warn' : ''}" id="sec-guia"><header><h2><span class="n">${N ? N() : '·'}</span>Guía de remisión</h2>${(d.guias || []).length ? `<span class="pill ok">${icon('check', 'sm')}Vinculada</span>` : d.tipo === '01' || DB.cfg.reglas.guiaBoleta ? `<span class="pill bad">${icon('alert', 'sm')}Obligatoria</span>` : '<span class="pill neutral">Opcional</span>'}</header><div class="body" id="ed-guia">${guiaHTML()}</div></section>`);
+  if (d.operacion === 'bienes') parts.push(`<section class="sec ${guiaSecWarn(d) ? 'sec-warn' : ''}" id="sec-guia"><header><h2><span class="n">${N ? N() : '·'}</span>Guía de remisión</h2>${guiaPill(d)}</header><div class="body" id="ed-guia">${guiaHTML()}</div></section>`);
   if (d.tipo === '01' && (d.operacion === 'servicios' || (d.operacion === 'bienes' && sp.sobre))) parts.push(`<section class="sec" id="sec-spot"><header><h2><span class="n">${N ? N() : '·'}</span>Detracción (SPOT)${d.operacion === 'bienes' ? ' <span class="faint" style="font-weight:500">· opcional para bienes</span>' : ''}</h2><span id="spot-pill">${spotPill(sp, d)}</span></header><div class="body" id="ed-spot">${spotHTML(sp)}</div></section>`);
   return parts.join('');
 }
@@ -2100,16 +2106,21 @@ function reExtra() { const el = $('#ed-extra'); if (!el) return; const ns = [...
 function renumber() { $$('.ed-form .sec header .n').forEach((x, i) => { x.textContent = i + 1; }); }
 function reOp() { const el = $('#ed-op'); if (el) el.innerHTML = opHTML(); reExtra(); }
 /* ---- guía vinculada ---- */
+const guiaReq = d => d.tipo === '01' || DB.cfg.reglas.guiaBoleta;
+const guiaSecWarn = d => !(d.guias || []).length && !d.guiaPosterior && guiaReq(d);
+const guiaPill = d => (d.guias || []).length ? `<span class="pill ok">${icon('check', 'sm')}Vinculada</span>` : d.guiaPosterior ? `<span class="pill brand">${icon('clock', 'sm')}Después de facturar</span>` : guiaReq(d) ? `<span class="pill bad">${icon('alert', 'sm')}Obligatoria</span>` : '<span class="pill neutral">Opcional</span>';
 function guiaHTML() {
-  const d = E.doc, gs = d.guias || [], req = d.tipo === '01' || DB.cfg.reglas.guiaBoleta;
+  const d = E.doc, gs = d.guias || [], req = guiaReq(d);
+  if (!gs.length && d.guiaPosterior) return `<div class="alert info" role="status">${icon('truck')}<div><b>Emitirás la guía después de facturar.</b> Al emitir esta ${d.tipo === '01' ? 'factura' : 'boleta'} te dejamos la guía lista con el cliente, los bienes y el comprobante relacionado; solo confirmas el transporte. Queda como pendiente hasta que la emitas.</div></div>
+    <div class="add-row" style="margin-top:12px"><button class="btn ghost" data-act="guia-despues" data-v="0">${icon('undo', 'sm')}Prefiero vincularla antes</button></div>`;
   const disp = gres().filter(x => !gs.some(g => g.id === x.id) && ['aceptado', 'observado', 'pendiente'].includes(x.estado) && (!d.cliente?.numDoc || x.cliente?.numDoc === d.cliente.numDoc));
   const chips = gs.map((g, i) => { const int = g.id && getDoc(g.id); return `<div class="gchip"><span class="g-ic">${icon('truck', 'sm')}</span><div class="g-main"><b class="num">${esc(g.serie)}-${pad(g.numero, 8)}</b><small>${int ? `${esc(MOTIVOS_TRASLADO[int.traslado?.motivo] || '')} · inicia ${fmtDate(int.traslado?.fechaInicio)} · ${PILL_CPE[int.estado]?.[2] || int.estado}` : 'Guía emitida en otro sistema'}</small></div><button class="btn ghost sm icon-only" data-act="guia-quitar" data-i="${i}" aria-label="Quitar guía ${esc(g.serie)}-${g.numero}">${icon('x', 'sm')}</button></div>`; }).join('');
   return `${gs.length ? '' : `<div class="alert ${req ? 'warn' : 'info'}" role="${req ? 'alert' : 'status'}">${icon('truck')}<div><b>Estás ${d.tipo === '01' ? 'facturando' : 'vendiendo'} bienes${req ? ': la guía de remisión es obligatoria' : ''}.</b> Vincula la guía remitente que sustenta el traslado; si aún no la emites, créala con estos bienes y vuelves aquí.</div></div>`}
     ${chips ? `<div class="gchips">${chips}</div>` : ''}
-    <div class="add-row" style="margin-top:12px"><button class="btn dark" data-act="guia-crear" ${d.items.some(x => !esServicio(x)) ? '' : 'disabled title="Agrega primero los bienes"'}>${icon('truck')}Crear guía con estos bienes</button><button class="btn" data-act="guia-vincular" ${disp.length ? '' : 'disabled'}>${icon('link')}Vincular guía emitida${disp.length ? ` (${disp.length})` : ''}</button><button class="btn ghost" data-act="guia-ext">${icon('plus')}De otro sistema</button></div>
+    <div class="add-row" style="margin-top:12px">${gs.length ? '' : `<button class="btn primary" data-act="guia-despues" data-v="1">${icon('clock')}Emitir la guía después de facturar</button>`}<button class="btn dark" data-act="guia-crear" ${d.items.some(x => !esServicio(x)) ? '' : 'disabled title="Agrega primero los bienes"'}>${icon('truck')}Crear guía antes</button><button class="btn" data-act="guia-vincular" ${disp.length ? '' : 'disabled'}>${icon('link')}Vincular guía emitida${disp.length ? ` (${disp.length})` : ''}</button><button class="btn ghost" data-act="guia-ext">${icon('plus')}De otro sistema</button></div>
     ${E.guiaExt ? `<div class="gext"><div class="field"><label for="gx-s">Serie</label><input class="input num" id="gx-s" data-gext="serie" value="${esc(E.guiaExt.serie)}" maxlength="4" placeholder="T001" style="text-transform:uppercase"></div><div class="field"><label for="gx-n">Número</label><input class="input num" id="gx-n" data-gext="numero" value="${esc(E.guiaExt.numero)}" inputmode="numeric" maxlength="8" placeholder="123"></div><button class="btn primary" data-act="guia-ext-add">${icon('check', 'sm')}Vincular</button></div>` : ''}`;
 }
-function reGuia() { const el = $('#ed-guia'); if (el) el.innerHTML = guiaHTML(); const sec = $('#sec-guia'); if (sec) { const has = (E.doc.guias || []).length, req = E.doc.tipo === '01' || DB.cfg.reglas.guiaBoleta; sec.classList.toggle('sec-warn', !has && req); const pl = sec.querySelector('header .pill'); if (pl) pl.outerHTML = has ? `<span class="pill ok">${icon('check', 'sm')}Vinculada</span>` : req ? `<span class="pill bad">${icon('alert', 'sm')}Obligatoria</span>` : '<span class="pill neutral">Opcional</span>'; } refreshCalc(true); }
+function reGuia() { const el = $('#ed-guia'); if (el) el.innerHTML = guiaHTML(); const sec = $('#sec-guia'); if (sec) { sec.classList.toggle('sec-warn', guiaSecWarn(E.doc)); const pl = sec.querySelector('header .pill'); if (pl) pl.outerHTML = guiaPill(E.doc); } refreshCalc(true); }
 /* ---- detracción ---- */
 function spotPill(sp, d) {
   const dt = d.detraccion || {};
@@ -2345,6 +2356,8 @@ async function emit(btn) {
     if (d.origenId) { const c = getDoc(d.origenId); if (c) { const cc = clone(c); cc.estado = c.tipo === 'NV' ? 'convertida' : 'facturada'; cc.facturaId = saved.id; await put('documentos', cc); logEvent(c.tipo === 'NV' ? 'nota_venta.convertida' : 'cotizacion.facturada', cc, `→ ${docNum(saved)}`); } }
     if (saved.tipo === '09' && saved.vinculaFacturaId) { const f = getDoc(saved.vinculaFacturaId); if (f && f.estado === 'borrador') { const ff = clone(f); ff.guias = [...(ff.guias || []).filter(g => g.id !== saved.id), { id: saved.id, serie: saved.serie, numero: saved.numero }]; await put('documentos', ff); logEvent('guia.vinculada', ff, `Guía ${docNum(saved)}`); setTimeout(() => toast(`Guía ${docNum(saved)} vinculada a tu factura en borrador`, 'ok', { label: 'Volver a la factura', fn: () => startEdit(ff.id) }), 400); } }
     for (const g of saved.guias || []) { const gd = g.id && getDoc(g.id); if (gd && !gd.facturaId) { const gg = clone(gd); gg.facturaId = saved.id; await put('documentos', gg); logEvent('guia.vinculada', gg, `→ ${docNum(saved)}`); } }
+    if (saved.tipo === '09' && saved.deFacturaId) { const f = getDoc(saved.deFacturaId); if (f) { logEvent('guia.vinculada', f, `Guía ${docNum(saved)} emitida después de facturar`); setTimeout(() => toast(`Guía ${docNum(saved)} vinculada a ${docNum(f)}`, 'ok', { label: 'Ver factura', fn: () => openDrawer(f.id) }), 900); } }
+    if (guiaPendiente(saved)) setTimeout(() => { if (E?.doc?.deFacturaId === saved.id || !guiaPendiente(getDoc(saved.id))) return; toast(`Falta la guía de remisión de ${docNum(saved)}`, 'warn', { label: 'Emitir guía ahora', fn: () => startGuiaDeFactura(saved.id) }); }, 2600);
     E.dirty = false; E = null; UI.cpeF = 'todos'; go(saved.tipo === '09' ? 'guias' : 'comprobantes'); openDrawer(saved.id); sendSunat(saved.id);
   } catch { btn?.classList.remove('loading'); }
 }
@@ -2593,7 +2606,7 @@ function renderDrawer() {
   const share = shareText(d), wa = waLink(d, share);
   const A = [];
   if (isCot) {
-    if (!['facturada', 'rechazada'].includes(d.estado)) A.push(`<button class="btn primary" data-act="convert" data-id="${d.id}" data-tipo="${d.cliente?.tipoDoc === '6' ? '01' : '03'}">${icon('receipt')}Convertir en ${d.cliente?.tipoDoc === '6' ? 'factura' : 'boleta'}</button>`);
+    if (!['facturada', 'rechazada'].includes(d.estado)) A.push(`<button class="btn primary" data-act="convert" data-id="${d.id}" data-tipo="${d.cliente?.tipoDoc === '6' ? '01' : '03'}">${icon('receipt')}${d.cliente?.tipoDoc === '6' ? 'Facturar ahora' : 'Emitir boleta'}</button>`);
     A.push(`<a class="btn" href="${esc(wa)}" target="_blank" rel="noopener" data-act="wa" data-id="${d.id}">${icon('chat')}WhatsApp</a>`);
     A.push(`<button class="btn" data-act="pdf" data-id="${d.id}">${icon('pdf')}PDF</button>`);
     if (d.estado !== 'facturada') A.push(`<button class="btn" data-act="edit" data-id="${d.id}">${icon('edit')}Editar</button>`);
@@ -2609,6 +2622,7 @@ function renderDrawer() {
     if (d.estado === 'borrador') A.push(`<button class="btn primary" data-act="edit" data-id="${d.id}">${icon('edit')}Continuar y emitir</button>`, `<button class="btn ghost danger" data-act="del-doc" data-id="${d.id}" style="margin-left:auto">${icon('trash')}Eliminar borrador</button>`);
     if (d.estado === 'pendiente') A.push(`<button class="btn primary" data-act="send" data-id="${d.id}" ${D.sending ? 'disabled' : ''}>${icon('send')}Enviar a SUNAT</button>`);
     if (d.estado === 'rechazado') A.push(`<button class="btn primary" data-act="fix" data-id="${d.id}">${icon('refresh')}Corregir en uno nuevo</button>`);
+    if (guiaPendiente(d)) A.unshift(`<button class="btn ${d.estado === 'pendiente' ? 'dark' : 'primary'}" data-act="gre-de-fac" data-id="${d.id}">${icon('truck')}Emitir guía de remisión</button>`);
     if (['aceptado', 'observado', 'pendiente'].includes(d.estado)) A.push(`<button class="btn" data-act="pdf" data-id="${d.id}">${icon('pdf')}PDF</button>`, `<button class="btn" data-act="sf-todo" data-id="${d.id}">${icon('download')}PDF + XML + CDR</button>`);
     if (['aceptado', 'observado'].includes(d.estado)) A.push(`<a class="btn" href="${esc(wa)}" target="_blank" rel="noopener">${icon('chat')}WhatsApp</a>`);
     if (d.tipo === '01' && d.formaPago === 'Credito' && d.estado === 'aceptado' && !d.cobrado) A.push(`<button class="btn dark" data-act="cobrado" data-id="${d.id}">${icon('coins')}Registrar cobro</button>`);
@@ -2621,7 +2635,8 @@ function renderDrawer() {
   const origen = d.origenId && getDoc(d.origenId), fact = d.facturaId && getDoc(d.facturaId), refd = d.ref?.id && getDoc(d.ref.id);
   const ncs = allDocs().filter(x => ES_NOTA(x.tipo) && x.ref?.id === d.id);
   const guiasRel = (d.guias || []).map(g => ({ g, doc: g.id && getDoc(g.id) }));
-  const facDeGuia = d.tipo === '09' ? allDocs().filter(x => (x.guias || []).some(g => g.id === d.id)) : [];
+  const facDeGuia = d.tipo === '09' ? allDocs().filter(x => (x.guias || []).some(g => g.id === d.id) || x.id === d.deFacturaId) : [];
+  const guiasPost = ['01', '03'].includes(d.tipo) ? gres().filter(g => g.deFacturaId === d.id && g.estado !== 'borrador') : [];
   const SLd = spotLegend(d, DB.cfg);
   const t = todayISO();
   const side = isCot ? `
@@ -2642,7 +2657,7 @@ function renderDrawer() {
     ${d.tipo === '09' ? greSideHTML(d) : ''}
     ${SLd ? `<section class="panel"><div class="panel-h"><h2>Detracción (SPOT)</h2><span class="pill brand">${SLd.sp.porcentaje}%</span></div><div class="panel-b"><dl class="kv"><dt>Tipo</dt><dd>${esc(SLd.sp.codigo)} · ${esc(SLd.sp.desc)}</dd><dt>Monto</dt><dd class="num">${money(SLd.sp.monto)}</dd><dt>Neto a cobrar</dt><dd class="num">${money(SLd.sp.neto, d.moneda)}</dd><dt>Cuenta BN</dt><dd class="num">${esc(DB.cfg.docs.detraccion || '—')}</dd></dl></div></section>` : ''}
     ${d.tipo === '01' && d.formaPago === 'Credito' ? `<section class="panel"><div class="panel-h"><h2>Cobranza</h2>${d.cobrado ? `<span class="pill ok">${icon('check', 'sm')}Cobrado</span>` : ''}</div><div class="panel-b"><ul class="mini-list" style="margin:0 -18px">${(d.cuotas || []).map((q, i) => `<li style="cursor:default"><div class="m-main"><b>Cuota ${i + 1}</b><small>Vence ${fmtDate(q.fecha)}</small></div>${!d.cobrado && q.fecha < t ? `<span class="pill bad">${icon('alert', 'sm')}Vencida</span>` : ''}<span class="m-amt num">${money(q.monto, d.moneda)}</span></li>`).join('')}</ul></div></section>` : ''}
-    ${origen || refd || ncs.length || guiasRel.length || facDeGuia.length || (fact && !isCot && d.tipo !== 'NV') ? `<section class="panel"><div class="panel-h"><h2>Relacionados</h2></div><div class="panel-b"><dl class="kv">${origen ? `<dt>${origen.tipo === 'NV' ? 'Nota de venta' : 'Cotización'}</dt><dd><button class="linkbtn" data-act="open" data-id="${origen.id}">${docNum(origen)}</button></dd>` : ''}${refd ? `<dt>Modifica a</dt><dd><button class="linkbtn" data-act="open" data-id="${refd.id}">${docNum(refd)}</button></dd>` : ''}${guiasRel.map(({ g, doc }) => `<dt>Guía de remisión</dt><dd>${doc ? `<button class="linkbtn" data-act="open" data-id="${doc.id}">${docNum(doc)}</button>` : `<span class="num">${esc(g.serie)}-${pad(g.numero, 8)}</span> <span class="faint">externa</span>`}</dd>`).join('')}${facDeGuia.map(f => `<dt>Facturada en</dt><dd><button class="linkbtn" data-act="open" data-id="${f.id}">${docNum(f)}</button> <span class="faint">${money(totalOf(f), f.moneda)}</span></dd>`).join('')}${ncs.map(n => `<dt>${TIPOS[n.tipo].corto}</dt><dd><button class="linkbtn" data-act="open" data-id="${n.id}">${docNum(n)}</button> <span class="faint">${n.tipo === '07' ? '−' : '+'} ${money(totalOf(n), n.moneda)}</span></dd>`).join('')}</dl></div></section>` : ''}
+    ${origen || refd || ncs.length || guiasRel.length || guiasPost.length || facDeGuia.length || (fact && !isCot && d.tipo !== 'NV') ? `<section class="panel"><div class="panel-h"><h2>Relacionados</h2></div><div class="panel-b"><dl class="kv">${origen ? `<dt>${origen.tipo === 'NV' ? 'Nota de venta' : 'Cotización'}</dt><dd><button class="linkbtn" data-act="open" data-id="${origen.id}">${docNum(origen)}</button></dd>` : ''}${refd ? `<dt>Modifica a</dt><dd><button class="linkbtn" data-act="open" data-id="${refd.id}">${docNum(refd)}</button></dd>` : ''}${guiasPost.map(g => `<dt>Guía de remisión</dt><dd><button class="linkbtn" data-act="open" data-id="${g.id}">${docNum(g)}</button> <span class="faint">emitida después · ${esc(PILL_CPE[g.estado]?.[2] || g.estado)}</span></dd>`).join('')}${guiasRel.map(({ g, doc }) => `<dt>Guía de remisión</dt><dd>${doc ? `<button class="linkbtn" data-act="open" data-id="${doc.id}">${docNum(doc)}</button>` : `<span class="num">${esc(g.serie)}-${pad(g.numero, 8)}</span> <span class="faint">externa</span>`}</dd>`).join('')}${facDeGuia.map(f => `<dt>Facturada en</dt><dd><button class="linkbtn" data-act="open" data-id="${f.id}">${docNum(f)}</button> <span class="faint">${money(totalOf(f), f.moneda)}</span></dd>`).join('')}${ncs.map(n => `<dt>${TIPOS[n.tipo].corto}</dt><dd><button class="linkbtn" data-act="open" data-id="${n.id}">${docNum(n)}</button> <span class="faint">${n.tipo === '07' ? '−' : '+'} ${money(totalOf(n), n.moneda)}</span></dd>`).join('')}</dl></div></section>` : ''}
     ${historialDocHTML(d)}
     ${d.estado !== 'borrador' ? `<details class="more" id="xml-det"><summary>${icon('code')}XML UBL 2.1${d.tipo === '09' ? ' · DespatchAdvice' : ''}${xmlGuardado(d) ? ' · firmado' : ''}${icon('chev')}</summary><div class="inner"><div class="code" id="xml-view">${hlXML(xmlGuardado(d) || buildXML(d, DB.cfg))}</div><div class="row-gap" style="margin-top:10px"><button class="btn sm" data-act="copy-xml" data-id="${d.id}">${icon('copy', 'sm')}Copiar XML</button><button class="btn sm" data-act="sf-xml" data-id="${d.id}">${icon('download', 'sm')}Descargar XML</button><span class="hint" id="xml-hint">${xmlGuardado(d) ? 'Firmado digitalmente: es el XML que recibió SUNAT.' : 'Sin firma: tu API agrega la firma XMLDSig al enviar.'}</span></div></div></details>` : ''}`;
   dl.innerHTML = `
@@ -3177,7 +3192,7 @@ const EVENTOS = {
   'cotizacion.creada': ['Cotización creada', 'emision', 'quote'], 'cotizacion.editada': ['Cotización editada', 'cambios', 'edit'], 'cotizacion.estado': ['Estado de cotización', 'cambios', 'refresh'], 'cotizacion.facturada': ['Cotización facturada', 'emision', 'receipt'],
   'documento.borrador': ['Borrador guardado', 'cambios', 'edit'], 'documento.emitido': ['Comprobante emitido', 'emision', 'receipt'], 'documento.eliminado': ['Documento eliminado', 'cambios', 'trash'],
   'sunat.aceptado': ['Aceptado por SUNAT', 'sunat', 'check'], 'sunat.observado': ['Aceptado con observaciones', 'sunat', 'alert'], 'sunat.rechazado': ['Rechazado por SUNAT', 'sunat', 'x'], 'sunat.error': ['Error de envío', 'sunat', 'alert'],
-  'guia.vinculada': ['Guía vinculada', 'emision', 'link'], 'nota_venta.emitida': ['Nota de venta emitida', 'emision', 'tag'], 'nota_venta.editada': ['Nota de venta editada', 'cambios', 'edit'], 'nota_venta.convertida': ['Nota de venta convertida', 'emision', 'receipt'], 'nota_venta.anulada': ['Nota de venta anulada', 'cambios', 'ban'],
+  'guia.vinculada': ['Guía vinculada', 'emision', 'link'], 'guia.desde_factura': ['Guía preparada desde la factura', 'emision', 'truck'], 'nota_venta.emitida': ['Nota de venta emitida', 'emision', 'tag'], 'nota_venta.editada': ['Nota de venta editada', 'cambios', 'edit'], 'nota_venta.convertida': ['Nota de venta convertida', 'emision', 'receipt'], 'nota_venta.anulada': ['Nota de venta anulada', 'cambios', 'ban'],
   'cobro.registrado': ['Cobro registrado', 'cobranza', 'coins'], 'archivo.pdf': ['Copia PDF archivada', 'archivo', 'archive'], 'archivo.descarga': ['Archivos SUNAT descargados', 'archivo', 'download'],
   'cliente.creado': ['Cliente registrado', 'maestros', 'users'], 'cliente.editado': ['Cliente actualizado', 'maestros', 'users'], 'producto.creado': ['Producto registrado', 'maestros', 'box'], 'producto.editado': ['Producto actualizado', 'maestros', 'box'], 'config.actualizada': ['Configuración', 'maestros', 'shield'],
 };
@@ -3342,10 +3357,11 @@ function vGuias() {
 function vEditorGRE() {
   const d = E.doc, t = d.traslado, cfg = DB.cfg;
   const nro = `${d.serie}-${pad(nextNumero('09', d.serie), 8)}`;
-  const vincF = d.vinculaFacturaId && getDoc(d.vinculaFacturaId);
+  const vincF = d.vinculaFacturaId && getDoc(d.vinculaFacturaId), deF = d.deFacturaId && getDoc(d.deFacturaId);
   return `
   <div class="page-head"><div><button class="btn ghost sm" data-act="back">${icon('back', 'sm')}Volver</button><h1 style="margin-top:8px">${E.isNew ? 'Nueva guía de remisión' : 'Editar guía de remisión'}</h1><p class="sub num">Remitente electrónica · N.° ${nro} · se confirma al emitir</p></div></div>
   ${!empresaLista(cfg) ? `<div class="alert brand" style="margin-bottom:14px">${icon('building')}<div>Para emitir necesitas los datos de tu empresa. <button class="linkbtn" data-act="go" data-r="sunat">Completar en Integración SUNAT</button></div></div>` : ''}
+  ${deF ? `<div class="alert brand" style="margin-bottom:14px">${icon('receipt')}<div><b>Guía de la ${TIPOS[deF.tipo].corto.toLowerCase()} ${docNum(deF)}.</b> Cliente, bienes y comprobante relacionado ya están cargados${E.transpPrevio ? '; el transporte es el de tu última guía' : ''}. Revisa y emite.</div></div>` : ''}
   ${vincF ? `<div class="alert info" style="margin-bottom:14px">${icon('link')}<div>Al emitirla quedará vinculada a la factura en borrador de <b>${esc(vincF.cliente?.nombre || '')}</b> (${money(totalOf(vincF), vincF.moneda)}).</div></div>` : ''}
   <div class="seg ed-tabs" role="group" aria-label="Vista">${[['datos', 'Datos'], ['preview', 'Vista previa']].map(([k, l]) => `<button data-act="ed-tab" data-v="${k}" aria-pressed="${E.tab === k}">${l}</button>`).join('')}</div>
   <div class="ed" id="ed" data-tab="${E.tab}">
@@ -3577,6 +3593,7 @@ Object.assign(ACT, {
 document.addEventListener('input', ev => {
   const t = ev.target;
   if (t.matches('[data-refq]')) { UI.refQ = t.value; $('#ref-list').innerHTML = refList(); return; }
+  if (t.matches('[data-cotq]')) { UI.cotQ = t.value; $('#cot-list').innerHTML = cotList(); return; }
   if (t.matches('[data-hdate]')) { UI[t.dataset.hdate] = t.value; render(); return; }
   if (!E) return;
   if (t.matches('[data-gext]')) { E.guiaExt[t.dataset.gext] = t.dataset.gext === 'serie' ? t.value.toUpperCase() : t.value.replace(/\D/g, ''); return; }
@@ -3748,6 +3765,58 @@ Object.assign(ACT, {
   'sf-xml': async el => { try { const d = getDoc(el.dataset.id); const { xml } = await xmlDe(d); await saveFile(`${claveSunat(d)}.xml`, new Blob([xml], { type: 'application/xml' })); } catch { toast('No se pudo descargar el XML.', 'bad'); } },
   'sf-cdr': async el => { try { const d = getDoc(el.dataset.id); const c = await cdrDe(d); if (!c) { toast('Este comprobante aún no tiene constancia de SUNAT.', 'warn'); return; } await saveFile(`R-${claveSunat(d)}.zip`, new Blob([c.u8], { type: 'application/zip' })); if (!c.real) toast('Constancia simulada: sin validez tributaria.', 'warn'); } catch { toast('No se pudo descargar la constancia.', 'bad'); } },
   'sf-todo': async el => { el.classList.add('loading'); try { await descargarTodo(getDoc(el.dataset.id)); } catch (e) { console.warn(e); toast('No se pudieron preparar los archivos.', 'bad'); } el.classList.remove('loading'); },
+});
+
+/* ================= FACTURACIÓN RÁPIDA: COTIZACIÓN → FACTURA → GUÍA ================= */
+const cotsFacturables = () => cots().filter(d => !['facturada', 'rechazada'].includes(d.estado) && d.numero && (d.items || []).length)
+  .sort((a, b) => (b.estado === 'aprobada') - (a.estado === 'aprobada') || byRecent(a, b));
+function cotPickModal() {
+  UI.cotQ = '';
+  openModal(`<div class="modal-h"><h2>Facturar desde una cotización</h2><button class="btn ghost icon-only" data-act="modal-close" aria-label="Cerrar">${icon('x')}</button></div>
+    <div class="modal-b"><div class="search" style="max-width:none">${icon('search')}<input class="input" id="cot-q" data-cotq placeholder="Número o cliente" autocomplete="off"></div><div class="pick-list" id="cot-list">${cotList()}</div></div>
+    <div class="modal-f"><span class="hint" style="margin-right:auto;align-self:center">Se copian cliente, productos, precios y moneda. Las aprobadas salen primero.</span><button class="btn" data-act="modal-close">Cancelar</button></div>`, true);
+  setTimeout(() => { if (matchMedia('(pointer:fine)').matches) $('#cot-q')?.focus(); }, 50);
+}
+function cotList() {
+  const q = (UI.cotQ || '').toLowerCase();
+  const list = cotsFacturables().filter(d => !q || docNum(d).toLowerCase().includes(q) || (d.cliente?.nombre || '').toLowerCase().includes(q)).slice(0, 40);
+  if (!list.length) return emptyHTML('quote', 'Sin cotizaciones por facturar', 'Las cotizaciones facturadas o rechazadas no aparecen aquí.');
+  return list.map(d => `<button class="pick" data-act="cot-usar" data-id="${d.id}"><span><b class="num">${docNum(d)}</b><small>${esc(d.cliente?.nombre || '')} · ${fmtDate(d.fecha)} · ${d.items.length} ítem${d.items.length > 1 ? 's' : ''}</small></span>${docPill(d)}<span class="num">${money(totalOf(d), d.moneda)}</span><span class="qty" style="background:var(--granate-50);color:var(--granate)">${icon('arrow', 'sm')}</span></button>`).join('');
+}
+/* La guía puede emitirse antes (vinculada en la factura) o después (desde la factura emitida). Mientras falte, queda pendiente. */
+function guiaPendiente(d) {
+  if (!d || !['01', '03'].includes(d.tipo) || d.operacion !== 'bienes' || (d.guias || []).length) return false;
+  if (!['pendiente', 'aceptado', 'observado'].includes(d.estado)) return false;
+  if (!(d.guiaPosterior || d.tipo === '01' || DB.cfg.reglas?.guiaBoleta)) return false;
+  return !gres().some(g => (g.deFacturaId === d.id || g.facturaId === d.id) && !['borrador', 'rechazado'].includes(g.estado));
+}
+const ultimoTransporte = () => gres().filter(g => g.numero && g.traslado && g.estado !== 'rechazado').sort(byRecent)[0]?.traslado || null;
+function startGuiaDeFactura(fid) {
+  const f = getDoc(fid); if (!f) return;
+  const borr = gres().find(g => g.deFacturaId === f.id && g.estado === 'borrador'); if (borr) return startEdit(borr.id);
+  const ya = gres().find(g => (g.deFacturaId === f.id || g.facturaId === f.id) && !['borrador', 'rechazado'].includes(g.estado));
+  if (ya) { toast(`${docNum(f)} ya tiene la guía ${docNum(ya)}.`); return openDrawer(ya.id); }
+  const items = (f.items || []).filter(it => !esServicio(it)).map(it => ({ id: uid(), codigo: it.codigo, desc: it.desc, unidad: it.unidad, cant: it.cant }));
+  if (!items.length) { toast('Este comprobante no tiene bienes que trasladar.', 'warn'); return; }
+  const g = newDoc('09', { cliente: clone(f.cliente), items, docRel: { tipo: f.tipo, serie: f.serie, numero: f.numero }, facturaId: f.id, deFacturaId: f.id, obs: '' });
+  const prev = ultimoTransporte();
+  if (prev) {
+    Object.assign(g.traslado, { modalidad: prev.modalidad || '02', m1l: !!prev.m1l, conductor: clone(prev.conductor || g.traslado.conductor), placa: prev.placa || '', transportista: clone(prev.transportista || g.traslado.transportista) });
+    if (prev.partida?.direccion && prev.partida?.ubigeo) g.traslado.partida = clone(prev.partida);
+  }
+  openEditor(g, true, 'card'); E.transpPrevio = !!prev; autoPeso(); refreshGRE(true); render();
+  logEvent('guia.desde_factura', f, `Guía preparada con ${items.length} bien${items.length > 1 ? 'es' : ''}`);
+}
+Object.assign(ACT, {
+  'cot-pick': () => { if (!cotsFacturables().length) { toast('No tienes cotizaciones por facturar.', 'warn'); return; } cotPickModal(); },
+  'cot-usar': async el => {
+    const id = el.dataset.id;
+    if (E && E.dirty && (E.doc.items || []).length && !(await confirmDlg({ title: '¿Reemplazar lo que llevas?', body: 'Se cargarán el cliente y los productos de la cotización en lugar de los actuales.', ok: 'Jalar cotización' }))) return;
+    const tipo = E && E.doc.tipo === '03' ? '03' : undefined;
+    closeModal(); if (E) E.dirty = false; startConvert(id, tipo);
+  },
+  'guia-despues': el => { const d = E.doc; d.guiaPosterior = el.dataset.v === '1'; markDirty(); E.errors = (E.errors || []).filter(x => !/guía de remisión/i.test(x)); const er = $('#ed-errors'); if (er) er.innerHTML = errorsHTML(); reGuia(); },
+  'gre-de-fac': el => startGuiaDeFactura(el.dataset.id),
 });
 
 </script>
