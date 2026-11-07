@@ -700,6 +700,7 @@ details.more>.inner{padding:0 18px 18px}
 @media (max-width:1180px) and (max-height:860px){ .nav-link{min-height:50px;font-size:.66rem} .nav-link .icon{width:18px;height:18px} .brand{padding-bottom:6px} .nav-cta{width:48px;height:48px;margin-bottom:6px} }
 
 </style>
+<script src="granate-config.js"></script>
 </head>
 <body>
 <div class="app">
@@ -906,7 +907,7 @@ function defaultConfig() {
     series: { '01': 'F001', '03': 'B001', '07F': 'FC01', '07B': 'BC01', '08F': 'FD01', '08B': 'BD01', '09': 'T001', NV: 'NV01', COT: 'C001' },
     igvRate: 0.18, incluyeIGV: false, tipoCambio: 3.5, validezDias: 15,
     condiciones: 'Precios en la moneda indicada. Tiempo de entrega a coordinar desde la orden de compra.',
-    integracion: { modo: 'simulador', url: '', ambiente: 'beta' },
+    integracion: { modo: 'simulador', url: apiDefault(), ambiente: 'beta' },
     /* reglas de emisión: la factura de bienes SIEMPRE exige guía; en boletas es opcional */
     reglas: { guiaBoleta: false, archivarPDF: true },
     docs: defaultDocs(),
@@ -952,10 +953,15 @@ function mergeDocs(o) {
   };
   return { ...d, ...o, cuentas: Array.isArray(o.cuentas) ? o.cuentas : [], cot: fix('cot', o.cot), fac: fix('fac', o.fac) };
 }
+// URL de la API que trae publicada la web (granate-config.js en GitHub Pages). En Claude o en el servidor no existe.
+function apiDefault() { const u = typeof window !== 'undefined' ? String(window.GRANATE_API_DEFAULT || '').trim().replace(/\/+$/, '') : ''; return /^https:\/\//.test(u) || /^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(u) ? u : ''; }
 function mergeCfg(c) {
   const d = defaultConfig(); if (!c) return d;
   const o = clone(c);
-  return { ...d, ...o, empresa: { ...d.empresa, ...(o.empresa || {}) }, series: { ...d.series, ...(o.series || {}) }, integracion: { ...d.integracion, ...(o.integracion || {}) }, reglas: { ...d.reglas, ...(o.reglas || {}) }, docs: mergeDocs(o.docs) };
+  const m = { ...d, ...o, empresa: { ...d.empresa, ...(o.empresa || {}) }, series: { ...d.series, ...(o.series || {}) }, integracion: { ...d.integracion, ...(o.integracion || {}) }, reglas: { ...d.reglas, ...(o.reglas || {}) }, docs: mergeDocs(o.docs) };
+  const def = apiDefault();
+  if (def && !String(m.integracion.url || '').trim() && !m.integracion.manual) m.integracion.url = def;
+  return m;
 }
 const empresaLista = cfg => validRUC(cfg.empresa.ruc) && cfg.empresa.razon.trim().length > 2 && cfg.empresa.direccion.trim().length > 3;
 
@@ -1422,7 +1428,7 @@ async function putCfg(cfg) {
   if (DB.mode === 'db') { try { await DB.db.doc('config/empresa').set(clone(DB.cfg)); } catch (e) { dbErr(e); throw e; } } else persistLocal();
   changed();
 }
-function setReady() { if (DB.ready) { changed(); return; } DB.ready = true; UI.route = currentRoute(); if (UI.route === 'editor') { UI.route = 'inicio'; location.hash = 'inicio'; } render(); }
+function setReady() { if (DB.ready) { changed(); return; } DB.ready = true; if (!window.claude) { despertarAPI(); document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible' && !apiViva()) despertarAPI(); }); } UI.route = currentRoute(); if (UI.route === 'editor') { UI.route = 'inicio'; location.hash = 'inicio'; } render(); }
 
 let chT = null;
 function changed() {
@@ -2344,14 +2350,44 @@ async function padronGet(path, base = padronURL()) {
   if (!base) return { ok: false, off: true };
   const key = base + path;
   if (PCACHE.has(key)) return PCACHE.get(key);
+  if (!apiViva(base) && !(await despertarAPI(base))) return { ok: false, net: true, mensaje: window.claude ? 'Dentro de Claude no se puede consultar tu API: usa la web publicada.' : 'Tu API no respondió. Revisa la URL en «Integración SUNAT» o vuelve a intentar en un momento.' };
   try {
-    const ctl = new AbortController(), to = setTimeout(() => ctl.abort(), 7000);
+    const ctl = new AbortController(), to = setTimeout(() => ctl.abort(), 15000);
     const r = await fetch(key, { signal: ctl.signal, headers: apiHeaders() }); clearTimeout(to);
-    const j = await r.json().catch(() => ({}));
-    const out = r.ok ? { ok: true, data: j } : { ok: false, status: r.status, mensaje: j.mensaje || `Tu API respondió ${r.status}.`, ruc: j.ruc };
+    const j = await r.json().catch(() => null);
+    if (!j) { API_VIVA.ts = 0; return { ok: false, status: 503, cargando: true, mensaje: 'Tu API está despertando. Reintentamos solos en unos segundos.' }; }
+    if (r.status < 500) marcarViva(base);
+    const out = r.ok ? { ok: true, data: j } : { ok: false, status: r.status, mensaje: j.mensaje || `Tu API respondió ${r.status}.`, ruc: j.ruc, cargando: r.status === 503 };
     if (r.ok || r.status === 404) { PCACHE.set(key, out); if (PCACHE.size > 300) PCACHE.delete(PCACHE.keys().next().value); }
     return out;
-  } catch { return { ok: false, net: true, mensaje: window.claude ? 'Dentro de Claude no se puede consultar tu API: publica la web en tu dominio.' : 'No se pudo consultar el padrón. Revisa la URL de tu API.' }; }
+  } catch { return { ok: false, net: true, mensaje: window.claude ? 'Dentro de Claude no se puede consultar tu API: usa la web publicada.' : 'No se pudo consultar el padrón. Revisa la URL de tu API.' }; }
+}
+/* La API gratuita (Render) se duerme tras 15 min sin uso y tarda ~1 min en despertar: la despertamos al abrir la app
+   y antes de consultar si lleva rato sin responder. */
+const API_VIVA = { base: '', ts: 0, promesa: null, base0: '' };
+const apiViva = (base = padronURL()) => API_VIVA.base === base && Date.now() - API_VIVA.ts < 13 * 60e3;
+const apiDespertando = () => !!API_VIVA.promesa;
+function marcarViva(base) { API_VIVA.base = base; API_VIVA.ts = Date.now(); }
+function despertarAPI(base = padronURL()) {
+  if (!base) return Promise.resolve(false);
+  if (API_VIVA.promesa && API_VIVA.base0 === base) return API_VIVA.promesa;
+  API_VIVA.base0 = base;
+  // Mientras despierta, la nube puede rechazar la conexión o responder algo que no es la API: reintentamos hasta ~95 s.
+  API_VIVA.promesa = (async () => {
+    const fin = Date.now() + 95000;
+    while (Date.now() < fin) {
+      try {
+        const ctl = new AbortController(), to = setTimeout(() => ctl.abort(), Math.max(1500, fin - Date.now()));
+        const r = await fetch(`${base}/health`, { signal: ctl.signal, headers: apiHeaders(), cache: 'no-store' }); clearTimeout(to);
+        const j = await r.json().catch(() => null);
+        if ((j && j.ok) || r.status === 401) { marcarViva(base); return true; }
+      } catch { /* aún despertando */ }
+      await sleep(3000);
+    }
+    return false;
+  })().finally(() => { API_VIVA.promesa = null; if (E && document.activeElement?.id === 'cli-q') renderCombo(); });
+  setTimeout(() => { if (API_VIVA.promesa && E && document.activeElement?.id === 'cli-q') renderCombo(); }, 1500);
+  return API_VIVA.promesa;
 }
 const padronChip = p => (!p ? '' : p.estado === 'NO ACTIVO' ? `<span class="pill bad">${icon('x', 'sm')}No figura activo en SUNAT</span>` : `<span class="pill ${p.apto ? 'ok' : 'warn'}">${icon(p.apto ? 'check' : 'alert', 'sm')}${esc(p.estado)}${p.condicion ? ` · ${esc(p.condicion)}` : ''}</span>`);
 const padronDe = d => ({ estado: d.estado, condicion: d.condicion, apto: !!d.apto, fecha: todayISO() });
@@ -2376,6 +2412,7 @@ function queryPadron() {
     if (seq !== padronSeq || !E) return;
     if (r.ok) { E.padronRes = r.data.datos ? r.data.datos : [r.data]; E.padronState = E.padronRes.length ? '' : 'msg:Sin coincidencias entre las empresas activas del padrón.'; }
     else E.padronState = 'msg:' + (r.status === 404 && /^\d{8}$/.test(q) ? 'Este DNI no tiene RUC activo. Para boletas puedes registrarlo como cliente con DNI.' : r.mensaje);
+    if (r.cargando) { E.pRetry = E.pRetryQ === q ? (E.pRetry || 0) + 1 : 1; E.pRetryQ = q; if (E.pRetry <= 12) setTimeout(() => { if (seq === padronSeq && E && E.cliQ.trim() === q) { queryPadron(); renderCombo(); } }, 10000); }
     if (document.activeElement?.id === 'cli-q') renderCombo();
   }, 260);
 }
@@ -2387,7 +2424,7 @@ function autoPadron(target) {
   if (c.tipoDoc === '6') delete c.padron;
   if (!path) return;
   if (!padronURL()) { const h = $(hid); if (h && c.tipoDoc === '6') h.innerHTML = `${docHint(c)} · <span class="faint">conecta tu API para completar desde el padrón</span>`; return; }
-  const h0 = $(hid); if (h0) h0.innerHTML = `${docHint(c)} · consultando padrón SUNAT…`;
+  const h0 = $(hid); if (h0) h0.innerHTML = `${docHint(c)} · ${apiViva() ? 'consultando padrón SUNAT…' : 'despertando tu API y consultando el padrón (hasta 1 min)…'}`;
   padronGet(path).then(r => {
     const cur = isEd ? E?.doc.cliente : UI.mCli; if (!cur || String(cur.numDoc).trim() !== n) return;
     const auto = isEd ? (E.autoCli = E.autoCli || {}) : (UI.mAuto = UI.mAuto || {});
@@ -2436,7 +2473,7 @@ function renderCombo() {
   const res = (q ? all.filter(c => c.nombre.toLowerCase().includes(q) || (c.numDoc || '').startsWith(q)) : all.sort((a, b) => a.nombre.localeCompare(b.nombre))).slice(0, q ? 5 : 7);
   const locales = new Set(res.map(c => c.numDoc));
   const pres = (E.padronRes || []).filter(r => !locales.has(r.ruc)), st = E.padronState || '';
-  const sec = st || pres.length ? `<div class="combo-sec">${icon('shield', 'sm')}Padrón SUNAT${st === 'loading' ? ' · buscando…' : ''}</div>`
+  const sec = st || pres.length ? `<div class="combo-sec">${icon('shield', 'sm')}Padrón SUNAT${st === 'loading' ? (apiDespertando() ? ' · despertando tu API (hasta 1 min)…' : ' · buscando…') : ''}</div>`
     + pres.map((r, i) => `<button class="combo-opt ${res.length + i === comboIdx ? 'act' : ''}" role="option" data-act="cli-padron" data-i="${E.padronRes.indexOf(r)}"><span class="avatar dark">${icon('building', 'sm')}</span><span style="min-width:0;flex:1"><b>${esc(r.razonSocial)}</b><small class="num">RUC ${r.ruc}${r.distrito ? ` · ${esc(r.distrito)}` : ''}</small></span>${r.apto ? '' : padronChip(padronDe(r))}</button>`).join('')
     + (st === 'off' ? `<div class="combo-note">Conecta tu API Granate en «Integración SUNAT» para buscar por RUC, DNI o razón social en el padrón oficial.</div>` : st.startsWith('msg:') ? `<div class="combo-note">${esc(st.slice(4))}</div>` : '') : '';
   list.innerHTML = res.map((c, i) => `<button class="combo-opt ${i === comboIdx ? 'act' : ''}" role="option" data-act="cli-pick" data-id="${c.id}"><span class="avatar">${esc(initials(c.nombre))}</span><span><b>${esc(c.nombre)}</b><small class="num">${DOCID[c.tipoDoc]} ${esc(c.numDoc)}</small></span></button>`).join('')
@@ -2650,7 +2687,7 @@ async function viaApi(doc, step) {
   if (!/^https?:\/\//.test(base)) throw new Error('Configura la URL de tu API en «Integración SUNAT».');
   step('xml', 'run'); const xml = buildXML(doc, cfg); step('xml', 'done');
   step('firma', 'run'); step('envio', 'run');
-  const ctl = new AbortController(), to = setTimeout(() => ctl.abort(), 45000);
+  const ctl = new AbortController(), to = setTimeout(() => ctl.abort(), 110000);
   let r;
   try {
     r = await fetch(`${base}/cpe/emitir`, { method: 'POST', headers: apiHeaders({ 'Content-Type': 'application/json' }), signal: ctl.signal, body: JSON.stringify({ ambiente: cfg.integracion.ambiente, emisor: { ruc: cfg.empresa.ruc, razonSocial: cfg.empresa.razon }, documento: apiDoc(doc), xml }) });
@@ -2994,9 +3031,10 @@ const ACT = {
     const base = String(UI.cfgDraft.integracion.url || '').trim().replace(/\/+$/, '');
     const show = h => { UI.apiState = h; const st = $('#api-state'); if (st) st.innerHTML = h; };
     if (!/^https?:\/\//.test(base)) { show('<span style="color:var(--bad)">Escribe una URL que empiece con https://</span>'); return; }
-    el.classList.add('loading'); const ctl = new AbortController(); const to = setTimeout(() => ctl.abort(), 8000);
-    try { const r = await fetch(`${base}/health`, { signal: ctl.signal, headers: apiHeaders() }); let j = {}; try { j = await r.json(); } catch { /* */ } show(r.ok ? `<span style="color:var(--ok)">Conexión correcta${j.ambiente ? ` · tu API está en ${j.ambiente === 'produccion' ? 'producción' : 'beta SUNAT'}` : ''}${j.base ? ` · base de transacciones con ${j.base.documentos} documentos y ${j.base.archivos} PDF` : ''}${j.gre === false ? ' · guías: faltan credenciales API SUNAT' : ''}</span>` : `<span style="color:var(--bad)">La API respondió ${r.status}${r.status === 401 ? ': revisa la clave' : ''}</span>`); }
-    catch { show(`<span style="color:var(--bad)">Sin respuesta${window.claude ? ': en Claude las conexiones externas están bloqueadas' : ''}</span>`); }
+    el.classList.add('loading'); const ctl = new AbortController(); const to = setTimeout(() => ctl.abort(), 95000);
+    const lento = setTimeout(() => show('<span class="faint">Conectando… si tu API gratuita estaba dormida tarda hasta 1 minuto en despertar.</span>'), 2500);
+    try { const r = await fetch(`${base}/health`, { signal: ctl.signal, headers: apiHeaders() }); clearTimeout(lento); if (r.status < 500) marcarViva(base); let j = {}; try { j = await r.json(); } catch { /* */ } show(r.ok ? `<span style="color:var(--ok)">Conexión correcta${j.ambiente ? ` · tu API está en ${j.ambiente === 'produccion' ? 'producción' : 'beta SUNAT'}` : ''}${j.base ? ` · base de transacciones con ${j.base.documentos} documentos y ${j.base.archivos} PDF` : ''}${j.gre === false ? ' · guías: faltan credenciales API SUNAT' : ''}</span>` : `<span style="color:var(--bad)">La API respondió ${r.status}${r.status === 401 ? ': revisa la clave' : ''}</span>`); }
+    catch { clearTimeout(lento); show(`<span style="color:var(--bad)">Sin respuesta${window.claude ? ': en Claude las conexiones externas están bloqueadas' : ''}</span>`); }
     clearTimeout(to); $('[data-act="test-api"]')?.classList.remove('loading'); el.classList.remove('loading'); loadPadronEstado();
   },
   'reset-demo': async () => { if (await confirmDlg({ title: '¿Reiniciar el ambiente de prueba?', body: 'Se borran los datos de prueba de este navegador y se cargan los ejemplos de nuevo.', ok: 'Reiniciar', danger: true })) { try { localStorage.removeItem(LS_KEY); indexedDB.deleteDatabase('granate-archivo'); } catch { /* */ } location.hash = 'inicio'; location.reload(); } },
@@ -3045,7 +3083,7 @@ document.addEventListener('input', ev => {
     let v = t.value; if (t.hasAttribute('data-num')) v = num(v);
     setPath(UI.cfgDraft, t.dataset.cfg, v);
     if (t.dataset.cfg === 'empresa.ruc') { const ok = validRUC(t.value), h = $('#ruc-hint'); t.setAttribute('aria-invalid', String(!!t.value && !ok)); h.className = `hint ${t.value ? (ok ? 'ok' : 'bad') : ''}`; h.textContent = t.value ? (ok ? 'RUC válido (dígito verificador correcto)' : t.value.length < 11 ? `${11 - t.value.length} dígitos más` : 'Revisa el RUC: el dígito verificador no coincide') : '11 dígitos.'; }
-    if (t.dataset.cfg === 'integracion.url') { UI.padronEstado = null; PCACHE.clear(); const el = $('#padron-state'); if (el) el.innerHTML = padronEstadoHTML(); }
+    if (t.dataset.cfg === 'integracion.url') { UI.cfgDraft.integracion.manual = true; UI.padronEstado = null; PCACHE.clear(); const el = $('#padron-state'); if (el) el.innerHTML = padronEstadoHTML(); }
     cfgChanged(false); if (UI.route === 'personalizar') refreshPs(); return;
   }
   if (t.matches('[data-acct]')) { const a = UI.cfgDraft.docs.cuentas[+t.dataset.i]; a[t.dataset.acct] = t.value; if (t.dataset.acct === 'cci') { const n = t.value.replace(/\D/g, '').length, h = $(`#ac-ch-${t.dataset.i}`); if (h) { h.textContent = n === 20 ? '20 dígitos' : `${n} de 20 dígitos`; h.className = `hint ${n && n !== 20 ? 'bad' : ''}`; } } cfgChanged(false); refreshPs(); return; }
