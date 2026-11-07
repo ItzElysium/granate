@@ -699,6 +699,13 @@ details.more>.inner{padding:0 18px 18px}
 @media (max-width:1180px){ .nav-link{min-height:56px} }
 @media (max-width:1180px) and (max-height:860px){ .nav-link{min-height:50px;font-size:.66rem} .nav-link .icon{width:18px;height:18px} .brand{padding-bottom:6px} .nav-cta{width:48px;height:48px;margin-bottom:6px} }
 
+/* archivos SUNAT por comprobante */
+.sf-list{display:flex;flex-direction:column;gap:6px}
+.sf{display:flex;align-items:center;gap:10px;padding:8px 8px 8px 10px;border:1px solid var(--line);border-radius:var(--r);background:var(--surface)}
+.sf-ic{width:30px;height:30px;border-radius:8px;background:var(--granate-50);color:var(--granate);display:grid;place-items:center;flex:none}
+.sf-main{flex:1;min-width:0}.sf-main b{display:block;font-size:var(--fs-sm)}.sf-main small{display:block;font-size:var(--fs-xs);color:var(--text-3);line-height:1.35}
+.sf-act{display:flex;gap:2px;flex:none}
+
 </style>
 <script src="granate-config.js"></script>
 </head>
@@ -2603,8 +2610,7 @@ function renderDrawer() {
     if (d.estado === 'borrador') A.push(`<button class="btn primary" data-act="edit" data-id="${d.id}">${icon('edit')}Continuar y emitir</button>`, `<button class="btn ghost danger" data-act="del-doc" data-id="${d.id}" style="margin-left:auto">${icon('trash')}Eliminar borrador</button>`);
     if (d.estado === 'pendiente') A.push(`<button class="btn primary" data-act="send" data-id="${d.id}" ${D.sending ? 'disabled' : ''}>${icon('send')}Enviar a SUNAT</button>`);
     if (d.estado === 'rechazado') A.push(`<button class="btn primary" data-act="fix" data-id="${d.id}">${icon('refresh')}Corregir en uno nuevo</button>`);
-    if (['aceptado', 'observado', 'pendiente'].includes(d.estado)) A.push(`<button class="btn" data-act="pdf" data-id="${d.id}">${icon('pdf')}PDF</button>`, `<button class="btn" data-act="zip" data-id="${d.id}">${icon('download')}XML (ZIP)</button>`);
-    if (d.sunat?.cdr) A.push(`<button class="btn" data-act="cdr" data-id="${d.id}">${icon('shield')}CDR SUNAT</button>`);
+    if (['aceptado', 'observado', 'pendiente'].includes(d.estado)) A.push(`<button class="btn" data-act="pdf" data-id="${d.id}">${icon('pdf')}PDF</button>`, `<button class="btn" data-act="sf-todo" data-id="${d.id}">${icon('download')}PDF + XML + CDR</button>`);
     if (['aceptado', 'observado'].includes(d.estado)) A.push(`<a class="btn" href="${esc(wa)}" target="_blank" rel="noopener">${icon('chat')}WhatsApp</a>`);
     if (d.tipo === '01' && d.formaPago === 'Credito' && d.estado === 'aceptado' && !d.cobrado) A.push(`<button class="btn dark" data-act="cobrado" data-id="${d.id}">${icon('coins')}Registrar cobro</button>`);
     if (['01', '03'].includes(d.tipo) && d.estado === 'aceptado') A.push(`<button class="btn ghost" data-act="nc" data-id="${d.id}">${icon('undo')}Nota de crédito</button>`, `<button class="btn ghost" data-act="nd" data-id="${d.id}">${icon('plusdoc')}Nota de débito</button>`);
@@ -2633,12 +2639,13 @@ function renderDrawer() {
       ${d.estado === 'borrador' ? '<p class="muted">Este borrador aún no tiene número ni se ha enviado.</p>' : timelineHTML(d)}
       ${d.sunat && d.estado !== 'borrador' ? `<dl class="kv">${d.sunat.codigo ? `<dt>Código</dt><dd class="num">${esc(d.sunat.codigo)}</dd>` : ''}${d.sunat.hash ? `<dt>Hash</dt><dd class="num" style="font-size:var(--fs-xs)">${esc(d.sunat.hash)}</dd>` : ''}${d.sunat.fecha ? `<dt>Respuesta</dt><dd class="num">${fmtDate(d.sunat.fecha.slice(0, 10))} ${d.sunat.fecha.slice(11, 16)}</dd>` : ''}<dt>Canal</dt><dd>${d.sunat.modo === 'api' ? 'Tu API' : 'Simulador'} · ${d.sunat.ambiente === 'produccion' ? 'Producción' : 'Beta'}</dd>${d.sunat.ultimoError ? `<dt>Último error</dt><dd style="color:var(--bad)">${esc(d.sunat.ultimoError)}</dd>` : ''}</dl>` : ''}
     </div></section>
+    ${archivosSunatHTML(d)}
     ${d.tipo === '09' ? greSideHTML(d) : ''}
     ${SLd ? `<section class="panel"><div class="panel-h"><h2>Detracción (SPOT)</h2><span class="pill brand">${SLd.sp.porcentaje}%</span></div><div class="panel-b"><dl class="kv"><dt>Tipo</dt><dd>${esc(SLd.sp.codigo)} · ${esc(SLd.sp.desc)}</dd><dt>Monto</dt><dd class="num">${money(SLd.sp.monto)}</dd><dt>Neto a cobrar</dt><dd class="num">${money(SLd.sp.neto, d.moneda)}</dd><dt>Cuenta BN</dt><dd class="num">${esc(DB.cfg.docs.detraccion || '—')}</dd></dl></div></section>` : ''}
     ${d.tipo === '01' && d.formaPago === 'Credito' ? `<section class="panel"><div class="panel-h"><h2>Cobranza</h2>${d.cobrado ? `<span class="pill ok">${icon('check', 'sm')}Cobrado</span>` : ''}</div><div class="panel-b"><ul class="mini-list" style="margin:0 -18px">${(d.cuotas || []).map((q, i) => `<li style="cursor:default"><div class="m-main"><b>Cuota ${i + 1}</b><small>Vence ${fmtDate(q.fecha)}</small></div>${!d.cobrado && q.fecha < t ? `<span class="pill bad">${icon('alert', 'sm')}Vencida</span>` : ''}<span class="m-amt num">${money(q.monto, d.moneda)}</span></li>`).join('')}</ul></div></section>` : ''}
     ${origen || refd || ncs.length || guiasRel.length || facDeGuia.length || (fact && !isCot && d.tipo !== 'NV') ? `<section class="panel"><div class="panel-h"><h2>Relacionados</h2></div><div class="panel-b"><dl class="kv">${origen ? `<dt>${origen.tipo === 'NV' ? 'Nota de venta' : 'Cotización'}</dt><dd><button class="linkbtn" data-act="open" data-id="${origen.id}">${docNum(origen)}</button></dd>` : ''}${refd ? `<dt>Modifica a</dt><dd><button class="linkbtn" data-act="open" data-id="${refd.id}">${docNum(refd)}</button></dd>` : ''}${guiasRel.map(({ g, doc }) => `<dt>Guía de remisión</dt><dd>${doc ? `<button class="linkbtn" data-act="open" data-id="${doc.id}">${docNum(doc)}</button>` : `<span class="num">${esc(g.serie)}-${pad(g.numero, 8)}</span> <span class="faint">externa</span>`}</dd>`).join('')}${facDeGuia.map(f => `<dt>Facturada en</dt><dd><button class="linkbtn" data-act="open" data-id="${f.id}">${docNum(f)}</button> <span class="faint">${money(totalOf(f), f.moneda)}</span></dd>`).join('')}${ncs.map(n => `<dt>${TIPOS[n.tipo].corto}</dt><dd><button class="linkbtn" data-act="open" data-id="${n.id}">${docNum(n)}</button> <span class="faint">${n.tipo === '07' ? '−' : '+'} ${money(totalOf(n), n.moneda)}</span></dd>`).join('')}</dl></div></section>` : ''}
     ${historialDocHTML(d)}
-    ${d.estado !== 'borrador' ? `<details class="more"><summary>${icon('code')}XML UBL 2.1${d.tipo === '09' ? ' · DespatchAdvice' : ''}${icon('chev')}</summary><div class="inner"><div class="code" id="xml-view">${hlXML(buildXML(d, DB.cfg))}</div><div class="row-gap" style="margin-top:10px"><button class="btn sm" data-act="copy-xml" data-id="${d.id}">${icon('copy', 'sm')}Copiar XML</button><span class="hint">Sin firma: tu API agrega la firma XMLDSig.</span></div></div></details>` : ''}`;
+    ${d.estado !== 'borrador' ? `<details class="more" id="xml-det"><summary>${icon('code')}XML UBL 2.1${d.tipo === '09' ? ' · DespatchAdvice' : ''}${xmlGuardado(d) ? ' · firmado' : ''}${icon('chev')}</summary><div class="inner"><div class="code" id="xml-view">${hlXML(xmlGuardado(d) || buildXML(d, DB.cfg))}</div><div class="row-gap" style="margin-top:10px"><button class="btn sm" data-act="copy-xml" data-id="${d.id}">${icon('copy', 'sm')}Copiar XML</button><button class="btn sm" data-act="sf-xml" data-id="${d.id}">${icon('download', 'sm')}Descargar XML</button><span class="hint" id="xml-hint">${xmlGuardado(d) ? 'Firmado digitalmente: es el XML que recibió SUNAT.' : 'Sin firma: tu API agrega la firma XMLDSig al enviar.'}</span></div></div></details>` : ''}`;
   dl.innerHTML = `
     <div class="drawer-h"><button class="btn ghost icon-only" data-act="close-drawer" aria-label="Cerrar">${icon('x')}</button>
       <div style="flex:1;min-width:0"><div class="row-gap"><h2 id="dr-title" class="num">${TIPOS[d.tipo].corto} ${docNum(d)}</h2>${docPill(d)}</div><div class="d-sub">${esc(d.cliente?.nombre || '—')} · <b class="num">${d.tipo === '09' ? `${nf2.format(Number(d.traslado?.pesoKg) || 0)} kg · ${esc(MOTIVOS_TRASLADO[d.traslado?.motivo] || '')}` : `${d.tipo === '07' ? '−' : ''}${money(c.total, d.moneda)}`}</b></div></div></div>
@@ -2659,7 +2666,7 @@ async function sendSunat(id) {
   catch (e) { res = { estado: 'pendiente', error: e.message || 'Error de conexión' }; }
   const fresh = clone(getDoc(id));
   if (res.estado === 'pendiente') { fresh.sunat = { ...(fresh.sunat || {}), ultimoError: res.error, fecha: new Date().toISOString(), modo: DB.cfg.integracion.modo, ambiente: DB.cfg.integracion.ambiente }; }
-  else { fresh.estado = res.estado; fresh.sunat = { estado: res.estado, codigo: res.codigo, descripcion: res.descripcion, hash: res.hash || '', observaciones: res.observaciones || [], cdr: res.cdr || '', fecha: new Date().toISOString(), modo: res.modo, ambiente: res.ambiente }; }
+  else { fresh.estado = res.estado; fresh.sunat = { estado: res.estado, codigo: res.codigo, descripcion: res.descripcion, hash: res.hash || '', observaciones: res.observaciones || [], cdr: res.cdr || '', xml: res.xml || '', fecha: new Date().toISOString(), modo: res.modo, ambiente: res.ambiente }; }
   try { await put('documentos', fresh); } catch { /* ya notificado */ }
   logEvent(res.estado === 'pendiente' ? 'sunat.error' : `sunat.${res.estado}`, fresh, res.estado === 'pendiente' ? res.error : `${res.codigo ? `[${res.codigo}] ` : ''}${res.descripcion || ''}`);
   if (['aceptado', 'observado'].includes(res.estado)) archivePDF(fresh, `Aceptado por SUNAT${res.modo === 'simulador' ? ' (simulador)' : ''}`);
@@ -2700,7 +2707,7 @@ async function viaApi(doc, step) {
   if (est === 'error') { step('cdr', 'fail'); throw new Error(`SUNAT ${j.codigo}: ${j.descripcion}. Corrige y reenvía con el mismo número.`); }
   const map = { aceptado: 'aceptado', observado: 'observado', rechazado: 'rechazado' };
   step('cdr', map[est] === 'rechazado' ? 'fail' : 'done');
-  return { estado: map[est] || 'pendiente', codigo: String(j.codigo ?? ''), descripcion: j.descripcion || '', hash: j.hash || '', observaciones: j.observaciones || [], cdr: j.cdrZipBase64 && j.cdrZipBase64.length < 150000 ? j.cdrZipBase64 : '', modo: 'api', ambiente: j.ambiente || cfg.integracion.ambiente, error: map[est] ? undefined : 'Respuesta sin estado reconocible.' };
+  return { estado: map[est] || 'pendiente', codigo: String(j.codigo ?? ''), descripcion: j.descripcion || '', hash: j.hash || '', observaciones: j.observaciones || [], cdr: j.cdrZipBase64 && j.cdrZipBase64.length < 150000 ? j.cdrZipBase64 : '', xml: j.xmlFirmadoBase64 && j.xmlFirmadoBase64.length < 200000 ? j.xmlFirmadoBase64 : '', modo: 'api', ambiente: j.ambiente || cfg.integracion.ambiente, error: map[est] ? undefined : 'Respuesta sin estado reconocible.' };
 }
 
 /* ---------- compartir, PDF, ZIP ---------- */
@@ -2942,7 +2949,7 @@ const ACT = {
   'cot-estado': async el => { const d = clone(getDoc(el.dataset.id)); const prev = d.estado; if (prev === el.dataset.v) return; d.estado = el.dataset.v; await put('documentos', d); logEvent('cotizacion.estado', d, `${PILL_COT[prev]?.[2] || prev} → ${PILL_COT[d.estado][2]}`); toast(`Cotización marcada como ${PILL_COT[d.estado][2].toLowerCase()}`, 'ok', { label: 'Deshacer', fn: async () => { const x = clone(getDoc(d.id)); x.estado = prev; await put('documentos', x); } }); },
   wa: async el => { const d = getDoc(el.dataset.id); if (d && d.tipo === 'COT' && d.estado === 'borrador') { const x = clone(d); x.estado = 'enviada'; await put('documentos', x); toast('Cotización marcada como enviada'); } return 'default'; },
   'copy-text': el => copy(shareText(getDoc(el.dataset.id)), 'Texto copiado. Pégalo en tu correo o chat.'),
-  'copy-xml': el => copy(buildXML(getDoc(el.dataset.id), DB.cfg), 'XML copiado'),
+  'copy-xml': async el => { const { xml } = await xmlDe(getDoc(el.dataset.id)); copy(xml, 'XML copiado'); },
   pdf: async el => { el.classList.add('loading'); try { const d = getDoc(el.dataset.id); const b = await makePDF(d); await saveFile(`${d.tipo === 'COT' ? 'Cotizacion' : TIPOS[d.tipo].corto.replace(/\s/g, '')}-${docNum(d)}.pdf`, b); } catch (e) { toast('No se pudo generar el PDF. Revisa tu conexión.', 'bad'); console.warn(e); } el.classList.remove('loading'); },
   zip: async el => { el.classList.add('loading'); try { await downloadZip(getDoc(el.dataset.id)); } catch { toast('No se pudo generar el ZIP.', 'bad'); } el.classList.remove('loading'); },
   cdr: async el => { const d = getDoc(el.dataset.id); try { const bin = atob(d.sunat.cdr); const u8 = Uint8Array.from(bin, c => c.charCodeAt(0)); await saveFile(`R-${fileBase(d, DB.cfg.empresa.ruc)}.zip`, new Blob([u8])); } catch { toast('No se pudo descargar el CDR.', 'bad'); } },
@@ -3172,7 +3179,7 @@ const EVENTOS = {
   'documento.borrador': ['Borrador guardado', 'cambios', 'edit'], 'documento.emitido': ['Comprobante emitido', 'emision', 'receipt'], 'documento.eliminado': ['Documento eliminado', 'cambios', 'trash'],
   'sunat.aceptado': ['Aceptado por SUNAT', 'sunat', 'check'], 'sunat.observado': ['Aceptado con observaciones', 'sunat', 'alert'], 'sunat.rechazado': ['Rechazado por SUNAT', 'sunat', 'x'], 'sunat.error': ['Error de envío', 'sunat', 'alert'],
   'guia.vinculada': ['Guía vinculada', 'emision', 'link'], 'nota_venta.emitida': ['Nota de venta emitida', 'emision', 'tag'], 'nota_venta.editada': ['Nota de venta editada', 'cambios', 'edit'], 'nota_venta.convertida': ['Nota de venta convertida', 'emision', 'receipt'], 'nota_venta.anulada': ['Nota de venta anulada', 'cambios', 'ban'],
-  'cobro.registrado': ['Cobro registrado', 'cobranza', 'coins'], 'archivo.pdf': ['Copia PDF archivada', 'archivo', 'archive'],
+  'cobro.registrado': ['Cobro registrado', 'cobranza', 'coins'], 'archivo.pdf': ['Copia PDF archivada', 'archivo', 'archive'], 'archivo.descarga': ['Archivos SUNAT descargados', 'archivo', 'download'],
   'cliente.creado': ['Cliente registrado', 'maestros', 'users'], 'cliente.editado': ['Cliente actualizado', 'maestros', 'users'], 'producto.creado': ['Producto registrado', 'maestros', 'box'], 'producto.editado': ['Producto actualizado', 'maestros', 'box'], 'config.actualizada': ['Configuración', 'maestros', 'shield'],
 };
 const H_FILTROS = [['todos', 'Todo'], ['emision', 'Emisión'], ['sunat', 'SUNAT'], ['cobranza', 'Cobranza'], ['cambios', 'Cambios'], ['archivo', 'Archivo PDF'], ['maestros', 'Maestros']];
@@ -3652,6 +3659,97 @@ async function demoUpgrade(btn) {
   btn?.classList.remove('loading'); render();
 }
 Object.assign(ACT, { 'demo-upgrade': el => demoUpgrade(el) });
+
+/* ================= ARCHIVOS SUNAT DE CADA COMPROBANTE: PDF, XML Y CDR ================= */
+// Lo que SUNAT exige conservar: el XML firmado que se le envió, su constancia (CDR) y la representación impresa (PDF).
+const ES_ARCH_SUNAT = d => ['01', '03', '07', '08', '09'].includes(d?.tipo) && d.estado !== 'borrador' && !!d.numero;
+const b64u8 = b => Uint8Array.from(atob(b), c => c.charCodeAt(0));
+const claveSunat = d => fileBase(d, DB.cfg.empresa.ruc);
+function xmlGuardado(d) { if (!d?.sunat?.xml) return ''; try { return new TextDecoder().decode(b64u8(d.sunat.xml)); } catch { return ''; } }
+async function apiArchivoSunat(d, cual) {
+  const base = padronURL(); if (!base || d.sunat?.modo !== 'api') return null;
+  try { const r = await fetch(`${base}/documentos/${encodeURIComponent(claveSunat(d))}/${cual}`, { headers: apiHeaders() }); return r.ok ? new Uint8Array(await r.arrayBuffer()) : null; } catch { return null; }
+}
+async function xmlDe(d) {
+  const g = xmlGuardado(d); if (g) return { xml: g, firmado: true };
+  const u8 = await apiArchivoSunat(d, 'xml'); if (u8) return { xml: new TextDecoder().decode(u8), firmado: true };
+  return { xml: buildXML(d, DB.cfg), firmado: false };
+}
+function cdrSimulado(d) {
+  const ruc = DB.cfg.empresa.ruc, num = `${d.serie}-${d.numero}`, f = d.sunat?.fecha || new Date().toISOString();
+  const fecha = f.slice(0, 10), hora = (f.slice(11, 19) || '00:00:00');
+  const obs = (d.sunat?.observaciones || []).map(o => `\n  <cbc:Note>${esc(o)}</cbc:Note>`).join('');
+  const rec = d.cliente?.numDoc ? `\n    <cac:RecipientParty><cac:PartyIdentification><cbc:ID>${esc(`${d.cliente.tipoDoc}-${d.cliente.numDoc}`)}</cbc:ID></cac:PartyIdentification></cac:RecipientParty>` : '';
+  return `<?xml version="1.0" encoding="UTF-8"?>
+<!-- CONSTANCIA SIMULADA por Granate (modo simulador): NO tiene validez tributaria. En beta o producción SUNAT devuelve este archivo firmado. -->
+<ar:ApplicationResponse xmlns:ar="urn:oasis:names:specification:ubl:schema:xsd:ApplicationResponse-2" xmlns:cac="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2" xmlns:cbc="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2">
+  <cbc:UBLVersionID>2.0</cbc:UBLVersionID>
+  <cbc:CustomizationID>1.0</cbc:CustomizationID>
+  <cbc:ID>SIM-${Date.parse(f) || Date.now()}</cbc:ID>
+  <cbc:IssueDate>${fecha}</cbc:IssueDate>
+  <cbc:IssueTime>${hora}</cbc:IssueTime>
+  <cbc:ResponseDate>${fecha}</cbc:ResponseDate>
+  <cbc:ResponseTime>${hora}</cbc:ResponseTime>${obs}
+  <cac:SenderParty><cac:PartyIdentification><cbc:ID>20131312955</cbc:ID></cac:PartyIdentification></cac:SenderParty>
+  <cac:ReceiverParty><cac:PartyIdentification><cbc:ID>6-${esc(ruc)}</cbc:ID></cac:PartyIdentification></cac:ReceiverParty>
+  <cac:DocumentResponse>
+    <cac:Response><cbc:ReferenceID>${esc(num)}</cbc:ReferenceID><cbc:ResponseCode>${esc(d.sunat?.codigo || '0')}</cbc:ResponseCode><cbc:Description>${esc(d.sunat?.descripcion || `El comprobante ${num} ha sido aceptado`)}</cbc:Description></cac:Response>
+    <cac:DocumentReference><cbc:ID>${esc(num)}</cbc:ID></cac:DocumentReference>${rec}
+  </cac:DocumentResponse>
+</ar:ApplicationResponse>
+`;
+}
+async function cdrDe(d) {
+  if (d.sunat?.cdr) return { u8: b64u8(d.sunat.cdr), real: true };
+  const u8 = await apiArchivoSunat(d, 'cdr'); if (u8) return { u8, real: true };
+  if (['aceptado', 'observado'].includes(d.estado) && d.sunat?.modo !== 'api') {
+    await loadLib('zip'); const z = new window.JSZip(); z.file(`R-${claveSunat(d)}.xml`, cdrSimulado(d));
+    return { u8: await z.generateAsync({ type: 'uint8array', compression: 'DEFLATE' }), real: false };
+  }
+  return null;
+}
+const sfRow = (ic, t, s, acts) => `<div class="sf"><span class="sf-ic">${icon(ic, 'sm')}</span><span class="sf-main"><b>${t}</b><small>${esc(s)}</small></span><span class="sf-act">${acts}</span></div>`;
+function archivosSunatHTML(d) {
+  if (!ES_ARCH_SUNAT(d)) return '';
+  const api = d.sunat?.modo === 'api', enviado = ['aceptado', 'observado', 'rechazado'].includes(d.estado);
+  const firmado = !!d.sunat?.xml || (api && enviado), okSunat = ['aceptado', 'observado'].includes(d.estado);
+  const cdrReal = !!d.sunat?.cdr || (api && enviado), hayCdr = cdrReal || okSunat;
+  const cdrTxt = cdrReal ? 'Constancia oficial de SUNAT' : okSunat ? 'Simulada · sin validez tributaria' : d.estado === 'pendiente' ? 'Llega cuando SUNAT lo recibe' : 'SUNAT no emitió constancia';
+  const xmlTxt = firmado ? 'Firmado · el que recibió SUNAT' : api ? 'Tu API lo firma al enviar' : 'Simulador · en producción se firma';
+  return `<section class="panel"><div class="panel-h"><h2>Archivos SUNAT</h2><button class="btn sm" data-act="sf-todo" data-id="${d.id}" title="PDF, XML y CDR en un .zip">${icon('download', 'sm')}Todo</button></div><div class="panel-b"><div class="sf-list">
+    ${sfRow('pdf', 'PDF', `Representación impresa · QR${d.sunat?.hash ? ' y hash' : ''}`, `<button class="btn ghost sm" data-act="sf-ver-pdf" data-id="${d.id}">Ver</button><button class="btn ghost sm icon-only" data-act="pdf" data-id="${d.id}" aria-label="Descargar PDF">${icon('download', 'sm')}</button>`)}
+    ${sfRow('code', 'XML UBL 2.1', xmlTxt, `<button class="btn ghost sm" data-act="sf-ver-xml" data-id="${d.id}">Ver</button><button class="btn ghost sm icon-only" data-act="sf-xml" data-id="${d.id}" aria-label="Descargar XML">${icon('download', 'sm')}</button>`)}
+    ${sfRow('shield', 'CDR', cdrTxt, hayCdr ? `<button class="btn ghost sm icon-only" data-act="sf-cdr" data-id="${d.id}" aria-label="Descargar CDR">${icon('download', 'sm')}</button>` : '')}
+  </div><p class="hint" style="margin-top:8px">Nombres oficiales: <span class="num">${esc(claveSunat(d))}</span> · consérvalos 5 años.</p></div></section>`;
+}
+async function verPDF(d) {
+  const b = await makePDF(d), u = URL.createObjectURL(b);
+  let w = null; try { w = window.open(u, '_blank'); } catch { w = null; }
+  if (w) { try { w.opener = null; } catch { /* */ } } else await saveFile(`${claveSunat(d)}.pdf`, b); // bloqueado (p. ej. dentro de Claude): se descarga
+  setTimeout(() => URL.revokeObjectURL(u), 120000);
+}
+async function descargarTodo(d) {
+  await loadLib('zip');
+  const k = claveSunat(d), z = new window.JSZip();
+  const [pdf, x, cdr] = await Promise.all([makePDF(d), xmlDe(d), cdrDe(d)]);
+  z.file(`${k}.pdf`, pdf); z.file(`${k}.xml`, x.xml); if (cdr) z.file(`R-${k}.zip`, cdr.u8);
+  if (!x.firmado || (cdr && !cdr.real)) z.file('LEEME.txt', `Archivos de ${TIPOS[d.tipo].impreso} ${d.serie}-${d.numero} generados en Granate.\r\n\r\n${x.firmado ? '' : '- El XML no está firmado: se emitió con el simulador. En producción tu API lo firma con tu certificado digital antes de enviarlo a SUNAT.\r\n'}${cdr && !cdr.real ? '- La constancia (CDR) es SIMULADA y no tiene validez tributaria. En beta o producción la devuelve SUNAT.\r\n' : ''}`);
+  await saveFile(`${k}-archivos.zip`, await z.generateAsync({ type: 'blob', compression: 'DEFLATE' }));
+  logEvent('archivo.descarga', d, `PDF + XML${cdr ? ' + CDR' : ''}${x.firmado ? '' : ' (simulador)'}`);
+}
+Object.assign(ACT, {
+  'sf-ver-pdf': async el => { el.classList.add('loading'); try { await verPDF(getDoc(el.dataset.id)); } catch (e) { console.warn(e); toast('No se pudo generar el PDF.', 'bad'); } el.classList.remove('loading'); },
+  'sf-ver-xml': async el => {
+    const d = getDoc(el.dataset.id), det = $('#xml-det'); if (!d || !det) return;
+    const { xml, firmado } = await xmlDe(d);
+    const v = $('#xml-view'); if (v) v.innerHTML = hlXML(xml);
+    const h = $('#xml-hint'); if (h) h.textContent = firmado ? 'Firmado digitalmente: es el XML que recibió SUNAT.' : 'Sin firma: tu API agrega la firma XMLDSig al enviar.';
+    det.open = true; det.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  },
+  'sf-xml': async el => { try { const d = getDoc(el.dataset.id); const { xml } = await xmlDe(d); await saveFile(`${claveSunat(d)}.xml`, new Blob([xml], { type: 'application/xml' })); } catch { toast('No se pudo descargar el XML.', 'bad'); } },
+  'sf-cdr': async el => { try { const d = getDoc(el.dataset.id); const c = await cdrDe(d); if (!c) { toast('Este comprobante aún no tiene constancia de SUNAT.', 'warn'); return; } await saveFile(`R-${claveSunat(d)}.zip`, new Blob([c.u8], { type: 'application/zip' })); if (!c.real) toast('Constancia simulada: sin validez tributaria.', 'warn'); } catch { toast('No se pudo descargar la constancia.', 'bad'); } },
+  'sf-todo': async el => { el.classList.add('loading'); try { await descargarTodo(getDoc(el.dataset.id)); } catch (e) { console.warn(e); toast('No se pudieron preparar los archivos.', 'bad'); } el.classList.remove('loading'); },
+});
 
 </script>
 </body>
