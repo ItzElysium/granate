@@ -3,9 +3,28 @@
 | Carpeta | Qué es |
 |---|---|
 | `web/granate.html` | La aplicación (un solo archivo). Publícala en tu dominio (Azure Static Web Apps, Netlify…). |
-| `api/` | API Node: envía comprobantes a SUNAT (beta o producción) y sirve el **padrón RUC** para autocompletar clientes. |
+| `web/granate-prueba.html` | La misma app en **modo prueba**: datos demo de todos los documentos, almacenamiento aparte y botón para reiniciar. Ábrela directo en el navegador. |
+| `api/` | API Node: envía comprobantes y guías a SUNAT, guarda **todas las transacciones** (SQLite: documentos, envíos con XML y CDR, bitácora, copias PDF) y sirve el **padrón RUC**. |
 | `padron/build_padron.py` | Convierte el padrón reducido de SUNAT en una base SQLite con búsqueda por RUC, DNI y razón social. |
 | `.github/workflows/padron-sunat.yml` | **Robot diario**: descarga el padrón de SUNAT, arma la base y la publica como Release. |
+
+## Documentos
+
+| Documento | Serie | Canal SUNAT | Reglas que valida la app |
+|---|---|---|---|
+| Factura (01) | F001 | billService (beta y producción) | Bienes ⇒ **guía de remisión vinculada obligatoria**. Servicios > S/ 700 ⇒ **detracción** con tipo del catálogo 54 y porcentaje ligado; crédito por el neto |
+| Boleta (03) | B001 | billService | > S/ 700 identifica al cliente; guía opcional (regla configurable) |
+| Nota de crédito (07) | FC01 / BC01 | billService | Comprobante de referencia, motivo cat. 09 y sustento |
+| Nota de débito (08) | FD01 / BD01 | billService | Comprobante de referencia, motivo cat. 10 (intereses, aumento, penalidades) |
+| Guía de remisión remitente (09) | T001 | **API REST GRE** (OAuth2, sin beta: simulador o producción) | Motivo cat. 20, modalidad cat. 18, peso, ubigeos, conductor y placa o transportista |
+| Nota de venta | NV01 | No se declara | Documento interno: alerta para convertirla en boleta o factura |
+
+Probado contra el beta oficial de SUNAT el 07/11/2026: factura con detracción (contado, crédito y USD), factura de bienes con guía vinculada, nota de débito y nota de crédito → **todas aceptadas**.
+
+## Historial y base de transacciones
+
+- La web registra cada movimiento (emisión, respuesta de SUNAT, cobro, guía vinculada, conversión, anulación, cambios de clientes, productos y configuración) y guarda una **copia PDF** de cada documento aceptado (y de cada versión de cotizaciones y notas de venta).
+- Con tu API conectada, todo se guarda además en `api/data/granate.db`: XML firmado, CDR, cada intento de envío, bitácora y PDF. *Historial → Correlativos* detecta saltos de numeración.
 
 ## Cómo fluye el padrón
 
@@ -41,7 +60,8 @@ Medido con el padrón del 07/11/2026: **13,9 millones de contribuyentes** activo
 | `GET /padron/ruc/{ruc o dni}` | `{ ruc, razonSocial, estado, condicion, direccion, distrito, provincia, departamento, direccionCompleta, apto }` — 404 si no figura activo |
 | `GET /padron/buscar?q=texto` | `{ datos: [...] }` empresas (RUC 20) por razón social |
 | `GET /padron/estado` | fecha de la versión de SUNAT, registros, empresas |
-| `POST /cpe/emitir` | ver `api/README` del conector SUNAT |
+| `POST /cpe/emitir` · `POST /gre/emitir` | ver `api/README` |
+| `GET /bitacora` · `POST /archivo` · `GET /documentos/{clave}` · `GET /correlativos` | base de transacciones (ver `api/README`) |
 
 ## Notas
 
