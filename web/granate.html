@@ -1006,7 +1006,7 @@ function defaultConfig() {
     empresa: { ...MASTER_STEEL },
     marca: { titulo: 'MASTER STEEL CALLAO S.A.C.', sub: 'Facturación electrónica' },
     vendedores: [],
-    soporte: { whatsapp: '5198209844', mensaje: 'Hola, necesito ayuda con el facturador electrónico de Master Steel.' },
+    soporte: { whatsapp: '51982098446', mensaje: 'Hola, necesito ayuda con el facturador electrónico de Master Steel.' },
     series: { '01': 'F001', '03': 'B001', '07F': 'FC01', '07B': 'BC01', '08F': 'FD01', '08B': 'BD01', '09': 'T001', NV: 'NV01', COT: 'C001', OV: 'OV01' },
     igvRate: 0.18, incluyeIGV: false, tipoCambio: 3.5, validezDias: 15,
     condiciones: 'Precios en la moneda indicada. Tiempo de entrega a coordinar desde la orden de compra.',
@@ -1067,7 +1067,7 @@ function mergeCfg(c) {
   // datos de la demo anterior o sin emisor: pasa a Master Steel Callao
   if (!String(o.empresa?.ruc || '').trim() || o.empresa?.ruc === RUC_DEMO_VIEJO) { m.empresa = { ...MASTER_STEEL }; if (m.docs?.cot?.firmaCargo === 'Granate Demo') m.docs.cot.firmaCargo = MASTER_STEEL.comercial; }
   m.marca = { ...d.marca, ...(o.marca || {}) };
-  m.soporte = { ...d.soporte, ...(o.soporte || {}) }; m.vendedores = Array.isArray(o.vendedores) ? o.vendedores.filter(Boolean) : d.vendedores;
+  m.soporte = { ...d.soporte, ...(o.soporte || {}) }; if (String(m.soporte.whatsapp).replace(/\D/g, '') === '5198209844') m.soporte.whatsapp = d.soporte.whatsapp; m.vendedores = Array.isArray(o.vendedores) ? o.vendedores.filter(Boolean) : d.vendedores;
   return m;
 }
 const empresaLista = cfg => validRUC(cfg.empresa.ruc) && cfg.empresa.razon.trim().length > 2 && cfg.empresa.direccion.trim().length > 3;
@@ -1485,10 +1485,24 @@ async function initData() {
   }
   startLocal();
 }
+/* Datos reales: desde esta época se borra lo de prueba (documentos, clientes, productos, bitácora y PDF) una sola vez
+   y la numeración de cada serie vuelve a empezar. Se conservan el emisor y la conexión con la API. */
+const DATOS_EPOCA = 'master-steel-real-1';
+const DEMO_VEND = ['Carlos Ramírez', 'Lucía Torres', 'Miguel Salazar'];
+function limpiarCfgDemo(c) {
+  const m = mergeCfg(c || null);
+  m.docs.cuentas = (m.docs.cuentas || []).filter(a => !/^[0\s-]*$/.test(String(a.numero || '')) && !/^0+$/.test(String(a.cci || '')));
+  if (/^[0\s-]*$/.test(String(m.docs.detraccion || ''))) m.docs.detraccion = '';
+  m.vendedores = (m.vendedores || []).filter(v => !DEMO_VEND.includes(v));
+  if (m.docs?.cot?.firmaCargo === 'Granate Demo') m.docs.cot.firmaCargo = MASTER_STEEL.comercial;
+  return m;
+}
+let DATOS_BORRADOS = false;
 function startLocal() {
   DB.mode = 'local';
   let raw = null; try { raw = JSON.parse(localStorage.getItem(LS_KEY) || 'null'); } catch { raw = null; }
-  if (!raw) { const s = buildSeed(todayISO()); raw = { cfg: s.cfg, clientes: s.clientes, productos: s.productos, documentos: s.documentos, movimientos: s.movimientos, archivo: [] }; }
+  if (raw && raw.epoca !== DATOS_EPOCA) { raw = { cfg: limpiarCfgDemo(raw.cfg), logo: raw.logo || null }; DATOS_BORRADOS = true; try { indexedDB.deleteDatabase('granate-archivo'); } catch { /* */ } }
+  if (!raw) raw = { cfg: defaultConfig() };
   DB.cfg = mergeCfg(raw.cfg); DB.logo = raw.logo || null;
   for (const k of ['clientes', 'productos', 'documentos', 'movimientos', 'archivo']) DB.cols[k] = new Map((raw[k] || []).map(o => [o.id, o]));
   persistLocal(); setReady();
@@ -1496,7 +1510,7 @@ function startLocal() {
 function persistLocal() {
   if (DB.mode !== 'local') return;
   const movs = [...DB.cols.movimientos.values()].sort((a, b) => (b.ts || '').localeCompare(a.ts || '')).slice(0, 3000);
-  try { localStorage.setItem(LS_KEY, JSON.stringify({ cfg: DB.cfg, logo: DB.logo, clientes: [...DB.cols.clientes.values()], productos: [...DB.cols.productos.values()], documentos: [...DB.cols.documentos.values()], movimientos: movs, archivo: [...DB.cols.archivo.values()] })); } catch { /* sin almacenamiento */ }
+  try { localStorage.setItem(LS_KEY, JSON.stringify({ epoca: DATOS_EPOCA, cfg: DB.cfg, logo: DB.logo, clientes: [...DB.cols.clientes.values()], productos: [...DB.cols.productos.values()], documentos: [...DB.cols.documentos.values()], movimientos: movs, archivo: [...DB.cols.archivo.values()] })); } catch { /* sin almacenamiento */ }
 }
 function startDb(db) {
   DB.mode = 'db'; DB.db = db;
@@ -1550,7 +1564,7 @@ async function putCfg(cfg) {
   if (DB.mode === 'db') { try { await DB.db.doc('config/empresa').set(clone(DB.cfg)); } catch (e) { dbErr(e); throw e; } } else persistLocal();
   changed();
 }
-function setReady() { if (DB.ready) { changed(); return; } DB.ready = true; if (!window.claude) { despertarAPI(); document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible' && !apiViva()) despertarAPI(); }); } UI.route = currentRoute(); if (UI.route === 'editor') { UI.route = 'inicio'; location.hash = 'inicio'; } render(); }
+function setReady() { if (DB.ready) { changed(); return; } DB.ready = true; if (DATOS_BORRADOS) setTimeout(() => toast('Se borraron los datos de prueba: empiezas con datos reales y la numeración de cada serie desde el N.° 1.', 'ok'), 600); if (!window.claude) { despertarAPI(); document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible' && !apiViva()) despertarAPI(); }); } UI.route = currentRoute(); if (UI.route === 'editor') { UI.route = 'inicio'; location.hash = 'inicio'; } render(); }
 
 let chT = null;
 function changed() {
@@ -1632,7 +1646,7 @@ function renderNav() {
     <div class="nav-foot">
       <div class="conn" title="${integ.modo === 'api' ? 'Conectado a tu API' : 'Simulador SUNAT'}"><span class="dot ${integ.modo === 'api' ? '' : 'sim'}"></span><span class="nf-txt">${integ.modo === 'api' ? `API · ${integ.ambiente === 'produccion' ? 'Producción' : 'Beta'}` : 'Simulador SUNAT'}</span></div>
       <div class="nf-txt">${DB.mode === 'db' ? 'Datos sincronizados entre dispositivos' : DB.mode === 'local' ? 'Datos guardados en este navegador' : 'Cargando…'}</div>
-      ${typeof GRANATE_PRUEBA !== 'undefined' && GRANATE_PRUEBA ? `<span class="prueba-pill" title="Datos de demostración en un almacenamiento aparte">Prueba</span><button class="linkbtn nf-txt" data-act="reset-demo" style="color:var(--nav-muted);text-align:left">Reiniciar datos demo</button>` : ''}
+      ${typeof GRANATE_PRUEBA !== 'undefined' && GRANATE_PRUEBA ? `<span class="prueba-pill" title="Ambiente de prueba: sus datos se guardan aparte de la versión principal">Prueba</span><button class="linkbtn nf-txt" data-act="reset-demo" style="color:var(--nav-muted);text-align:left">Borrar todos los datos</button>` : ''}
     </div>`;
 }
 
@@ -3263,7 +3277,7 @@ const ACT = {
     catch { clearTimeout(lento); show(`<span style="color:var(--bad)">Sin respuesta${window.claude ? ': en Claude las conexiones externas están bloqueadas' : ''}</span>`); }
     clearTimeout(to); $('[data-act="test-api"]')?.classList.remove('loading'); el.classList.remove('loading'); loadPadronEstado();
   },
-  'reset-demo': async () => { if (await confirmDlg({ title: '¿Reiniciar el ambiente de prueba?', body: 'Se borran los datos de prueba de este navegador y se cargan los ejemplos de nuevo.', ok: 'Reiniciar', danger: true })) { try { localStorage.removeItem(LS_KEY); indexedDB.deleteDatabase('granate-archivo'); } catch { /* */ } location.hash = 'inicio'; location.reload(); } },
+  'reset-demo': async () => { if (await confirmDlg({ title: '¿Borrar todos los datos de prueba?', body: 'Se borran los documentos, clientes, productos, historial y PDF de este navegador. La numeración vuelve a empezar desde el N.° 1. Se conservan los datos de Master Steel y la conexión con la API.', ok: 'Borrar todo', danger: true })) { try { const r = JSON.parse(localStorage.getItem(LS_KEY) || 'null'); localStorage.setItem(LS_KEY, JSON.stringify({ epoca: DATOS_EPOCA, cfg: limpiarCfgDemo(r?.cfg), logo: r?.logo || null })); indexedDB.deleteDatabase('granate-archivo'); } catch { /* */ } location.hash = 'inicio'; location.reload(); } },
   'del-demo': async () => {
     if (!(await confirmDlg({ title: '¿Eliminar los datos de demostración?', body: 'Se borran los clientes, productos y documentos ficticios. Tus datos reales no se tocan.', ok: 'Eliminar datos demo', danger: true }))) return;
     for (const col of ['documentos', 'clientes', 'productos']) for (const o of [...DB.cols[col].values()]) if (o.demo) await remove(col, o.id);
