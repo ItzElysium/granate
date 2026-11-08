@@ -37,6 +37,7 @@ async function zipBase64(nombre, contenido) {
   return z.generateAsync({ type: 'base64', compression: 'DEFLATE' });
 }
 
+const esperar = ms => new Promise(r => setTimeout(r, ms));
 const esc = s => String(s).replace(/[<>&]/g, c => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;' }[c]));
 function sobreSOAP(usuario, clave, nombreZip, b64) {
   return `<?xml version="1.0" encoding="UTF-8"?>
@@ -97,6 +98,62 @@ async function emitir({ xml, ruc, tipo, serie, numero, ambiente = 'beta', usuari
 }
 
 /* =====================================================================
+   Comunicación de baja (RA) · sendSummary → ticket → getStatus
+   ===================================================================== */
+function sobreOp(usuario, clave, cuerpo) {
+  return `<?xml version="1.0" encoding="UTF-8"?>
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ser="http://service.sunat.gob.pe" xmlns:wsse="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd">
+  <soapenv:Header><wsse:Security><wsse:UsernameToken><wsse:Username>${esc(usuario)}</wsse:Username><wsse:Password>${esc(clave)}</wsse:Password></wsse:UsernameToken></wsse:Security></soapenv:Header>
+  <soapenv:Body>${cuerpo}</soapenv:Body>
+</soapenv:Envelope>`;
+}
+async function llamarSOAP(url, accion, sobre, timeoutMs = 45000) {
+  const ctl = new AbortController(); const to = setTimeout(() => ctl.abort(), timeoutMs);
+  try {
+    const res = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'text/xml; charset=utf-8', SOAPAction: `urn:${accion}` }, body: sobre, signal: ctl.signal });
+    const body = await res.text();
+    return { res, d: new DOMParser().parseFromString(body, 'text/xml') };
+  } finally { clearTimeout(to); }
+}
+function faltaSOAP(d, res) {
+  const faultcode = texto(d, 'faultcode'), faultstring = texto(d, 'faultstring'), detalle = texto(d, 'message') || texto(d, 'detail');
+  const codigo = (faultcode.match(/(\d{4})/) || detalle.match(/INFO\s*:\s*(\d{4})/) || faultstring.match(/^(\d{4})$/) || [])[1] || faultcode || `HTTP ${res.status}`;
+  const descripcion = (/^\d+$/.test(faultstring) ? detalle : faultstring.replace(/\s*-\s*Detalle:[\s\S]*$/, '')) || detalle || `HTTP ${res.status}`;
+  const n = Number(codigo);
+  return { estado: n >= 100 && n < 2000 ? 'ERROR' : 'RECHAZADO', codigo, descripcion, http: res.status };
+}
+const credenciales = (ruc, ambiente, usuarioSol, claveSol) => ambiente === 'beta' ? [`${ruc}MODDATOS`, 'MODDATOS'] : [`${ruc}${usuarioSol}`, claveSol];
+/** Consulta un ticket de resumen o baja. statusCode 0 = procesado, 98 = en proceso, 99 = procesado con errores. */
+async function consultarTicket({ ticket, ruc, ambiente = 'beta', usuarioSol, claveSol, endpoint, timeoutMs = 12000 }) {
+  const [u, p] = credenciales(ruc, ambiente, usuarioSol, claveSol);
+  const { res, d } = await llamarSOAP(endpoint || ENDPOINTS[ambiente], 'getStatus', sobreOp(u, p, `<ser:getStatus><ticket>${esc(ticket)}</ticket></ser:getStatus>`), timeoutMs);
+  const statusCode = texto(d, 'statusCode'), content = texto(d, 'content');
+  if (statusCode === '98') return { estado: 'EN_PROCESO', ticket, codigo: '98', descripcion: 'SUNAT aún procesa la comunicación de baja.' };
+  if (content) {
+    const cdr = await leerCDR(content), n = Number(cdr.codigo);
+    return { estado: n === 0 ? (cdr.observaciones.length ? 'OBSERVADO' : 'ACEPTADO') : 'RECHAZADO', ticket, codigo: cdr.codigo, descripcion: cdr.descripcion, observaciones: cdr.observaciones, cdrZipBase64: content, statusCode };
+  }
+  if (!statusCode) return { ...faltaSOAP(d, res), ticket };
+  return { estado: 'RECHAZADO', ticket, codigo: statusCode, descripcion: 'SUNAT procesó la baja con errores.', statusCode };
+}
+/** Envía una comunicación de baja (RA-AAAAMMDD-n) y espera su constancia. */
+async function emitirBaja({ xml, ruc, id, ambiente = 'beta', usuarioSol, claveSol, keyPem, certPem, endpoint, intentos = 3, esperaMs = 1500, timeoutTicketMs = 8000 }) {
+  const { xml: firmado, hash } = firmarXML(xml, { keyPem, certPem });
+  const base = `${ruc}-${id}`, b64 = await zipBase64(`${base}.xml`, firmado);
+  const [u, p] = credenciales(ruc, ambiente, usuarioSol, claveSol);
+  const { res, d } = await llamarSOAP(endpoint || ENDPOINTS[ambiente], 'sendSummary', sobreOp(u, p, `<ser:sendSummary><fileName>${esc(base)}.zip</fileName><contentFile>${b64}</contentFile></ser:sendSummary>`));
+  const ticket = texto(d, 'ticket');
+  if (!ticket) return { ...faltaSOAP(d, res), hash, xmlFirmado: firmado };
+  let r = { estado: 'EN_PROCESO', ticket, codigo: '98', descripcion: 'SUNAT recibió la baja y la está procesando.' };
+  for (let i = 0; i < intentos; i++) {
+    await esperar(esperaMs);
+    try { r = await consultarTicket({ ticket, ruc, ambiente, usuarioSol, claveSol, endpoint, timeoutMs: timeoutTicketMs }); } catch (e) { r = { estado: 'EN_PROCESO', ticket, codigo: '98', descripcion: e.name === 'AbortError' ? 'SUNAT recibió la baja pero aún no responde la consulta del ticket. Consulta en unos minutos.' : e.message }; }
+    if (r.estado !== 'EN_PROCESO') break;
+  }
+  return { ...r, ticket, hash, xmlFirmado: firmado };
+}
+
+/* =====================================================================
    Guía de remisión remitente (09) · API REST de SUNAT (OAuth2)
    No hay ambiente beta: se usa con las «Credenciales de API SUNAT» de producción.
    ===================================================================== */
@@ -105,7 +162,6 @@ const GRE = {
   token: process.env.SUNAT_GRE_TOKEN_URL || 'https://api-seguridad.sunat.gob.pe/v1/clientessol',
   api: process.env.SUNAT_GRE_API_URL || 'https://api-cpe.sunat.gob.pe/v1',
 };
-const esperar = ms => new Promise(r => setTimeout(r, ms));
 let tokenCache = { k: '', token: '', vence: 0 };
 async function tokenGRE({ clientId, clientSecret, usuario, clave, timeoutMs = 20000 }) {
   const k = `${clientId}|${usuario}`;
@@ -166,4 +222,4 @@ async function emitirGRE({ xml, ruc, serie, numero, keyPem, certPem, clientId, c
   return { estado: 'EN_PROCESO', codigo: '98', descripcion: 'SUNAT aún procesa la guía.', ticket, hash, xmlFirmado: firmado };
 }
 
-module.exports = { emitir, emitirGRE, consultarTicketGRE, tokenGRE, firmarXML, leerCDR, ENDPOINTS, GRE };
+module.exports = { emitirBaja, consultarTicket, emitir, emitirGRE, consultarTicketGRE, tokenGRE, firmarXML, leerCDR, ENDPOINTS, GRE };
