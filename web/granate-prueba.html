@@ -3,24 +3,24 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="theme-color" content="#121012">
+<meta name="theme-color" content="#0A2836">
 <title>Master Steel Callao S.A.C. · Facturación electrónica · PRUEBA</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap">
 <style>
-/* ============ Granate · Cotiza y Factura — tokens ============ */
+/* ============ AI Toque · Cotiza y Factura — tokens (paleta de marca; los nombres --granate-* se conservan por compatibilidad) ============ */
 :root{
-  --granate:#7A1F2E; --granate-h:#8C2536; --granate-p:#62182A; --granate-d:#3E0F19;
-  --granate-50:#FBF4F5; --granate-100:#F4E4E7; --granate-200:#E8C7CD; --granate-300:#D69AA5;
-  --ink:#141113; --nav:#121012; --nav-2:#1C181A; --nav-line:#2A2427; --nav-text:#ECE6E7; --nav-muted:#A89EA2;
-  --bg:#F6F3F2; --surface:#FFFFFF; --surface-2:#FAF8F7; --line:#E7E0E0; --line-2:#D8CDCF;
-  --text:#1A1517; --text-2:#574D51; --text-3:#6F6468;
+  --granate:#0F3B4C; --granate-h:#164C61; --granate-p:#0A2836; --granate-d:#061A24; --led:#5EEAD4;
+  --granate-50:#EEF7F8; --granate-100:#DDF0F2; --granate-200:#B9E3E6; --granate-300:#7FCFD3;
+  --ink:#0A2836; --nav:#0A2836; --nav-2:#0F3B4C; --nav-line:#1E4E61; --nav-text:#E8F3F5; --nav-muted:#9FC3CF;
+  --bg:#F3F7F8; --surface:#FFFFFF; --surface-2:#F8FBFB; --line:#DDE7EA; --line-2:#C9D8DD;
+  --text:#0E1E25; --text-2:#45585F; --text-3:#5E7178;
   --ok:#1D6A44; --ok-bg:#E5F1EA; --warn:#865500; --warn-bg:#FBF0D9; --bad:#B0261C; --bad-bg:#FBE8E6; --info:#36475A; --info-bg:#E9EEF3;
   --r-sm:8px; --r:10px; --r-lg:14px; --r-xl:18px;
-  --sh-1:0 1px 2px rgba(26,10,14,.06),0 1px 1px rgba(26,10,14,.04);
-  --sh-2:0 6px 16px -6px rgba(26,10,14,.18),0 2px 4px rgba(26,10,14,.06);
-  --sh-3:0 24px 48px -16px rgba(26,10,14,.35),0 4px 10px rgba(26,10,14,.08);
+  --sh-1:0 1px 2px rgba(6,26,36,.06),0 1px 1px rgba(6,26,36,.04);
+  --sh-2:0 6px 16px -6px rgba(6,26,36,.18),0 2px 4px rgba(6,26,36,.06);
+  --sh-3:0 24px 48px -16px rgba(6,26,36,.35),0 4px 10px rgba(6,26,36,.08);
   --ease-out:cubic-bezier(.23,1,.32,1); --ease-drawer:cubic-bezier(.32,.72,0,1);
   --font:"Geist",ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
   --mono:"Geist Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
@@ -51,13 +51,15 @@ p{margin:0}
 .brand-mark{width:32px;height:32px;flex:none}
 .brand-name{font-weight:650;font-size:1.12rem;letter-spacing:-.02em;color:#fff}
 .brand-sub{font-size:var(--fs-xs);color:var(--nav-muted);line-height:1.2}
+.brand-hola{font-size:var(--fs-xs);font-weight:600;color:var(--led);line-height:1.2;margin-bottom:2px}
+.brand-pregunta{color:var(--nav-text);font-weight:500;margin-top:2px}
 .nav-cta{display:flex;align-items:center;justify-content:center;gap:8px;height:var(--tap);border-radius:var(--r);background:var(--granate);color:#fff;border:0;font-weight:600;cursor:pointer;margin:0 2px 12px;transition:background-color .15s ease,transform .16s var(--ease-out)}
 .nav-cta:hover{background:var(--granate-h)}.nav-cta:active{transform:scale(.97)}
 .nav-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:2px}
 .nav-link{display:flex;align-items:center;gap:12px;min-height:var(--tap);padding:0 12px;border-radius:var(--r);color:var(--nav-muted);text-decoration:none;font-weight:500;transition:background-color .15s ease,color .15s ease}
 .nav-link:hover{color:var(--nav-text);background:var(--nav-2)}
-.nav-link[aria-current="page"]{color:#fff;background:#3A1620}
-.nav-link[aria-current="page"] .icon{color:#F0A9B5}
+.nav-link[aria-current="page"]{color:#fff;background:var(--granate-h)}
+.nav-link[aria-current="page"] .icon{color:var(--led)}
 .nav-link .badge{margin-left:auto;font-size:.72rem;font-weight:600;min-width:22px;height:20px;padding:0 6px;border-radius:10px;background:var(--granate);color:#fff;display:inline-grid;place-items:center}
 .nav-foot{margin-top:auto;padding:12px 10px 4px;border-top:1px solid var(--nav-line);font-size:var(--fs-xs);color:var(--nav-muted);display:flex;flex-direction:column;gap:8px}
 .conn{display:flex;align-items:center;gap:8px;color:var(--nav-text);font-size:var(--fs-sm)}
@@ -75,7 +77,7 @@ p{margin:0}
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:var(--tap);padding:0 16px;border-radius:var(--r);border:1px solid var(--line-2);background:var(--surface);color:var(--text);font-weight:550;cursor:pointer;white-space:nowrap;text-decoration:none;transition:background-color .15s ease,border-color .15s ease,color .15s ease,transform .16s var(--ease-out),box-shadow .15s ease;-webkit-tap-highlight-color:transparent}
 .btn:hover{background:var(--surface-2);border-color:#C9BCBF}
 .btn:active{transform:scale(.97)}
-.btn.primary{background:var(--granate);border-color:var(--granate);color:#fff;box-shadow:0 1px 2px rgba(62,15,25,.25)}
+.btn.primary{background:var(--granate);border-color:var(--granate);color:#fff;box-shadow:0 1px 2px rgba(6,26,36,.25)}
 .btn.primary:hover{background:var(--granate-h);border-color:var(--granate-h)}
 .btn.primary:active{background:var(--granate-p)}
 .btn.dark{background:var(--ink);border-color:var(--ink);color:#fff}
@@ -120,7 +122,7 @@ p{margin:0}
 .textarea{padding:10px 12px;min-height:84px;resize:vertical;line-height:1.45}
 .select{appearance:none;padding-right:34px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23574D51' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;background-size:16px}
 .input:hover,.select:hover,.textarea:hover{border-color:#C4B6B9}
-.input:focus,.select:focus,.textarea:focus{outline:none;border-color:var(--granate);box-shadow:0 0 0 3px rgba(122,31,46,.14)}
+.input:focus,.select:focus,.textarea:focus{outline:none;border-color:var(--granate);box-shadow:0 0 0 3px rgba(15,59,76,.14)}
 .input::placeholder,.textarea::placeholder{color:#7E7377}
 .input[aria-invalid="true"]{border-color:var(--bad);box-shadow:0 0 0 3px rgba(176,38,28,.1)}
 .hint{font-size:var(--fs-xs);color:var(--text-3)}
@@ -130,7 +132,7 @@ p{margin:0}
 .g3{grid-template-columns:repeat(3,minmax(0,1fr))}
 .g4{grid-template-columns:repeat(4,minmax(0,1fr))}
 .span2{grid-column:span 2}.span3{grid-column:span 3}.spanall{grid-column:1/-1}
-.seg{display:inline-flex;padding:3px;border-radius:12px;background:#EEE8E7;gap:2px;flex-wrap:wrap}
+.seg{display:inline-flex;padding:3px;border-radius:12px;background:#E6EEF0;gap:2px;flex-wrap:wrap}
 .seg button{min-height:38px;padding:0 14px;border:0;border-radius:9px;background:transparent;color:var(--text-2);font-weight:560;cursor:pointer;display:inline-flex;align-items:center;gap:6px;transition:background-color .15s ease,color .15s ease,box-shadow .15s ease}
 .seg button:hover{color:var(--text)}
 .seg button[aria-pressed="true"]{background:var(--surface);color:var(--text);box-shadow:var(--sh-1)}
@@ -199,12 +201,12 @@ table.t{width:100%;border-collapse:separate;border-spacing:0}
 .hbar{display:grid;grid-template-columns:110px minmax(0,1fr) auto;align-items:center;gap:12px;cursor:pointer;border-radius:8px;padding:2px 0}
 .hbar .h-l{font-size:var(--fs-sm);color:var(--text-2);font-weight:520;display:flex;gap:6px;align-items:baseline}
 .hbar .h-l small{color:var(--text-3)}
-.hbar .h-track{display:block;height:12px;border-radius:0 4px 4px 0;background:#F1ECEB;overflow:hidden}
+.hbar .h-track{display:block;height:12px;border-radius:0 4px 4px 0;background:#EAF1F3;overflow:hidden}
 .hbar .h-fill{display:block;height:100%;border-radius:0 4px 4px 0;background:var(--granate);transform-origin:left;transition:background-color .12s ease}
 .hbar:hover .h-fill{background:var(--granate-h)}
 .hbar .h-v{font-size:var(--fs-sm);font-weight:600;min-width:96px;text-align:right}
 .banner{display:flex;align-items:center;gap:14px;padding:14px 16px;border-radius:var(--r-lg);background:var(--ink);color:#fff;margin-bottom:18px}
-.banner .b-ic{width:38px;height:38px;border-radius:10px;background:#3A1620;color:#F0A9B5;display:grid;place-items:center;flex:none}
+.banner .b-ic{width:38px;height:38px;border-radius:10px;background:var(--granate-h);color:var(--led);display:grid;place-items:center;flex:none}
 .banner .b-t{flex:1;min-width:0}
 .banner .b-t b{display:block}
 .banner .b-t span{color:#CFC6C8;font-size:var(--fs-sm)}
@@ -255,7 +257,7 @@ table.t{width:100%;border-collapse:separate;border-spacing:0}
 .stepper button:active{background:var(--granate-100)}
 .stepper input{width:100%;min-width:0;border:0;text-align:center;height:100%;padding:0;font-variant-numeric:tabular-nums;background:transparent}
 .stepper input:focus{outline:none}
-.stepper:focus-within{border-color:var(--granate);box-shadow:0 0 0 3px rgba(122,31,46,.14)}
+.stepper:focus-within{border-color:var(--granate);box-shadow:0 0 0 3px rgba(15,59,76,.14)}
 .it .input.price{text-align:right;font-variant-numeric:tabular-nums}
 .add-row{display:flex;gap:8px;flex-wrap:wrap;padding-top:14px;border-top:1px solid var(--line);margin-top:4px}
 .items-empty{padding:22px;border:1.5px dashed var(--line-2);border-radius:var(--r);text-align:center;color:var(--text-2);margin-bottom:12px}
@@ -284,7 +286,7 @@ table.t{width:100%;border-collapse:separate;border-spacing:0}
 /* ============ Document (A4) preview ============ */
 .paper-frame{background:#E9E3E2;border-radius:var(--r-lg);padding:14px;overflow:hidden;border:1px solid var(--line)}
 .paper-scale{transform-origin:top left}
-.paper{width:794px;min-height:1123px;background:#fff;color:#1A1517;padding:46px 50px 40px;font-size:12px;line-height:1.45;box-shadow:0 2px 12px rgba(26,10,14,.12);font-family:var(--font);position:relative;display:flex;flex-direction:column}
+.paper{width:794px;min-height:1123px;background:#fff;color:#1A1517;padding:46px 50px 40px;font-size:12px;line-height:1.45;box-shadow:0 2px 12px rgba(6,26,36,.12);font-family:var(--font);position:relative;display:flex;flex-direction:column}
 .paper .p-top{display:flex;justify-content:space-between;gap:24px;align-items:flex-start}
 .paper .p-em{display:flex;gap:14px;align-items:flex-start;max-width:440px}
 .paper .p-logo{width:54px;height:54px;border-radius:12px;background:var(--doc,var(--granate));color:var(--doc-on,#fff);display:grid;place-items:center;font-weight:700;font-size:20px;letter-spacing:-.02em;flex:none}
@@ -382,7 +384,7 @@ details.more>.inner{padding:0 18px 18px}
 .rc{position:relative;display:flex;gap:12px;padding:14px;border:1.5px solid var(--line);border-radius:var(--r-lg);cursor:pointer;background:var(--surface);transition:border-color .15s ease,background-color .15s ease}
 .rc:hover{border-color:var(--line-2)}
 .rc input{position:absolute;opacity:0}
-.rc .rc-ic{width:38px;height:38px;border-radius:10px;background:#F1ECEB;color:var(--text-2);display:grid;place-items:center;flex:none}
+.rc .rc-ic{width:38px;height:38px;border-radius:10px;background:#EAF1F3;color:var(--text-2);display:grid;place-items:center;flex:none}
 .rc b{display:block}
 .rc span{font-size:var(--fs-xs);color:var(--text-2);line-height:1.4;display:block;margin-top:2px}
 .rc:has(input:checked){border-color:var(--granate);background:var(--granate-50)}
@@ -402,10 +404,10 @@ details.more>.inner{padding:0 18px 18px}
 @starting-style{.toast{opacity:0;transform:translateY(12px)}}
 .toast.out{opacity:0;transform:translateY(8px);transition-duration:.18s}
 .toast .icon{color:#9FD3B3}.toast.bad .icon{color:#F3A39B}.toast.warn .icon{color:#E9C27A}
-.toast .t-act{margin-left:auto;color:#F0A9B5;background:none;border:0;font-weight:600;cursor:pointer;padding:4px}
+.toast .t-act{margin-left:auto;color:var(--led);background:none;border:0;font-weight:600;cursor:pointer;padding:4px}
 
 /* Skeleton / loading */
-.skel{background:linear-gradient(90deg,#EEE8E7 25%,#F6F2F1 50%,#EEE8E7 75%);background-size:200% 100%;animation:sh 1.2s linear infinite;border-radius:8px}
+.skel{background:linear-gradient(90deg,#E6EEF0 25%,#F2F7F8 50%,#E6EEF0 75%);background-size:200% 100%;animation:sh 1.2s linear infinite;border-radius:8px}
 @keyframes sh{to{background-position:-200% 0}}
 
 /* ============ Responsive: tablet ============ */
@@ -558,7 +560,7 @@ details.more>.inner{padding:0 18px 18px}
 .paper .p-sec h4{margin:0 0 5px;font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--doc,var(--granate));font-weight:700}
 .paper .p-sec p{margin:0 0 3px;font-size:11px;color:#3C3437}
 .paper table.p-acc{margin-top:2px}
-.paper table.p-acc td{padding:5px 8px 5px 0;border-bottom:1px solid #F1ECEB;font-size:11px}
+.paper table.p-acc td{padding:5px 8px 5px 0;border-bottom:1px solid #EAF1F3;font-size:11px}
 .paper .p-ref{margin-top:10px}
 .paper .p-firma{display:flex;justify-content:flex-end;margin-top:28px}
 .paper .p-firma .p-sign{margin:0;padding-top:8px;line-height:1.35}
@@ -625,7 +627,7 @@ details.more>.inner{padding:0 18px 18px}
 .opc .opc-t b{display:block;font-size:var(--fs-md);font-weight:640}
 .opc .opc-t small{display:block;font-size:var(--fs-xs);color:var(--text-2);line-height:1.35;margin-top:2px}
 .opc .opc-ck{position:absolute;top:10px;right:10px;width:22px;height:22px;border-radius:50%;border:1.5px solid var(--line-2);display:grid;place-items:center;color:transparent;transition:background-color .15s ease,border-color .15s ease}
-.opc.on{border-color:var(--granate);background:var(--granate-50);box-shadow:0 0 0 3px rgba(122,31,46,.1)}
+.opc.on{border-color:var(--granate);background:var(--granate-50);box-shadow:0 0 0 3px rgba(15,59,76,.1)}
 .opc.on .opc-ic{background:var(--granate);color:#fff}
 .opc.on .opc-ck{background:var(--granate);border-color:var(--granate);color:#fff}
 .hint .icon{vertical-align:-3px}
@@ -638,7 +640,7 @@ details.more>.inner{padding:0 18px 18px}
 .gchip .g-ic{width:34px;height:34px;border-radius:10px;background:var(--ok-bg);color:var(--ok);display:grid;place-items:center;flex:none}
 .gchip .g-main{flex:1;min-width:0}.gchip .g-main b{display:block}.gchip .g-main small{color:var(--text-3);font-size:var(--fs-xs)}
 .gext{display:grid;grid-template-columns:120px 160px auto;gap:10px;align-items:end;margin-top:12px;padding:12px;border:1px dashed var(--line-2);border-radius:var(--r)}
-.locked{display:flex;align-items:center;gap:8px;min-height:var(--tap);padding:0 12px;border-radius:var(--r);background:#F1ECEB;border:1px solid var(--line);color:var(--text-2)}
+.locked{display:flex;align-items:center;gap:8px;min-height:var(--tap);padding:0 12px;border-radius:var(--r);background:#EAF1F3;border:1px solid var(--line);color:var(--text-2)}
 .locked b{color:var(--text);font-size:var(--fs-md)}
 .locked small{font-size:var(--fs-xs);margin-left:auto}
 .spot-sum{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:14px}
@@ -682,7 +684,7 @@ details.more>.inner{padding:0 18px 18px}
 .h-det{max-width:340px;color:var(--text-2);font-size:var(--fs-sm)}
 .hlist{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:2px}
 .hlist li{display:grid;grid-template-columns:28px minmax(0,1fr) auto;gap:10px;align-items:start;padding:6px 0}
-.hlist .h-ic{width:28px;height:28px;border-radius:8px;background:#F1ECEB;color:var(--text-2);display:grid;place-items:center}
+.hlist .h-ic{width:28px;height:28px;border-radius:8px;background:#EAF1F3;color:var(--text-2);display:grid;place-items:center}
 .hlist .h-ic.emision{background:var(--granate-50);color:var(--granate)}.hlist .h-ic.sunat{background:var(--ok-bg);color:var(--ok)}.hlist .h-ic.archivo{background:var(--info-bg);color:var(--info)}.hlist .h-ic.cobranza{background:var(--warn-bg);color:var(--warn)}
 .hlist b{display:block;font-size:var(--fs-sm);font-weight:600}
 .hlist small{display:block;font-size:var(--fs-xs);color:var(--text-3);overflow-wrap:anywhere}
@@ -733,6 +735,12 @@ details.more>.inner{padding:0 18px 18px}
 .wa-fab:hover{transform:translateY(-2px);box-shadow:0 12px 28px rgba(0,0,0,.26)}
 .wa-fab:focus-visible{outline:3px solid #141113;outline-offset:3px}
 body.con-abar .wa-fab{bottom:calc(92px + env(safe-area-inset-bottom))}
+.wa-fab{touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+.wa-fab.arrastrando,.wa-fab.arrastrando:hover{transform:scale(1.08);cursor:grabbing;transition:none}
+@media (max-width:719px){
+  .wa-fab{right:12px;bottom:calc(80px + env(safe-area-inset-bottom));height:52px;min-width:52px;padding:0 12px}
+  body.con-abar .wa-fab{bottom:calc(150px + env(safe-area-inset-bottom))}
+}
 .wa-fab-txt{display:none}.wa-fab:hover .wa-fab-txt,.wa-fab:focus-visible .wa-fab-txt{display:inline}
 #main{padding-bottom:88px}
 @media print{.wa-fab{display:none}}
@@ -803,6 +811,7 @@ body.sin-sesion .nav{display:none}
 .usr-est small{font-size:var(--fs-xs)}
 .usr-acc{display:flex;justify-content:flex-end;gap:4px;flex-wrap:wrap}
 .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+@media (max-width:719px){ .banner{flex-wrap:wrap} .banner .b-t{flex:1 1 calc(100% - 52px)} .banner>.btn{flex:1 1 auto} }
 
 </style>
 <script src="granate-config.js"></script>
@@ -1078,7 +1087,7 @@ const BLOQUES = {
 };
 function defaultDocs() {
   return {
-    color: '#7A1F2E',
+    color: '#0F3B4C',
     cuentas: [],
     detraccion: '', mostrarDetraccion: true,
     cot: { titulo: 'Cotización', orden: Object.keys(BLOQUES.cot), ocultos: [], mostrarCodigo: true, mostrarUnidad: true, pie: 'Gracias por considerarnos. Quedamos atentos a su confirmación.', firmaNombre: '', firmaCargo: '' },
@@ -1492,7 +1501,7 @@ const IC = {
   bank: 'M3 10 12 4l9 6M5 10v8M9.5 10v8M14.5 10v8M19 10v8M3 20h18', tag: 'M3 12V4h8l10 10-8 8zM7.5 8.5h.01', ban: 'M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM5.6 5.6l12.8 12.8', plusdoc: 'M14 3H6a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8zM14 3v5h5M12 11v6M9 14h6',
 };
 const icon = (n, cls = '') => `<svg class="icon ${cls}" viewBox="0 0 24 24" aria-hidden="true"><path d="${IC[n] || ''}"/></svg>`;
-const BRAND = `<svg class="brand-mark" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="9" fill="#7A1F2E"/><path d="M10 7.5h8.5l4 4V24.5H10z" fill="#fff"/><path d="M18.5 7.5v4h4" fill="#E8C7CD"/><path d="M13 16h6.5M13 19.5h4.5" stroke="#7A1F2E" stroke-width="1.8" stroke-linecap="round"/></svg>`;
+const BRAND = `<svg class="brand-mark" viewBox="0 0 27 27" aria-hidden="true"><rect width="27" height="27" rx="7" fill="#0F3B4C"/><g transform="translate(2 5.5)"><g><rect x="4" y="13" width="1" height="2" fill="#FFFFFF"/><rect x="6" y="13" width="1" height="2" fill="#FFFFFF"/><rect x="8" y="13" width="1" height="2" fill="#FFFFFF"/><rect x="10" y="13" width="1" height="2" fill="#FFFFFF"/><rect x="12" y="13" width="1" height="2" fill="#FFFFFF"/><rect x="14" y="13" width="1" height="2" fill="#FFFFFF"/><rect x="16" y="13" width="1" height="2" fill="#FFFFFF"/><rect x="18" y="13" width="1" height="2" fill="#FFFFFF"/><rect x="4" y="0" width="1" height="1" fill="#FFFFFF"/><rect x="18" y="0" width="1" height="1" fill="#FFFFFF"/><rect x="4" y="1" width="2" height="1" fill="#FFFFFF"/><rect x="17" y="1" width="2" height="1" fill="#FFFFFF"/><rect x="4" y="2" width="1" height="1" fill="#FFFFFF"/><rect x="5" y="2" width="1" height="1" fill="#9FC3CF"/><rect x="6" y="2" width="1" height="1" fill="#FFFFFF"/><rect x="16" y="2" width="1" height="1" fill="#FFFFFF"/><rect x="17" y="2" width="1" height="1" fill="#9FC3CF"/><rect x="18" y="2" width="1" height="1" fill="#FFFFFF"/><rect x="4" y="3" width="15" height="1" fill="#FFFFFF"/><rect x="4" y="4" width="15" height="1" fill="#FFFFFF"/><rect x="4" y="5" width="3" height="1" fill="#FFFFFF"/><rect x="7" y="5" width="1" height="1" fill="#0A2836"/><rect x="8" y="5" width="2" height="1" fill="#2C5A6B"/><rect x="10" y="5" width="6" height="1" fill="#0A2836"/><rect x="16" y="5" width="3" height="1" fill="#FFFFFF"/><rect x="4" y="6" width="2" height="1" fill="#FFFFFF"/><rect x="6" y="6" width="11" height="1" fill="#0A2836"/><rect x="17" y="6" width="2" height="1" fill="#FFFFFF"/><rect x="4" y="7" width="2" height="1" fill="#FFFFFF"/><rect x="6" y="7" width="11" height="1" fill="#0A2836"/><rect x="17" y="7" width="2" height="1" fill="#FFFFFF"/><rect x="4" y="8" width="3" height="1" fill="#FFFFFF"/><rect x="7" y="8" width="9" height="1" fill="#0A2836"/><rect x="16" y="8" width="3" height="1" fill="#FFFFFF"/><rect x="4" y="9" width="15" height="1" fill="#FFFFFF"/><rect x="4" y="10" width="2" height="1" fill="#FFFFFF"/><rect x="6" y="10" width="3" height="1" fill="#5C8494"/><rect x="9" y="10" width="5" height="1" fill="#FFFFFF"/><rect x="14" y="10" width="3" height="1" fill="#5C8494"/><rect x="17" y="10" width="2" height="1" fill="#FFFFFF"/><rect x="4" y="11" width="15" height="1" fill="#FFFFFF"/><rect x="4" y="12" width="2" height="1" fill="#FFFFFF"/><rect x="6" y="12" width="3" height="1" fill="#5C8494"/><rect x="9" y="12" width="5" height="1" fill="#FFFFFF"/><rect x="14" y="12" width="3" height="1" fill="#5C8494"/><rect x="17" y="12" width="2" height="1" fill="#FFFFFF"/><rect x="4" y="13" width="15" height="1" fill="#FFFFFF"/><g><rect x="8" y="6" width="2" height="2" fill="#5EEAD4"/><rect x="13" y="6" width="2" height="2" fill="#5EEAD4"/></g></g></g></svg>`;
 
 /* ---------- estado ---------- */
 const DB = { mode: 'loading', db: null, ready: false, cols: { clientes: new Map(), productos: new Map(), documentos: new Map(), movimientos: new Map(), archivo: new Map() }, cfg: defaultConfig(), logo: null, user: null, uid: null, assets: null };
@@ -1667,15 +1676,17 @@ function render() {
 function afterRender() { pintarWaFab(); if (['sunat', 'personalizar'].includes(UI.route)) pintarCfgBar(); else $('#cfg-bar')?.remove(); observePapers(); hydrateQR(); if (UI.route === 'historial') hydrateUsers(); if (UI.route === 'sunat' && padronURL(UI.cfgDraft || DB.cfg) && !UI.padronEstado) loadPadronEstado(); }
 const loadingHTML = () => `<div class="page-head"><div><div class="skel" style="width:240px;height:30px"></div><div class="skel" style="width:320px;height:16px;margin-top:10px"></div></div></div><div class="skel" style="height:104px;border-radius:14px"></div><div class="dash"><div class="skel" style="height:300px;border-radius:14px"></div><div class="skel" style="height:300px;border-radius:14px"></div></div>`;
 
+/* Saludo del menú: casi siempre «¿Qué facturamos hoy?» y, a ratos (cada 15 min), «¿A quién cobramos hoy?» */
+const preguntaMarca = () => (Math.floor(Date.now() / 9e5) % 3 === 2 ? '¿A quién cobramos hoy?' : '¿Qué facturamos hoy?');
 const marcaTitulo = () => String(DB.cfg.marca?.titulo || DB.cfg.empresa?.razon || 'Facturador electrónico');
 function renderNav() {
-  const tt = `${marcaTitulo()} · ${typeof GRANATE_PRUEBA !== 'undefined' && GRANATE_PRUEBA ? 'PRUEBA' : 'Facturación electrónica'}`; if (document.title !== tt) document.title = tt;
+  const tt = `${marcaTitulo()} · ${typeof GRANATE_PRUEBA !== 'undefined' && GRANATE_PRUEBA ? 'PRUEBA' : 'Facturación electrónica'} · AI Toque`; if (document.title !== tt) document.title = tt;
   const pend = cpes().filter(d => d.estado === 'pendiente' || d.estado === 'rechazado').length, gpend = gres().filter(d => d.estado === 'pendiente' || d.estado === 'rechazado').length;
   const apr = cots().filter(d => d.estado === 'aprobada').length;
   const integ = DB.cfg.integracion || {};
   const item = (r, ic, long, short, badge, cls = '') => `<li class="${cls}"><a class="nav-link" href="#${r}" ${UI.route === r || (r === 'cotizaciones' && UI.route === 'editor' && E?.doc.tipo === 'COT') || (r === 'comprobantes' && UI.route === 'editor' && E && !['COT', '09'].includes(E.doc.tipo)) || (r === 'guias' && UI.route === 'editor' && E?.doc.tipo === '09') ? 'aria-current="page"' : ''}>${icon(ic)}<span class="nl-long">${long}</span><span class="nl-short">${short}</span>${badge ? `<span class="badge" aria-label="${badge} pendientes">${badge}</span>` : ''}</a></li>`;
   $('#nav').innerHTML = `
-    <div class="brand">${BRAND}<div class="brand-txt"><div class="brand-name" title="${esc(marcaTitulo())}">${esc(marcaTitulo())}</div><div class="brand-sub">${esc(DB.cfg.marca?.sub || 'Facturación electrónica')}</div></div></div>
+    <div class="brand">${BRAND}<div class="brand-txt"><div class="brand-hola">¡Hola!</div><div class="brand-name" title="${esc(marcaTitulo())}">${esc(marcaTitulo())}</div><div class="brand-sub brand-pregunta">${esc(preguntaMarca())}</div></div></div>
     <button class="nav-cta" data-act="new" data-tipo="COT" aria-label="Nueva cotización">${icon('plus')}<span>Nueva cotización</span></button>
     <ul class="nav-list">
       ${item('inicio', 'home', 'Inicio', 'Inicio')}
@@ -1723,7 +1734,7 @@ function vInicio() {
   const h = new Date().getHours(), saludo = h < 12 ? 'Buenos días' : h < 19 ? 'Buenas tardes' : 'Buenas noches';
   const meta = (ic, txt) => `<span class="t-meta">${icon(ic, 'sm')}${txt}</span>`;
   return `
-  ${bannerLocalHTML()}
+  ${bannerPruebaHTML()}${bannerLocalHTML()}
   ${!empresaLista(cfg) ? `<div class="banner"><div class="b-ic">${icon('building')}</div><div class="b-t"><b>Configura tu empresa para emitir comprobantes</b><span>RUC, razón social y dirección fiscal aparecen en cada factura y en el XML para SUNAT.</span></div><button class="btn primary" data-act="go" data-r="sunat">Configurar</button></div>` : ''}
   <div class="page-head launch-head"><div><p class="sub">${saludo} · ${esc(cfg.empresa.comercial || cfg.empresa.razon || 'Tu empresa')}</p><h1>¿Qué quieres hacer?</h1></div><div class="row-gap"><span class="faint num hide-sm">${fmtDate(t)}</span><button class="btn" data-act="go" data-r="personalizar">${icon('brush', 'sm')}Personalizar documentos</button></div></div>
   <div class="launch" role="navigation" aria-label="Acciones principales">
@@ -1993,7 +2004,7 @@ function vSunat() {
         </div></div></section>
     </div>
     <div class="stack">
-      <section class="panel"><div class="panel-h"><h2>Tu API Granate</h2></div>
+      <section class="panel"><div class="panel-h"><h2>Tu API AI Toque</h2></div>
         <div class="panel-b stack" style="gap:12px">
           ${f('integracion.url', 'URL base de tu API', integ.url, 'type="url" placeholder="https://api.tuempresa.pe"')}
           <div class="field"><label for="api-key">Clave de tu API <span class="faint">(opcional · X-Granate-Key)</span></label><input class="input" id="api-key" type="password" data-apikey value="${esc(apiKey())}" autocomplete="off" placeholder="Si definiste GRANATE_API_KEY en tu servidor"><span class="hint">Se guarda solo en este navegador, nunca en la base compartida.</span></div>
@@ -2046,17 +2057,17 @@ GET  {API}/padron/ruc/{ruc}
 GET  {API}/health  → 200`;
 function archSVG() {
   const box = (x, y, w, h, fill, stroke, t1, t2, dark) => `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="10" fill="${fill}" stroke="${stroke}" stroke-width="1.2"/><text x="${x + w / 2}" y="${y + h / 2 - (t2 ? 3 : -4)}" text-anchor="middle" font-size="12.5" font-weight="650" fill="${dark ? '#fff' : '#1A1517'}">${t1}</text>${t2 ? `<text x="${x + w / 2}" y="${y + h / 2 + 13}" text-anchor="middle" font-size="10.5" fill="${dark ? '#D9CFD1' : '#5F5559'}">${t2}</text>` : ''}`;
-  const arrow = (x1, y1, x2, y2, label, lx, anchor = 'start') => `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#7A1F2E" stroke-width="1.6" marker-end="url(#ah)"/>${label ? `<text x="${lx}" y="${(y1 + y2) / 2 + 4}" font-size="10.5" fill="#574D51" text-anchor="${anchor}">${label}</text>` : ''}`;
+  const arrow = (x1, y1, x2, y2, label, lx, anchor = 'start') => `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#0F3B4C" stroke-width="1.6" marker-end="url(#ah)"/>${label ? `<text x="${lx}" y="${(y1 + y2) / 2 + 4}" font-size="10.5" fill="#574D51" text-anchor="${anchor}">${label}</text>` : ''}`;
   return `<svg viewBox="0 0 340 352" font-family="Geist, system-ui, sans-serif" role="img" aria-label="Flujo: la web envía el documento a tu API, que firma y envía a SUNAT, y SUNAT devuelve la constancia CDR">
-    <defs><marker id="ah" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 10 5 0 10z" fill="#7A1F2E"/></marker></defs>
-    ${box(40, 6, 260, 52, '#141113', '#141113', 'Granate (web · tablet)', 'Cotiza, valida y arma el XML UBL 2.1', true)}
+    <defs><marker id="ah" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 10 5 0 10z" fill="#0F3B4C"/></marker></defs>
+    ${box(40, 6, 260, 52, '#141113', '#141113', 'AI Toque (web · tablet)', 'Cotiza, valida y arma el XML UBL 2.1', true)}
     ${arrow(140, 60, 140, 112, 'JSON + XML', 132, 'end')}
     ${arrow(200, 112, 200, 60, 'Estado + CDR', 208)}
-    ${box(40, 114, 260, 64, '#FBF4F5', '#D69AA5', 'Tu API (p. ej. Azure Functions)', 'Firma con certificado digital · ZIP', false)}
+    ${box(40, 114, 260, 64, '#EEF7F8', '#7FCFD3', 'Tu API (p. ej. Azure Functions)', 'Firma con certificado digital · ZIP', false)}
     <text x="170" y="170" text-anchor="middle" font-size="10.5" fill="#5F5559">Clave SOL y certificado viven aquí</text>
     ${arrow(140, 180, 140, 232, 'sendBill · ZIP', 132, 'end')}
     ${arrow(200, 232, 200, 180, 'CDR', 208)}
-    ${box(40, 234, 260, 52, '#7A1F2E', '#7A1F2E', 'SUNAT · SEE del contribuyente', 'billService · beta / producción', true)}
+    ${box(40, 234, 260, 52, '#0F3B4C', '#0F3B4C', 'SUNAT · SEE del contribuyente', 'billService · beta / producción', true)}
     <rect x="40" y="300" width="260" height="44" rx="10" fill="#fff" stroke="#D8CDCF" stroke-dasharray="4 3"/>
     <text x="170" y="318" text-anchor="middle" font-size="11.5" font-weight="600" fill="#1A1517">APIs REST SUNAT (OAuth2)</text>
     <text x="170" y="334" text-anchor="middle" font-size="10.5" fill="#5F5559">Validez de comprobantes · GRE · padrón vía tu API</text>
@@ -2070,7 +2081,7 @@ function hlXML(x) {
 }
 
 /* ================= PERSONALIZAR DOCUMENTOS ================= */
-const COLORES = [['#7A1F2E', 'Granate'], ['#141113', 'Negro'], ['#1F3A5F', 'Azul marino'], ['#1D5C45', 'Verde'], ['#8A4B12', 'Cobre'], ['#4B2A6B', 'Uva']];
+const COLORES = [['#0F3B4C', 'Petróleo AI Toque'], ['#7A1F2E', 'Granate'], ['#141113', 'Negro'], ['#1F3A5F', 'Azul marino'], ['#1D5C45', 'Verde'], ['#8A4B12', 'Cobre'], ['#4B2A6B', 'Uva']];
 function sampleDoc(tipo) {
   const cfg = UI.cfgDraft || DB.cfg, t = todayISO();
   const real = allDocs().filter(d => (tipo === 'cot' ? d.tipo === 'COT' : d.tipo === '01') && d.items?.length).sort(byRecent)[0];
@@ -2412,7 +2423,7 @@ function cliHTML() {
       <div class="field"><label for="cli-mail">Correo <span class="faint">(opcional)</span></label><input class="input" id="cli-mail" type="email" data-cli="email" value="${esc(c.email)}"></div>
       <div class="field"><label for="cli-tel">Celular / WhatsApp <span class="faint">(opcional)</span></label><input class="input" id="cli-tel" type="tel" data-cli="telefono" value="${esc(c.telefono)}" placeholder="9XX XXX XXX"></div>
     </div>
-    ${!padronURL() && c.tipoDoc !== '0' ? `<p class="hint" style="margin-top:8px">Con tu API Granate conectada, la razón social, dirección y estado se completan solos desde el padrón SUNAT.</p>` : ''}
+    ${!padronURL() && c.tipoDoc !== '0' ? `<p class="hint" style="margin-top:8px">Con tu API AI Toque conectada, la razón social, dirección y estado se completan solos desde el padrón SUNAT.</p>` : ''}
     <div style="display:flex;justify-content:space-between;align-items:center;margin-top:12px;flex-wrap:wrap;gap:8px"><label class="switch"><input type="checkbox" data-savecli ${E.saveCli ? 'checked' : ''}><span class="track"></span><span>Guardar en mis clientes</span></label>
       <div class="row-gap"><button class="btn sm ghost" data-act="cli-change">Buscar existente</button><button class="btn sm dark" data-act="cli-done">${icon('check', 'sm')}Listo</button></div></div>`;
   }
@@ -2601,7 +2612,7 @@ async function emit(btn) {
   } catch { btn?.classList.remove('loading'); }
 }
 
-/* ---------- padrón SUNAT (vía tu API Granate) ---------- */
+/* ---------- padrón SUNAT (vía tu API AI Toque) ---------- */
 const padronURL = (cfg = DB.cfg) => { const u = String(cfg.integracion?.url || '').trim().replace(/\/+$/, ''); return /^https?:\/\//.test(u) ? u : ''; };
 const PCACHE = new Map();
 async function padronGet(path, base = padronURL()) {
@@ -2739,7 +2750,7 @@ function renderCombo() {
   const pres = (E.padronRes || []).filter(r => !locales.has(r.ruc)), st = E.padronState || '';
   const sec = st || pres.length ? `<div class="combo-sec">${icon('shield', 'sm')}Padrón SUNAT${st === 'loading' ? (apiDespertando() ? ' · despertando tu API (hasta 1 min)…' : ' · buscando…') : ''}</div>${E.padronAviso ? `<div class="combo-note warn">${icon('alert', 'sm')} ${esc(E.padronAviso)}</div>` : ''}`
     + pres.map((r, i) => `<button class="combo-opt ${res.length + i === comboIdx ? 'act' : ''}" role="option" data-act="cli-padron" data-i="${E.padronRes.indexOf(r)}"><span class="avatar dark">${icon('building', 'sm')}</span><span style="min-width:0;flex:1"><b>${esc(r.razonSocial)}</b><small class="num">RUC ${r.ruc}${r.distrito ? ` · ${esc(r.distrito)}` : ''}</small></span>${r.apto ? '' : padronChip(padronDe(r))}</button>`).join('')
-    + (st === 'off' ? `<div class="combo-note">Conecta tu API Granate en «Integración SUNAT» para buscar por RUC, DNI o razón social en el padrón oficial.</div>` : st.startsWith('msg:') ? `<div class="combo-note">${esc(st.slice(4))}</div>` : '') : '';
+    + (st === 'off' ? `<div class="combo-note">Conecta tu API AI Toque en «Integración SUNAT» para buscar por RUC, DNI o razón social en el padrón oficial.</div>` : st.startsWith('msg:') ? `<div class="combo-note">${esc(st.slice(4))}</div>` : '') : '';
   list.innerHTML = res.map((c, i) => `<button class="combo-opt ${i === comboIdx ? 'act' : ''}" role="option" data-act="cli-pick" data-id="${c.id}"><span class="avatar">${esc(initials(c.nombre))}</span><span><b>${esc(c.nombre)}</b><small class="num">${DOCID[c.tipoDoc]} ${esc(c.numDoc)}</small></span></button>`).join('')
     + sec
     + `<button class="combo-opt ${comboIdx === res.length + pres.length ? 'act' : ''}" data-act="cli-new"><span class="avatar" style="background:var(--ink);color:#fff">${icon('plus', 'sm')}</span><span><b>Nuevo cliente${q ? ` «${esc(E.cliQ.trim())}»` : ''}</b><small>Regístralo sin salir del documento</small></span></button>`;
@@ -2756,9 +2767,9 @@ function newClientFromQuery() {
 }
 
 /* ================= DOCUMENTO (representación impresa) ================= */
-function lumin(hex) { const n = parseInt(String(hex || '#7A1F2E').slice(1), 16), f = c => { c /= 255; return c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4; }; return 0.2126 * f((n >> 16) & 255) + 0.7152 * f((n >> 8) & 255) + 0.0722 * f(n & 255); }
+function lumin(hex) { const n = parseInt(String(hex || '#0F3B4C').slice(1), 16), f = c => { c /= 255; return c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4; }; return 0.2126 * f((n >> 16) & 255) + 0.7152 * f((n >> 8) & 255) + 0.0722 * f(n & 255); }
 const onColor = hex => (lumin(hex) > 0.18 ? '#141113' : '#ffffff');
-const hexRGB = hex => { const n = parseInt(String(hex || '#7A1F2E').slice(1), 16); return [(n >> 16) & 255, (n >> 8) & 255, n & 255]; };
+const hexRGB = hex => { const n = parseInt(String(hex || '#0F3B4C').slice(1), 16); return [(n >> 16) & 255, (n >> 8) & 255, n & 255]; };
 const BANCOS = ['BCP', 'BBVA', 'Interbank', 'Scotiabank', 'BanBif', 'Banco de la Nación', 'Banco Pichincha', 'Banco GNB', 'Mibanco', 'Caja Arequipa', 'Caja Huancayo', 'Caja Piura'];
 const docTitulo = (d, cfg) => (esOV(d) ? 'Orden de venta' : d.tipo === 'COT' ? (cfg.docs.cot.titulo || 'Cotización') : TIPOS[d.tipo].impreso);
 function cuentasDoc(d, cfg) {
@@ -2777,7 +2788,7 @@ function spotLegend(d, cfg) {
 function paperHTML(d, cfg = DB.cfg, logo = DB.logo) {
   if (d.tipo === '09') return paperGRE(d, cfg, logo);
   const e = cfg.empresa, c = calc(d), isCot = d.tipo === 'COT', isNV = d.tipo === 'NV', cur = d.moneda, cli = d.cliente || {};
-  const P = isCot ? cfg.docs.cot : cfg.docs.fac, color = cfg.docs.color || '#7A1F2E';
+  const P = isCot ? cfg.docs.cot : cfg.docs.fac, color = cfg.docs.color || '#0F3B4C';
   const stamp = !isCot && d.estado === 'borrador' ? '<div class="stamp draft">BORRADOR</div>' : !isCot && d.estado === 'rechazado' ? '<div class="stamp bad">RECHAZADO</div>' : ['anulada', 'anulado'].includes(d.estado) ? '<div class="stamp bad">ANULADA</div>' : '';
   const SL = spotLegend(d, cfg);
   const rightRows = [['Fecha de emisión', fmtDate(d.fecha)], isCot ? [esOV(d) ? 'Entrega estimada' : 'Válida hasta', fmtDate(d.vence)] : d.vence ? ['Vencimiento', fmtDate(d.vence)] : null, ['Moneda', cur === 'USD' ? 'Dólares (USD)' : 'Soles (PEN)'], d.tipo === '01' ? ['Forma de pago', d.formaPago === 'Credito' ? 'Crédito' : 'Contado'] : null, ['01', '03'].includes(d.tipo) && d.operacion ? ['Operación', d.operacion === 'bienes' ? 'Venta de bienes' : 'Prestación de servicios'] : null, d.vendedor ? ['Vendedor', esc(d.vendedor)] : null, (d.guias || []).length ? ['Guía de remisión', d.guias.map(g => `${g.serie}-${pad(g.numero, 8)}`).join(', ')] : null].filter(Boolean);
@@ -3567,7 +3578,7 @@ function vHistorial() {
   const arch = [...DB.cols.archivo.values()].sort((a, b) => b.ts.localeCompare(a.ts));
   const docH = UI.hDoc && getDoc(UI.hDoc);
   const sinCopia = allDocs().filter(d => d.numero && (['aceptado', 'observado'].includes(d.estado) && ES_SUNAT(d.tipo) || (d.tipo === 'NV' && d.estado !== 'borrador')) && !archivoDe(d.id).length);
-  const where = enClaude() ? (DB.assets ? 'Archivos de este artifact (sincronizados entre tus dispositivos)' : 'Este navegador') : apiBase() ? 'Tu API Granate (base SQLite)' : 'Este navegador';
+  const where = enClaude() ? (DB.assets ? 'Archivos de este artifact (sincronizados entre tus dispositivos)' : 'Este navegador') : apiBase() ? 'Tu API AI Toque (base SQLite)' : 'Este navegador';
   const kb = arch.reduce((a, x) => a + (x.bytes || 0), 0) / 1024;
   const cor = tab === 'cor' ? correlativos() : [];
   const userCell = m => (m.usuario ? `<span class="faint" data-uid="${esc(m.usuario)}">…</span>` : '<span class="faint">—</span>');
@@ -3736,7 +3747,7 @@ function greSideHTML(d) {
   </dl></div></section>`;
 }
 function paperGRE(d, cfg = DB.cfg, logo = DB.logo) {
-  const e = cfg.empresa, t = d.traslado || {}, cli = d.cliente || {}, color = cfg.docs.color || '#7A1F2E';
+  const e = cfg.empresa, t = d.traslado || {}, cli = d.cliente || {}, color = cfg.docs.color || '#0F3B4C';
   const stamp = d.estado === 'borrador' ? '<div class="stamp draft">BORRADOR</div>' : d.estado === 'rechazado' ? '<div class="stamp bad">RECHAZADO</div>' : '';
   const logoHTML = logo?.dataUrl ? `<img class="p-logoimg" src="${logo.dataUrl}" alt="Logo de ${esc(e.comercial || e.razon)}">` : `<div class="p-logo">${esc(initials(e.comercial || e.razon))}</div>`;
   const row = (k, v) => `<div class="r"><span>${k}</span><span>${v}</span></div>`;
@@ -4024,7 +4035,7 @@ async function descargarTodo(d) {
   const k = claveSunat(d), z = new window.JSZip();
   const [pdf, x, cdr] = await Promise.all([makePDF(d), xmlDe(d), cdrDe(d)]);
   z.file(`${k}.pdf`, pdf); z.file(`${k}.xml`, x.xml); if (cdr) z.file(`R-${k}.zip`, cdr.u8);
-  if (!x.firmado || (cdr && !cdr.real)) z.file('LEEME.txt', `Archivos de ${TIPOS[d.tipo].impreso} ${d.serie}-${d.numero} generados en Granate.\r\n\r\n${x.firmado ? '' : '- El XML no está firmado: se emitió con el simulador. En producción tu API lo firma con tu certificado digital antes de enviarlo a SUNAT.\r\n'}${cdr && !cdr.real ? '- La constancia (CDR) es SIMULADA y no tiene validez tributaria. En beta o producción la devuelve SUNAT.\r\n' : ''}`);
+  if (!x.firmado || (cdr && !cdr.real)) z.file('LEEME.txt', `Archivos de ${TIPOS[d.tipo].impreso} ${d.serie}-${d.numero} generados en AI Toque.\r\n\r\n${x.firmado ? '' : '- El XML no está firmado: se emitió con el simulador. En producción tu API lo firma con tu certificado digital antes de enviarlo a SUNAT.\r\n'}${cdr && !cdr.real ? '- La constancia (CDR) es SIMULADA y no tiene validez tributaria. En beta o producción la devuelve SUNAT.\r\n' : ''}`);
   await saveFile(`${k}-archivos.zip`, await z.generateAsync({ type: 'blob', compression: 'DEFLATE' }));
   logEvent('archivo.descarga', d, `PDF + XML${cdr ? ' + CDR' : ''}${x.firmado ? '' : ' (simulador)'}`);
 }
@@ -4128,12 +4139,53 @@ function pintarWaFab() {
   if (!url) { a?.remove(); return; }
   if (!a) {
     a = document.createElement('a'); a.id = 'wa-fab'; a.className = 'wa-fab'; a.target = '_blank'; a.rel = 'noopener';
-    a.setAttribute('aria-label', 'Soporte por WhatsApp'); a.title = 'Soporte, apoyo y consultas por WhatsApp';
+    a.setAttribute('aria-label', 'Soporte por WhatsApp'); a.title = 'Soporte por WhatsApp · mantén presionado y arrastra para moverlo'; a.draggable = false;
     a.innerHTML = `<svg viewBox="0 0 32 32" width="28" height="28" aria-hidden="true"><path fill="currentColor" d="M16.04 3C8.86 3 3.04 8.82 3.04 16c0 2.3.6 4.53 1.74 6.5L3 29l6.68-1.75A12.94 12.94 0 0 0 16.04 29C23.22 29 29.04 23.18 29.04 16S23.22 3 16.04 3Zm0 23.62c-2 0-3.95-.54-5.66-1.56l-.4-.24-3.97 1.04 1.06-3.87-.26-.4A10.6 10.6 0 0 1 5.42 16c0-5.86 4.76-10.62 10.62-10.62S26.66 10.14 26.66 16 21.9 26.62 16.04 26.62Zm5.83-7.95c-.32-.16-1.88-.93-2.17-1.03-.29-.11-.5-.16-.71.16-.21.32-.82 1.03-1 1.24-.18.21-.37.24-.69.08-.32-.16-1.34-.49-2.55-1.57-.94-.84-1.58-1.88-1.76-2.2-.18-.32-.02-.49.14-.65.14-.14.32-.37.48-.56.16-.18.21-.32.32-.53.11-.21.05-.4-.03-.56-.08-.16-.71-1.71-.97-2.34-.26-.62-.52-.53-.71-.54h-.61c-.21 0-.56.08-.85.4-.29.32-1.11 1.09-1.11 2.65s1.14 3.08 1.3 3.29c.16.21 2.24 3.42 5.43 4.8.76.33 1.35.52 1.81.67.76.24 1.45.21 2 .13.61-.09 1.88-.77 2.14-1.51.27-.74.27-1.38.19-1.51-.08-.13-.29-.21-.61-.37Z"/></svg><span class="wa-fab-txt">Soporte</span>`;
     document.body.appendChild(a);
+    hacerArrastrable(a, 'whatsapp');
   }
   a.href = url;
   document.body.classList.toggle('con-abar', UI.route === 'editor');
+}
+
+/* ---------- botones flotantes que se pueden mover (WhatsApp y LanAI) ----------
+   Se arrastran con el dedo o el mouse; al soltarlos se pegan al borde más cercano y la posición
+   queda guardada en este equipo. Un toque sin arrastrar funciona como clic normal. */
+const FAB_POS = 'granate.fab.';
+function posFab(el, clave) {
+  let p = null; try { p = JSON.parse(localStorage.getItem(FAB_POS + clave) || 'null'); } catch { /* sin almacenamiento */ }
+  if (!p) { Object.assign(el.style, { left: '', top: '', right: '', bottom: '' }); el.classList.remove('movido'); return; }
+  const r = el.getBoundingClientRect(), m = 10, vw = innerWidth, vh = innerHeight;
+  const x = p.lado === 'izq' ? m : vw - r.width - m, y = Math.min(Math.max(m, p.ry * (vh - r.height)), vh - r.height - m);
+  Object.assign(el.style, { left: `${x}px`, top: `${y}px`, right: 'auto', bottom: 'auto' }); el.classList.add('movido');
+}
+function hacerArrastrable(el, clave) {
+  if (el._arrastrable) return; el._arrastrable = true;
+  let ini = null, mov = false;
+  el.addEventListener('pointerdown', ev => { if (ev.button !== 0) return; const r = el.getBoundingClientRect(); ini = { x: ev.clientX, y: ev.clientY, l: r.left, t: r.top, w: r.width, h: r.height, id: ev.pointerId }; mov = false; try { el.setPointerCapture(ev.pointerId); } catch { /* */ } });
+  el.addEventListener('pointermove', ev => {
+    if (!ini || ev.pointerId !== ini.id) return;
+    const dx = ev.clientX - ini.x, dy = ev.clientY - ini.y;
+    if (!mov && Math.hypot(dx, dy) < 8) return;
+    if (!mov) { mov = true; el.classList.add('arrastrando'); }
+    ev.preventDefault();
+    const x = Math.min(Math.max(4, ini.l + dx), innerWidth - ini.w - 4), y = Math.min(Math.max(4, ini.t + dy), innerHeight - ini.h - 4);
+    Object.assign(el.style, { left: `${x}px`, top: `${y}px`, right: 'auto', bottom: 'auto' });
+  });
+  const fin = () => {
+    if (!ini) return; const movido = mov; ini = null; mov = false;
+    if (!movido) return;
+    el.classList.remove('arrastrando');
+    const r = el.getBoundingClientRect();
+    const pos = { lado: r.left + r.width / 2 < innerWidth / 2 ? 'izq' : 'der', ry: Math.min(1, Math.max(0, r.top / Math.max(1, innerHeight - r.height))) };
+    try { localStorage.setItem(FAB_POS + clave, JSON.stringify(pos)); } catch { /* */ }
+    posFab(el, clave); el._sinClick = Date.now();
+  };
+  el.addEventListener('pointerup', fin); el.addEventListener('pointercancel', fin);
+  el.addEventListener('click', ev => { if (el._sinClick && Date.now() - el._sinClick < 450) { ev.preventDefault(); ev.stopImmediatePropagation(); } }, true);
+  el.addEventListener('dragstart', ev => ev.preventDefault());
+  addEventListener('resize', () => posFab(el, clave));
+  posFab(el, clave);
 }
 
 /* ================= ANULACIÓN EN SUNAT: COMUNICACIÓN DE BAJA ================= */
@@ -4192,6 +4244,16 @@ async function consultarBaja(id) {
   await put('documentos', f); logEvent('sunat.baja', f, `${f.baja.id} · consulta de ticket · ${r.estado} · [${r.codigo}] ${r.descripcion}`);
   return { f, r };
 }
+/* Reintenta sola, cada 5 minutos, las bajas que quedaron en proceso (el beta de SUNAT suele tardar en responder el ticket). */
+setInterval(async () => {
+  let cambio = false;
+  try {
+    for (const d of allDocs().filter(x => x.estado === 'baja_proceso' && x.baja?.modo === 'api' && x.baja?.ticket)) {
+      try { const r = await consultarBaja(d.id); if (r && r.f.estado !== 'baja_proceso') cambio = true; } catch { /* se reintenta en la próxima vuelta */ }
+    }
+  } catch { /* la app aún está cargando */ }
+  if (cambio) render();
+}, 5 * 60e3);
 function bajaPanelHTML(d) {
   if (fueraDePlazo(d)) return `<section class="panel"><div class="panel-h"><h2>Fuera de plazo</h2><span class="pill bad">${icon('clock', 'sm')}No se puede enviar</span></div><div class="panel-b"><p class="hint" style="margin:0 0 10px">Su fecha de emisión es ${fmtDate(d.fecha)}: SUNAT solo recibe comprobantes de hasta 3 días atrás. Sin envío no tiene validez; emite uno nuevo con fecha de hoy.</p><button class="btn primary" data-act="dup" data-id="${d.id}">${icon('refresh')}Emitir de nuevo con fecha de hoy</button></div></section>`;
   if (!d.baja) return '';
@@ -4319,7 +4381,7 @@ body{font:${fs}px/1.3 Arial,Helvetica,sans-serif;-webkit-print-color-adjust:exac
 .tot{font-size:${fs + 2}px;font-weight:700}
 .qr{width:${ancho === 58 ? 26 : 32}mm;margin:2mm auto 1mm}.qr svg{width:100%;height:auto;display:block}
 img.logo{display:block;max-width:${ancho === 58 ? 30 : 40}mm;max-height:16mm;margin:0 auto 1.5mm;filter:grayscale(1) contrast(1.4)}
-.no-print{font:14px Arial;margin:12px auto;width:${w}mm;display:flex;gap:8px}.no-print button{flex:1;height:44px;border-radius:10px;border:0;background:#7A1F2E;color:#fff;font-weight:700}
+.no-print{font:14px Arial;margin:12px auto;width:${w}mm;display:flex;gap:8px}.no-print button{flex:1;height:44px;border-radius:10px;border:0;background:#0F3B4C;color:#fff;font-weight:700}
 @media print{.no-print{display:none}}
 </style></head><body><div class="tk">
   ${logo ? `<img class="logo" src="${logo}" alt="">` : ''}
@@ -4612,7 +4674,7 @@ function datosLocales() {
 function bannerLocalHTML() {
   const L = datosLocales(); if (!L) return '';
   const p = [L.n.documentos && `${L.n.documentos} documento${L.n.documentos === 1 ? '' : 's'}`, L.n.clientes && `${L.n.clientes} cliente${L.n.clientes === 1 ? '' : 's'}`, L.n.productos && `${L.n.productos} producto${L.n.productos === 1 ? '' : 's'}`].filter(Boolean).join(', ');
-  return `<div class="banner"><div class="b-ic">${icon('upload')}</div><div class="b-t"><b>Este equipo tiene datos guardados solo aquí</b><span>${p}. Súbelos a la nube para verlos desde tus otros equipos.</span></div><button class="btn" data-act="nube-local-no" style="background:transparent;color:#fff;border-color:#5a3a42">Ahora no</button><button class="btn primary" data-act="nube-local-subir">${icon('upload', 'sm')}Subir a la nube</button></div>`;
+  return `<div class="banner"><div class="b-ic">${icon('upload')}</div><div class="b-t"><b>Este equipo tiene datos guardados solo aquí</b><span>${p}. Súbelos a la nube para verlos desde tus otros equipos.</span></div><button class="btn" data-act="nube-local-no" style="background:transparent;color:#fff;border-color:var(--nav-line)">Ahora no</button><button class="btn primary" data-act="nube-local-subir">${icon('upload', 'sm')}Subir a la nube</button></div>`;
 }
 async function subirDatosLocales(btn) {
   const L = datosLocales(); if (!L) return;
@@ -4634,6 +4696,13 @@ async function subirDatosLocales(btn) {
   if (rep) setTimeout(() => toast(`${rep} documento${rep === 1 ? '' : 's'} tienen el mismo número que otro ya registrado en la nube. Revísalos en Comprobantes.`, 'warn'), 1200);
 }
 
+/* En la versión de prueba (sin usuarios) se explica cómo llegar a la versión con usuario y datos reales */
+function bannerPruebaHTML() {
+  if (typeof GRANATE_PRUEBA === 'undefined' || !GRANATE_PRUEBA || !/granate-prueba\.html$/.test(location.pathname)) return '';
+  const url = location.pathname.replace(/granate-prueba\.html$/, 'granate.html');
+  return `<div class="banner"><div class="b-ic">${icon('lock')}</div><div class="b-t"><b>Versión de prueba: no pide usuario</b><span>Lo que hagas aquí queda solo en este navegador. Para entrar con tu usuario y ver los datos reales de la empresa desde cualquier equipo, usa la versión principal.</span></div><a class="btn primary" href="${esc(url)}">Ir a la versión con usuario</a></div>`;
+}
+
 /* ---------- pantalla de ingreso ---------- */
 function renderLogin() {
   document.body.classList.add('sin-sesion');
@@ -4642,7 +4711,7 @@ function renderLogin() {
   const e = DB.cfg.empresa || {};
   const ins = NUBE.vista === 'instalar';
   $('#main').innerHTML = `<div class="login-wrap"><div class="login-card">
-    <div class="login-brand">${BRAND}<div><b>${esc(marcaTitulo())}</b><small>${esc(DB.cfg.marca?.sub || 'Facturación electrónica')}</small></div></div>
+    <div class="login-brand">${BRAND}<div><b>${esc(marcaTitulo())}</b><small>${esc(DB.cfg.marca?.sub || 'Facturación con AI Toque')}</small></div></div>
     ${ins ? `<h1>Primera instalación</h1><p class="sub">Crea la empresa en la nube y tu usuario administrador. Necesitas el código de instalación que te entregó DataPrix.</p>
       <div class="stack" style="gap:12px">
         <div class="field"><label for="li-codigo">Código de instalación</label><input class="input num" id="li-codigo" autocomplete="off" placeholder="GRN-XXXX-XXXX" style="text-transform:uppercase" data-enter="login-instalar"></div>
@@ -4822,6 +4891,224 @@ document.addEventListener('change', async ev => {
   const email = s.dataset.usrRol, rol = s.value;
   try { await patchUsuario(email, { rol }); toast(`Rol actualizado a ${ROL_TXT[rol]}`); render(); } catch (e) { toast(e.message, 'bad'); render(); }
 });
+
+</script>
+<script>
+/* ================= LanAI · ayudante virtual de AI Toque =================
+   Revisa los comprobantes guardados en la app (sin enviar nada a internet):
+   avisa lo urgente, resume el mes y responde preguntas frecuentes de SUNAT.
+   Para conectar una IA más adelante: LANAI_IA_URL (POST {pregunta, contexto} → {respuesta}). */
+(function () {
+  'use strict';
+  /* Número de soporte: el configurado en la app (Integración SUNAT → soporte), con 982 098 446 por defecto */
+  var wsp = function () { try { var n = String((DB.cfg.soporte || {}).whatsapp || '51982098446').replace(/\D/g, '').replace(/^51(?=\d{9}$)/, ''); return n.replace(/^(\d{3})(\d{3})(\d{3})$/, '$1 $2 $3'); } catch (e) { return '982 098 446'; } };
+  var LANAI_IA_URL = window.LANAI_IA_URL || '';
+  var FAQ = [
+    { q: '¿Hasta cuándo puedo enviar una factura a SUNAT?', k: ['plazo', 'enviar', 'factura', 'dias', 'vence', 'tarde'],
+      a: 'El mismo día de emisión o hasta 3 días calendario después. Pasado ese plazo ya no tiene validez como factura electrónica: hay que emitir una nueva con fecha de hoy. Las boletas se informan hasta el 7.º día calendario siguiente.' },
+    { q: '¿Cómo anulo una factura?', k: ['anular', 'anulo', 'baja', 'error', 'factura', 'cancelar'],
+      a: 'Si no se la entregaste al cliente y no pasaron 7 días desde la constancia (CDR), usa «Anular» → comunicación de baja. Si ya la entregaste o pasó el plazo, emite una nota de crédito por anulación de la operación, al mismo cliente.' },
+    { q: '¿Cómo anulo una boleta?', k: ['anular', 'boleta', 'baja', 'resumen'],
+      a: 'Las boletas no usan comunicación de baja: se anulan con el resumen diario o con una nota de crédito. En AI Toque, por ahora, con nota de crédito (motivo 01 · anulación de la operación).' },
+    { q: '¿Boleta o factura?', k: ['boleta', 'factura', 'diferencia', 'ruc', 'dni', 'cual'],
+      a: 'Factura cuando el cliente tiene RUC y la necesita para su crédito fiscal. Boleta para consumidores finales. Si la boleta supera S/ 700, debes poner el DNI (o documento) del cliente.' },
+    { q: '¿Qué significa el código de SUNAT (CDR)?', k: ['cdr', 'codigo', 'constancia', 'rechazado', 'observado', 'aceptado', 'error'],
+      a: 'Código 0: aceptado. 4000 o más: aceptado con observaciones (es válido, pero corrige la causa). Entre 2000 y 3999: rechazado, emite uno nuevo. Entre 0100 y 1999: error de envío, corrige y reenvía con el mismo número.' },
+    { q: '¿Cuándo hay detracción?', k: ['detraccion', 'spot', 'banco', 'nacion', 'servicio', '700'],
+      a: 'En servicios sujetos al sistema de detracciones cuyo importe supera S/ 700. Se indica el tipo (catálogo 54) y el cliente deposita el porcentaje en tu cuenta del Banco de la Nación. AI Toque te avisa cuando aplica.' },
+    { q: '¿Necesito guía de remisión?', k: ['guia', 'remision', 'traslado', 'transporte', 'envio', 'mercaderia'],
+      a: 'Sí, cuando trasladas bienes (por ejemplo, despachos a clientes o a provincia). La guía de remisión remitente va vinculada a la factura de esa venta.' },
+    { q: '¿Qué es el modo beta o simulador?', k: ['beta', 'simulador', 'prueba', 'validez', 'produccion'],
+      a: 'Son modos de prueba: nada de lo emitido ahí tiene validez tributaria. En producción tus comprobantes van a SUNAT con tu certificado digital y tu usuario SOL.' },
+    { q: '¿Cómo me ayuda AI Toque a vender más?', k: ['vender', 'clientes', 'temporada', 'tendencia', 'ia', 'cartera', 'estudio', 'mercado'],
+      a: 'Te muestro a quién le vendes, qué día y a qué hora, y quién es tu mejor cliente del mes. Muy pronto: tendencias por temporada y consejos con IA para cuidar y crecer tu cartera.' }
+  ];
+
+  var norm = function (s) { return String(s || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9 ]/g, ' '); };
+  var el = function (tag, cls, txt) { var e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; };
+
+  var LANAI = '<svg viewBox="0 -1 23 17" shape-rendering="crispEdges" aria-hidden="true"><g class="la-cuerpo"><g><rect x="4" y="13" width="1" height="2" fill="#FFFFFF"/><rect x="6" y="13" width="1" height="2" fill="#FFFFFF"/><rect x="8" y="13" width="1" height="2" fill="#FFFFFF"/><rect x="10" y="13" width="1" height="2" fill="#FFFFFF"/><rect x="12" y="13" width="1" height="2" fill="#FFFFFF"/><rect x="14" y="13" width="1" height="2" fill="#FFFFFF"/><rect x="16" y="13" width="1" height="2" fill="#FFFFFF"/><rect x="18" y="13" width="1" height="2" fill="#FFFFFF"/><rect x="4" y="0" width="1" height="1" fill="#FFFFFF"/><rect x="18" y="0" width="1" height="1" fill="#FFFFFF"/><rect x="4" y="1" width="2" height="1" fill="#FFFFFF"/><rect x="17" y="1" width="2" height="1" fill="#FFFFFF"/><rect x="4" y="2" width="1" height="1" fill="#FFFFFF"/><rect x="5" y="2" width="1" height="1" fill="#9FC3CF"/><rect x="6" y="2" width="1" height="1" fill="#FFFFFF"/><rect x="16" y="2" width="1" height="1" fill="#FFFFFF"/><rect x="17" y="2" width="1" height="1" fill="#9FC3CF"/><rect x="18" y="2" width="1" height="1" fill="#FFFFFF"/><rect x="4" y="3" width="15" height="1" fill="#FFFFFF"/><rect x="4" y="4" width="15" height="1" fill="#FFFFFF"/><rect x="4" y="5" width="3" height="1" fill="#FFFFFF"/><rect x="7" y="5" width="1" height="1" fill="#0A2836"/><rect x="8" y="5" width="2" height="1" fill="#2C5A6B"/><rect x="10" y="5" width="6" height="1" fill="#0A2836"/><rect x="16" y="5" width="3" height="1" fill="#FFFFFF"/><rect x="4" y="6" width="2" height="1" fill="#FFFFFF"/><rect x="6" y="6" width="11" height="1" fill="#0A2836"/><rect x="17" y="6" width="2" height="1" fill="#FFFFFF"/><rect x="4" y="7" width="2" height="1" fill="#FFFFFF"/><rect x="6" y="7" width="11" height="1" fill="#0A2836"/><rect x="17" y="7" width="2" height="1" fill="#FFFFFF"/><rect x="4" y="8" width="3" height="1" fill="#FFFFFF"/><rect x="7" y="8" width="9" height="1" fill="#0A2836"/><rect x="16" y="8" width="3" height="1" fill="#FFFFFF"/><rect x="4" y="9" width="15" height="1" fill="#FFFFFF"/><rect x="4" y="10" width="2" height="1" fill="#FFFFFF"/><rect x="6" y="10" width="3" height="1" fill="#5C8494"/><rect x="9" y="10" width="5" height="1" fill="#FFFFFF"/><rect x="14" y="10" width="3" height="1" fill="#5C8494"/><rect x="17" y="10" width="2" height="1" fill="#FFFFFF"/><rect x="4" y="11" width="15" height="1" fill="#FFFFFF"/><rect x="4" y="12" width="2" height="1" fill="#FFFFFF"/><rect x="6" y="12" width="3" height="1" fill="#5C8494"/><rect x="9" y="12" width="5" height="1" fill="#FFFFFF"/><rect x="14" y="12" width="3" height="1" fill="#5C8494"/><rect x="17" y="12" width="2" height="1" fill="#FFFFFF"/><rect x="4" y="13" width="15" height="1" fill="#FFFFFF"/><g class="la-ojos"><rect x="8" y="6" width="2" height="2" fill="#5EEAD4"/><rect x="13" y="6" width="2" height="2" fill="#5EEAD4"/></g></g></g></svg>';
+  var TEMPORADAS = {"halloween": {"nombre": "Halloween", "desde": "10-25", "hasta": "11-10", "ojos": "#FF8A1F", "saludo": "¡Feliz Halloween! Soy LanAI", "vb": "3 -5 17 21", "svg": "<rect x=\"4\" y=\"13\" width=\"1\" height=\"2\" fill=\"#FFFFFF\"/><rect x=\"6\" y=\"13\" width=\"1\" height=\"2\" fill=\"#FFFFFF\"/><rect x=\"8\" y=\"13\" width=\"1\" height=\"2\" fill=\"#FFFFFF\"/><rect x=\"10\" y=\"13\" width=\"1\" height=\"2\" fill=\"#FFFFFF\"/><rect x=\"12\" y=\"13\" width=\"1\" height=\"2\" fill=\"#FFFFFF\"/><rect x=\"14\" y=\"13\" width=\"1\" height=\"2\" fill=\"#FFFFFF\"/><rect x=\"16\" y=\"13\" width=\"1\" height=\"2\" fill=\"#FFFFFF\"/><rect x=\"18\" y=\"13\" width=\"1\" height=\"2\" fill=\"#FFFFFF\"/><rect x=\"14\" y=\"-4\" width=\"1\" height=\"1\" fill=\"#0E0B12\"/><rect x=\"12\" y=\"-3\" width=\"2\" height=\"1\" fill=\"#0E0B12\"/><rect x=\"11\" y=\"-2\" width=\"2\" height=\"1\" fill=\"#0E0B12\"/><rect x=\"10\" y=\"-1\" width=\"3\" height=\"1\" fill=\"#0E0B12\"/><rect x=\"4\" y=\"0\" width=\"1\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"9\" y=\"0\" width=\"5\" height=\"1\" fill=\"#0E0B12\"/><rect x=\"18\" y=\"0\" width=\"1\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"4\" y=\"1\" width=\"2\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"9\" y=\"1\" width=\"5\" height=\"1\" fill=\"#FF8A1F\"/><rect x=\"17\" y=\"1\" width=\"2\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"4\" y=\"2\" width=\"1\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"5\" y=\"2\" width=\"1\" height=\"1\" fill=\"#9FC3CF\"/><rect x=\"6\" y=\"2\" width=\"1\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"7\" y=\"2\" width=\"9\" height=\"1\" fill=\"#0E0B12\"/><rect x=\"16\" y=\"2\" width=\"1\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"17\" y=\"2\" width=\"1\" height=\"1\" fill=\"#9FC3CF\"/><rect x=\"18\" y=\"2\" width=\"1\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"4\" y=\"3\" width=\"15\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"4\" y=\"4\" width=\"15\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"4\" y=\"5\" width=\"3\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"7\" y=\"5\" width=\"1\" height=\"1\" fill=\"#0A2836\"/><rect x=\"8\" y=\"5\" width=\"2\" height=\"1\" fill=\"#2C5A6B\"/><rect x=\"10\" y=\"5\" width=\"6\" height=\"1\" fill=\"#0A2836\"/><rect x=\"16\" y=\"5\" width=\"3\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"4\" y=\"6\" width=\"2\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"6\" y=\"6\" width=\"11\" height=\"1\" fill=\"#0A2836\"/><rect x=\"17\" y=\"6\" width=\"2\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"4\" y=\"7\" width=\"2\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"6\" y=\"7\" width=\"11\" height=\"1\" fill=\"#0A2836\"/><rect x=\"17\" y=\"7\" width=\"2\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"4\" y=\"8\" width=\"3\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"7\" y=\"8\" width=\"9\" height=\"1\" fill=\"#0A2836\"/><rect x=\"16\" y=\"8\" width=\"3\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"4\" y=\"9\" width=\"15\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"4\" y=\"10\" width=\"2\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"6\" y=\"10\" width=\"3\" height=\"1\" fill=\"#5C8494\"/><rect x=\"9\" y=\"10\" width=\"5\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"14\" y=\"10\" width=\"3\" height=\"1\" fill=\"#5C8494\"/><rect x=\"17\" y=\"10\" width=\"2\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"4\" y=\"11\" width=\"15\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"4\" y=\"12\" width=\"2\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"6\" y=\"12\" width=\"3\" height=\"1\" fill=\"#5C8494\"/><rect x=\"9\" y=\"12\" width=\"5\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"14\" y=\"12\" width=\"3\" height=\"1\" fill=\"#5C8494\"/><rect x=\"17\" y=\"12\" width=\"2\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"4\" y=\"13\" width=\"15\" height=\"1\" fill=\"#FFFFFF\"/>", "vars": "--granate:#3B1E5A;--granate-h:#4A2670;--granate-p:#2A1640;--granate-d:#1C0E2C;--granate-50:#F5F0FA;--granate-100:#EBE1F5;--granate-200:#D6C3EA;--granate-300:#B596D6;--nav:#2A1640;--nav-2:#3B1E5A;--nav-line:#4C2C6E;--nav-text:#F3ECFA;--nav-muted:#C9B6E0;--led:#FF8A1F;--bg:#F7F4FA;--surface-2:#FBF9FD;--line:#E7DFEF;--line-2:#D6CBE3;--ink:#2A1640"}, "navidad": {"nombre": "Navidad", "desde": "12-01", "hasta": "12-25", "ojos": "#FFD166", "saludo": "¡Feliz Navidad! Soy LanAI", "vb": "3 -4 17 20", "svg": "<rect x=\"4\" y=\"13\" width=\"1\" height=\"2\" fill=\"#FFFFFF\"/><rect x=\"6\" y=\"13\" width=\"1\" height=\"2\" fill=\"#FFFFFF\"/><rect x=\"8\" y=\"13\" width=\"1\" height=\"2\" fill=\"#FFFFFF\"/><rect x=\"10\" y=\"13\" width=\"1\" height=\"2\" fill=\"#FFFFFF\"/><rect x=\"12\" y=\"13\" width=\"1\" height=\"2\" fill=\"#FFFFFF\"/><rect x=\"14\" y=\"13\" width=\"1\" height=\"2\" fill=\"#FFFFFF\"/><rect x=\"16\" y=\"13\" width=\"1\" height=\"2\" fill=\"#FFFFFF\"/><rect x=\"18\" y=\"13\" width=\"1\" height=\"2\" fill=\"#FFFFFF\"/><rect x=\"16\" y=\"-3\" width=\"2\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"13\" y=\"-2\" width=\"4\" height=\"1\" fill=\"#D62828\"/><rect x=\"17\" y=\"-2\" width=\"1\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"11\" y=\"-1\" width=\"5\" height=\"1\" fill=\"#D62828\"/><rect x=\"4\" y=\"0\" width=\"1\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"10\" y=\"0\" width=\"5\" height=\"1\" fill=\"#D62828\"/><rect x=\"18\" y=\"0\" width=\"1\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"4\" y=\"1\" width=\"2\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"9\" y=\"1\" width=\"6\" height=\"1\" fill=\"#D62828\"/><rect x=\"17\" y=\"1\" width=\"2\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"4\" y=\"2\" width=\"1\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"5\" y=\"2\" width=\"1\" height=\"1\" fill=\"#9FC3CF\"/><rect x=\"6\" y=\"2\" width=\"1\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"8\" y=\"2\" width=\"7\" height=\"1\" fill=\"#EDEDED\"/><rect x=\"16\" y=\"2\" width=\"1\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"17\" y=\"2\" width=\"1\" height=\"1\" fill=\"#9FC3CF\"/><rect x=\"18\" y=\"2\" width=\"1\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"4\" y=\"3\" width=\"15\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"4\" y=\"4\" width=\"15\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"4\" y=\"5\" width=\"3\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"7\" y=\"5\" width=\"1\" height=\"1\" fill=\"#0A2836\"/><rect x=\"8\" y=\"5\" width=\"2\" height=\"1\" fill=\"#2C5A6B\"/><rect x=\"10\" y=\"5\" width=\"6\" height=\"1\" fill=\"#0A2836\"/><rect x=\"16\" y=\"5\" width=\"3\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"4\" y=\"6\" width=\"2\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"6\" y=\"6\" width=\"11\" height=\"1\" fill=\"#0A2836\"/><rect x=\"17\" y=\"6\" width=\"2\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"4\" y=\"7\" width=\"2\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"6\" y=\"7\" width=\"11\" height=\"1\" fill=\"#0A2836\"/><rect x=\"17\" y=\"7\" width=\"2\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"4\" y=\"8\" width=\"3\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"7\" y=\"8\" width=\"9\" height=\"1\" fill=\"#0A2836\"/><rect x=\"16\" y=\"8\" width=\"3\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"4\" y=\"9\" width=\"15\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"4\" y=\"10\" width=\"2\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"6\" y=\"10\" width=\"3\" height=\"1\" fill=\"#5C8494\"/><rect x=\"9\" y=\"10\" width=\"5\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"14\" y=\"10\" width=\"3\" height=\"1\" fill=\"#5C8494\"/><rect x=\"17\" y=\"10\" width=\"2\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"4\" y=\"11\" width=\"15\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"4\" y=\"12\" width=\"2\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"6\" y=\"12\" width=\"3\" height=\"1\" fill=\"#5C8494\"/><rect x=\"9\" y=\"12\" width=\"5\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"14\" y=\"12\" width=\"3\" height=\"1\" fill=\"#5C8494\"/><rect x=\"17\" y=\"12\" width=\"2\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"4\" y=\"13\" width=\"15\" height=\"1\" fill=\"#FFFFFF\"/>", "vars": "--granate:#0E3B2C;--granate-h:#155040;--granate-p:#0A2A20;--granate-d:#061A14;--granate-50:#EEF7F2;--granate-100:#DCEFE4;--granate-200:#B5DFC8;--granate-300:#7FC6A1;--nav:#0A2A20;--nav-2:#0E3B2C;--nav-line:#1D4D3D;--nav-text:#EAF6EF;--nav-muted:#A9D3BC;--led:#FFD166;--bg:#F4F8F5;--surface-2:#F9FBFA;--line:#DDE9E2;--line-2:#C8DBD0;--ink:#0A2A20"}, "anonuevo": {"nombre": "Año Nuevo", "desde": "12-26", "hasta": "01-06", "ojos": "#F5C542", "saludo": "¡Feliz año nuevo! Soy LanAI", "vb": "3 -4 17 20", "svg": "<rect x=\"4\" y=\"13\" width=\"1\" height=\"2\" fill=\"#FFFFFF\"/><rect x=\"6\" y=\"13\" width=\"1\" height=\"2\" fill=\"#FFFFFF\"/><rect x=\"8\" y=\"13\" width=\"1\" height=\"2\" fill=\"#FFFFFF\"/><rect x=\"10\" y=\"13\" width=\"1\" height=\"2\" fill=\"#FFFFFF\"/><rect x=\"12\" y=\"13\" width=\"1\" height=\"2\" fill=\"#FFFFFF\"/><rect x=\"14\" y=\"13\" width=\"1\" height=\"2\" fill=\"#FFFFFF\"/><rect x=\"16\" y=\"13\" width=\"1\" height=\"2\" fill=\"#FFFFFF\"/><rect x=\"18\" y=\"13\" width=\"1\" height=\"2\" fill=\"#FFFFFF\"/><rect x=\"10\" y=\"-3\" width=\"3\" height=\"1\" fill=\"#F5C542\"/><rect x=\"11\" y=\"-2\" width=\"1\" height=\"1\" fill=\"#C9D1E6\"/><rect x=\"11\" y=\"-1\" width=\"1\" height=\"1\" fill=\"#C9D1E6\"/><rect x=\"4\" y=\"0\" width=\"1\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"10\" y=\"0\" width=\"3\" height=\"1\" fill=\"#F5C542\"/><rect x=\"18\" y=\"0\" width=\"1\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"4\" y=\"1\" width=\"2\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"10\" y=\"1\" width=\"3\" height=\"1\" fill=\"#C9D1E6\"/><rect x=\"17\" y=\"1\" width=\"2\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"4\" y=\"2\" width=\"1\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"5\" y=\"2\" width=\"1\" height=\"1\" fill=\"#9FC3CF\"/><rect x=\"6\" y=\"2\" width=\"1\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"9\" y=\"2\" width=\"5\" height=\"1\" fill=\"#F5C542\"/><rect x=\"16\" y=\"2\" width=\"1\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"17\" y=\"2\" width=\"1\" height=\"1\" fill=\"#9FC3CF\"/><rect x=\"18\" y=\"2\" width=\"1\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"4\" y=\"3\" width=\"15\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"4\" y=\"4\" width=\"15\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"4\" y=\"5\" width=\"3\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"7\" y=\"5\" width=\"1\" height=\"1\" fill=\"#0A2836\"/><rect x=\"8\" y=\"5\" width=\"2\" height=\"1\" fill=\"#2C5A6B\"/><rect x=\"10\" y=\"5\" width=\"6\" height=\"1\" fill=\"#0A2836\"/><rect x=\"16\" y=\"5\" width=\"3\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"4\" y=\"6\" width=\"2\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"6\" y=\"6\" width=\"11\" height=\"1\" fill=\"#0A2836\"/><rect x=\"17\" y=\"6\" width=\"2\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"4\" y=\"7\" width=\"2\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"6\" y=\"7\" width=\"11\" height=\"1\" fill=\"#0A2836\"/><rect x=\"17\" y=\"7\" width=\"2\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"4\" y=\"8\" width=\"3\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"7\" y=\"8\" width=\"9\" height=\"1\" fill=\"#0A2836\"/><rect x=\"16\" y=\"8\" width=\"3\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"4\" y=\"9\" width=\"15\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"4\" y=\"10\" width=\"2\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"6\" y=\"10\" width=\"3\" height=\"1\" fill=\"#5C8494\"/><rect x=\"9\" y=\"10\" width=\"5\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"14\" y=\"10\" width=\"3\" height=\"1\" fill=\"#5C8494\"/><rect x=\"17\" y=\"10\" width=\"2\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"4\" y=\"11\" width=\"15\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"4\" y=\"12\" width=\"2\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"6\" y=\"12\" width=\"3\" height=\"1\" fill=\"#5C8494\"/><rect x=\"9\" y=\"12\" width=\"5\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"14\" y=\"12\" width=\"3\" height=\"1\" fill=\"#5C8494\"/><rect x=\"17\" y=\"12\" width=\"2\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"4\" y=\"13\" width=\"15\" height=\"1\" fill=\"#FFFFFF\"/>", "vars": "--granate:#1B1F45;--granate-h:#252A5A;--granate-p:#11142E;--granate-d:#0A0C1E;--granate-50:#F1F2F9;--granate-100:#E3E5F3;--granate-200:#C9CDE8;--granate-300:#9EA5D3;--nav:#11142E;--nav-2:#1B1F45;--nav-line:#2C3160;--nav-text:#EEF0FA;--nav-muted:#B4BADD;--led:#F5C542;--bg:#F5F6FA;--surface-2:#FAFAFD;--line:#E2E4F0;--line-2:#CDD1E5;--ink:#11142E"}, "carnaval": {"nombre": "Carnaval", "desde": "02-01", "hasta": "02-29", "ojos": "#FF4FA3", "saludo": "¡Que viva el carnaval! Soy LanAI", "vb": "0 -4 23 20", "svg": "<rect x=\"4\" y=\"13\" width=\"1\" height=\"2\" fill=\"#FFFFFF\"/><rect x=\"6\" y=\"13\" width=\"1\" height=\"2\" fill=\"#FFFFFF\"/><rect x=\"8\" y=\"13\" width=\"1\" height=\"2\" fill=\"#FFFFFF\"/><rect x=\"10\" y=\"13\" width=\"1\" height=\"2\" fill=\"#FFFFFF\"/><rect x=\"12\" y=\"13\" width=\"1\" height=\"2\" fill=\"#FFFFFF\"/><rect x=\"14\" y=\"13\" width=\"1\" height=\"2\" fill=\"#FFFFFF\"/><rect x=\"16\" y=\"13\" width=\"1\" height=\"2\" fill=\"#FFFFFF\"/><rect x=\"18\" y=\"13\" width=\"1\" height=\"2\" fill=\"#FFFFFF\"/><rect x=\"2\" y=\"-3\" width=\"1\" height=\"1\" fill=\"#2EC4F1\"/><rect x=\"9\" y=\"-3\" width=\"1\" height=\"1\" fill=\"#FF4FA3\"/><rect x=\"14\" y=\"-3\" width=\"1\" height=\"1\" fill=\"#FFD23F\"/><rect x=\"20\" y=\"-3\" width=\"1\" height=\"1\" fill=\"#FFD23F\"/><rect x=\"1\" y=\"-2\" width=\"1\" height=\"1\" fill=\"#2EC4F1\"/><rect x=\"3\" y=\"-2\" width=\"1\" height=\"1\" fill=\"#2EC4F1\"/><rect x=\"12\" y=\"-2\" width=\"1\" height=\"1\" fill=\"#2EC4F1\"/><rect x=\"19\" y=\"-2\" width=\"1\" height=\"1\" fill=\"#FFD23F\"/><rect x=\"21\" y=\"-2\" width=\"1\" height=\"1\" fill=\"#FFD23F\"/><rect x=\"4\" y=\"-1\" width=\"1\" height=\"1\" fill=\"#2EC4F1\"/><rect x=\"18\" y=\"-1\" width=\"1\" height=\"1\" fill=\"#FFD23F\"/><rect x=\"4\" y=\"0\" width=\"1\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"18\" y=\"0\" width=\"1\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"4\" y=\"1\" width=\"2\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"17\" y=\"1\" width=\"2\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"4\" y=\"2\" width=\"1\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"5\" y=\"2\" width=\"1\" height=\"1\" fill=\"#9FC3CF\"/><rect x=\"6\" y=\"2\" width=\"1\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"16\" y=\"2\" width=\"1\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"17\" y=\"2\" width=\"1\" height=\"1\" fill=\"#9FC3CF\"/><rect x=\"18\" y=\"2\" width=\"1\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"4\" y=\"3\" width=\"15\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"4\" y=\"4\" width=\"15\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"4\" y=\"5\" width=\"3\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"7\" y=\"5\" width=\"1\" height=\"1\" fill=\"#0A2836\"/><rect x=\"8\" y=\"5\" width=\"2\" height=\"1\" fill=\"#2C5A6B\"/><rect x=\"10\" y=\"5\" width=\"6\" height=\"1\" fill=\"#0A2836\"/><rect x=\"16\" y=\"5\" width=\"3\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"4\" y=\"6\" width=\"2\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"6\" y=\"6\" width=\"11\" height=\"1\" fill=\"#0A2836\"/><rect x=\"17\" y=\"6\" width=\"2\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"4\" y=\"7\" width=\"2\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"6\" y=\"7\" width=\"11\" height=\"1\" fill=\"#0A2836\"/><rect x=\"17\" y=\"7\" width=\"2\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"4\" y=\"8\" width=\"3\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"7\" y=\"8\" width=\"9\" height=\"1\" fill=\"#0A2836\"/><rect x=\"16\" y=\"8\" width=\"3\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"4\" y=\"9\" width=\"15\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"4\" y=\"10\" width=\"2\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"6\" y=\"10\" width=\"3\" height=\"1\" fill=\"#5C8494\"/><rect x=\"9\" y=\"10\" width=\"5\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"14\" y=\"10\" width=\"3\" height=\"1\" fill=\"#5C8494\"/><rect x=\"17\" y=\"10\" width=\"2\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"4\" y=\"11\" width=\"15\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"4\" y=\"12\" width=\"2\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"6\" y=\"12\" width=\"3\" height=\"1\" fill=\"#5C8494\"/><rect x=\"9\" y=\"12\" width=\"5\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"14\" y=\"12\" width=\"3\" height=\"1\" fill=\"#5C8494\"/><rect x=\"17\" y=\"12\" width=\"2\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"4\" y=\"13\" width=\"15\" height=\"1\" fill=\"#FFFFFF\"/>", "vars": "--granate:#5B1A8B;--granate-h:#6D24A3;--granate-p:#3B0F5C;--granate-d:#26093D;--granate-50:#F8F0FC;--granate-100:#F0E1F9;--granate-200:#E0C2F2;--granate-300:#C690E6;--nav:#3B0F5C;--nav-2:#5B1A8B;--nav-line:#6E2C9E;--nav-text:#F8EEFD;--nav-muted:#D7B8EC;--led:#FF4FA3;--bg:#FAF5FC;--surface-2:#FCFAFE;--line:#EADFF1;--line-2:#DACBE6;--ink:#3B0F5C"}, "fiestaspatrias": {"nombre": "Fiestas Patrias", "desde": "07-20", "hasta": "07-31", "ojos": "#FFFFFF", "saludo": "¡Felices Fiestas Patrias! Soy LanAI", "vb": "3 -1 22 17", "svg": "<rect x=\"4\" y=\"13\" width=\"1\" height=\"2\" fill=\"#FFFFFF\"/><rect x=\"6\" y=\"13\" width=\"1\" height=\"2\" fill=\"#FFFFFF\"/><rect x=\"8\" y=\"13\" width=\"1\" height=\"2\" fill=\"#FFFFFF\"/><rect x=\"10\" y=\"13\" width=\"1\" height=\"2\" fill=\"#FFFFFF\"/><rect x=\"12\" y=\"13\" width=\"1\" height=\"2\" fill=\"#FFFFFF\"/><rect x=\"14\" y=\"13\" width=\"1\" height=\"2\" fill=\"#FFFFFF\"/><rect x=\"16\" y=\"13\" width=\"1\" height=\"2\" fill=\"#FFFFFF\"/><rect x=\"18\" y=\"13\" width=\"1\" height=\"2\" fill=\"#FFFFFF\"/><rect x=\"4\" y=\"0\" width=\"1\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"18\" y=\"0\" width=\"1\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"20\" y=\"0\" width=\"1\" height=\"1\" fill=\"#C9A46A\"/><rect x=\"21\" y=\"0\" width=\"1\" height=\"1\" fill=\"#E4002B\"/><rect x=\"22\" y=\"0\" width=\"1\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"23\" y=\"0\" width=\"1\" height=\"1\" fill=\"#E4002B\"/><rect x=\"4\" y=\"1\" width=\"2\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"17\" y=\"1\" width=\"2\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"20\" y=\"1\" width=\"1\" height=\"1\" fill=\"#C9A46A\"/><rect x=\"21\" y=\"1\" width=\"1\" height=\"1\" fill=\"#E4002B\"/><rect x=\"22\" y=\"1\" width=\"1\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"23\" y=\"1\" width=\"1\" height=\"1\" fill=\"#E4002B\"/><rect x=\"4\" y=\"2\" width=\"1\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"5\" y=\"2\" width=\"1\" height=\"1\" fill=\"#9FC3CF\"/><rect x=\"6\" y=\"2\" width=\"1\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"16\" y=\"2\" width=\"1\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"17\" y=\"2\" width=\"1\" height=\"1\" fill=\"#9FC3CF\"/><rect x=\"18\" y=\"2\" width=\"1\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"20\" y=\"2\" width=\"1\" height=\"1\" fill=\"#C9A46A\"/><rect x=\"21\" y=\"2\" width=\"1\" height=\"1\" fill=\"#E4002B\"/><rect x=\"22\" y=\"2\" width=\"1\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"23\" y=\"2\" width=\"1\" height=\"1\" fill=\"#E4002B\"/><rect x=\"4\" y=\"3\" width=\"15\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"20\" y=\"3\" width=\"1\" height=\"1\" fill=\"#C9A46A\"/><rect x=\"21\" y=\"3\" width=\"1\" height=\"1\" fill=\"#E4002B\"/><rect x=\"22\" y=\"3\" width=\"1\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"23\" y=\"3\" width=\"1\" height=\"1\" fill=\"#E4002B\"/><rect x=\"4\" y=\"4\" width=\"15\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"20\" y=\"4\" width=\"1\" height=\"1\" fill=\"#C9A46A\"/><rect x=\"4\" y=\"5\" width=\"3\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"7\" y=\"5\" width=\"1\" height=\"1\" fill=\"#0A2836\"/><rect x=\"8\" y=\"5\" width=\"2\" height=\"1\" fill=\"#2C5A6B\"/><rect x=\"10\" y=\"5\" width=\"6\" height=\"1\" fill=\"#0A2836\"/><rect x=\"16\" y=\"5\" width=\"3\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"20\" y=\"5\" width=\"1\" height=\"1\" fill=\"#C9A46A\"/><rect x=\"4\" y=\"6\" width=\"2\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"6\" y=\"6\" width=\"11\" height=\"1\" fill=\"#0A2836\"/><rect x=\"17\" y=\"6\" width=\"2\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"20\" y=\"6\" width=\"1\" height=\"1\" fill=\"#C9A46A\"/><rect x=\"4\" y=\"7\" width=\"2\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"6\" y=\"7\" width=\"11\" height=\"1\" fill=\"#0A2836\"/><rect x=\"17\" y=\"7\" width=\"2\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"20\" y=\"7\" width=\"1\" height=\"1\" fill=\"#C9A46A\"/><rect x=\"4\" y=\"8\" width=\"3\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"7\" y=\"8\" width=\"9\" height=\"1\" fill=\"#0A2836\"/><rect x=\"16\" y=\"8\" width=\"3\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"20\" y=\"8\" width=\"1\" height=\"1\" fill=\"#C9A46A\"/><rect x=\"4\" y=\"9\" width=\"15\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"20\" y=\"9\" width=\"1\" height=\"1\" fill=\"#C9A46A\"/><rect x=\"4\" y=\"10\" width=\"2\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"6\" y=\"10\" width=\"3\" height=\"1\" fill=\"#5C8494\"/><rect x=\"9\" y=\"10\" width=\"1\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"10\" y=\"10\" width=\"3\" height=\"1\" fill=\"#E4002B\"/><rect x=\"13\" y=\"10\" width=\"1\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"14\" y=\"10\" width=\"3\" height=\"1\" fill=\"#5C8494\"/><rect x=\"17\" y=\"10\" width=\"2\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"20\" y=\"10\" width=\"1\" height=\"1\" fill=\"#C9A46A\"/><rect x=\"4\" y=\"11\" width=\"6\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"10\" y=\"11\" width=\"1\" height=\"1\" fill=\"#E4002B\"/><rect x=\"11\" y=\"11\" width=\"1\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"12\" y=\"11\" width=\"1\" height=\"1\" fill=\"#E4002B\"/><rect x=\"13\" y=\"11\" width=\"6\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"20\" y=\"11\" width=\"1\" height=\"1\" fill=\"#C9A46A\"/><rect x=\"4\" y=\"12\" width=\"2\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"6\" y=\"12\" width=\"3\" height=\"1\" fill=\"#5C8494\"/><rect x=\"9\" y=\"12\" width=\"1\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"10\" y=\"12\" width=\"3\" height=\"1\" fill=\"#E4002B\"/><rect x=\"13\" y=\"12\" width=\"1\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"14\" y=\"12\" width=\"3\" height=\"1\" fill=\"#5C8494\"/><rect x=\"17\" y=\"12\" width=\"2\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"20\" y=\"12\" width=\"1\" height=\"1\" fill=\"#C9A46A\"/><rect x=\"4\" y=\"13\" width=\"15\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"20\" y=\"13\" width=\"1\" height=\"1\" fill=\"#C9A46A\"/>", "vars": "--granate:#B00C24;--granate-h:#C8102E;--granate-p:#8C0B20;--granate-d:#5E0715;--granate-50:#FDF0F2;--granate-100:#FADDE2;--granate-200:#F3B7C1;--granate-300:#E77C8E;--nav:#8C0B20;--nav-2:#A50D26;--nav-line:#B8304A;--nav-text:#FFF1F3;--nav-muted:#F3C2CA;--led:#F2C14E;--bg:#FBF6F6;--surface-2:#FDFAFA;--line:#F0E1E3;--line-2:#E4CDD1;--ink:#8C0B20"}};
+  /* Ediciones de temporada: LanAI se viste sola según la fecha (o ?temporada=navidad para probar). */
+  function temporadaActual() {
+    var q = (location.search.match(/[?&]temporada=([a-z]+)/) || [])[1];
+    if (q) return TEMPORADAS[q] || null;
+    var hoy = (typeof todayISO === 'function' ? todayISO() : new Date().toISOString().slice(0, 10)).slice(5);
+    for (var k in TEMPORADAS) {
+      var t = TEMPORADAS[k], dentro = t.desde <= t.hasta ? (hoy >= t.desde && hoy <= t.hasta) : (hoy >= t.desde || hoy <= t.hasta);
+      if (dentro) return t;
+    }
+    return null;
+  }
+  var TEMP = temporadaActual();
+  var ojosHTML = function (c) { return '<g class="la-ojos"><rect x="8" y="6" width="2" height="2" fill="' + c + '"/><rect x="13" y="6" width="2" height="2" fill="' + c + '"/></g>'; };
+  if (TEMP) {
+    var pal = el('style'); pal.textContent = ':root{' + TEMP.vars + '}'; document.head.appendChild(pal);   /* toda la app toma la paleta de la temporada */
+    LANAI = '<svg viewBox="' + TEMP.vb + '" shape-rendering="crispEdges" aria-hidden="true"><g class="la-cuerpo">' + TEMP.svg + ojosHTML(TEMP.ojos) + '</g></svg>';
+  }
+  /* Ícono del menú: LanAI animada (brinquito suave y parpadeo), con la ropa de la temporada si corresponde */
+  var BASE = {"vb": "3 -1 17 17", "svg": "<rect x=\"4\" y=\"13\" width=\"1\" height=\"2\" fill=\"#FFFFFF\"/><rect x=\"6\" y=\"13\" width=\"1\" height=\"2\" fill=\"#FFFFFF\"/><rect x=\"8\" y=\"13\" width=\"1\" height=\"2\" fill=\"#FFFFFF\"/><rect x=\"10\" y=\"13\" width=\"1\" height=\"2\" fill=\"#FFFFFF\"/><rect x=\"12\" y=\"13\" width=\"1\" height=\"2\" fill=\"#FFFFFF\"/><rect x=\"14\" y=\"13\" width=\"1\" height=\"2\" fill=\"#FFFFFF\"/><rect x=\"16\" y=\"13\" width=\"1\" height=\"2\" fill=\"#FFFFFF\"/><rect x=\"18\" y=\"13\" width=\"1\" height=\"2\" fill=\"#FFFFFF\"/><rect x=\"4\" y=\"0\" width=\"1\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"18\" y=\"0\" width=\"1\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"4\" y=\"1\" width=\"2\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"17\" y=\"1\" width=\"2\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"4\" y=\"2\" width=\"1\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"5\" y=\"2\" width=\"1\" height=\"1\" fill=\"#9FC3CF\"/><rect x=\"6\" y=\"2\" width=\"1\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"16\" y=\"2\" width=\"1\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"17\" y=\"2\" width=\"1\" height=\"1\" fill=\"#9FC3CF\"/><rect x=\"18\" y=\"2\" width=\"1\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"4\" y=\"3\" width=\"15\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"4\" y=\"4\" width=\"15\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"4\" y=\"5\" width=\"3\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"7\" y=\"5\" width=\"1\" height=\"1\" fill=\"#0A2836\"/><rect x=\"8\" y=\"5\" width=\"2\" height=\"1\" fill=\"#2C5A6B\"/><rect x=\"10\" y=\"5\" width=\"6\" height=\"1\" fill=\"#0A2836\"/><rect x=\"16\" y=\"5\" width=\"3\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"4\" y=\"6\" width=\"2\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"6\" y=\"6\" width=\"11\" height=\"1\" fill=\"#0A2836\"/><rect x=\"17\" y=\"6\" width=\"2\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"4\" y=\"7\" width=\"2\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"6\" y=\"7\" width=\"11\" height=\"1\" fill=\"#0A2836\"/><rect x=\"17\" y=\"7\" width=\"2\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"4\" y=\"8\" width=\"3\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"7\" y=\"8\" width=\"9\" height=\"1\" fill=\"#0A2836\"/><rect x=\"16\" y=\"8\" width=\"3\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"4\" y=\"9\" width=\"15\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"4\" y=\"10\" width=\"2\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"6\" y=\"10\" width=\"3\" height=\"1\" fill=\"#5C8494\"/><rect x=\"9\" y=\"10\" width=\"5\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"14\" y=\"10\" width=\"3\" height=\"1\" fill=\"#5C8494\"/><rect x=\"17\" y=\"10\" width=\"2\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"4\" y=\"11\" width=\"15\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"4\" y=\"12\" width=\"2\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"6\" y=\"12\" width=\"3\" height=\"1\" fill=\"#5C8494\"/><rect x=\"9\" y=\"12\" width=\"5\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"14\" y=\"12\" width=\"3\" height=\"1\" fill=\"#5C8494\"/><rect x=\"17\" y=\"12\" width=\"2\" height=\"1\" fill=\"#FFFFFF\"/><rect x=\"4\" y=\"13\" width=\"15\" height=\"1\" fill=\"#FFFFFF\"/>", "ojos": "#5EEAD4"};
+  var M = TEMP || BASE;
+  var marca = '<rect width="27" height="27" rx="7" style="fill:var(--granate)"/><svg x="2" y="2" width="23" height="23" viewBox="' + M.vb + '" shape-rendering="crispEdges"><g class="bm-todo">' + M.svg + '<g class="bm-ojos"><rect x="8" y="6" width="2" height="2" fill="' + M.ojos + '"/><rect x="13" y="6" width="2" height="2" fill="' + M.ojos + '"/></g></g></svg>';
+  var vestir = function () {
+    var L = document.querySelectorAll('svg.brand-mark:not([data-lanai])');
+    for (var i = 0; i < L.length; i++) { L[i].setAttribute('viewBox', '0 0 27 27'); L[i].innerHTML = marca; L[i].setAttribute('data-lanai', TEMP ? TEMP.nombre : 'V1'); }
+  };
+  vestir(); new MutationObserver(vestir).observe(document.body, { childList: true, subtree: true });
+
+  var css = el('style');
+  css.textContent = [
+    '.la-btn{position:fixed;right:14px;bottom:calc(86px + env(safe-area-inset-bottom));z-index:60;width:64px;height:64px;border-radius:20px;border:0;background:var(--granate);box-shadow:var(--sh-3);cursor:pointer;display:grid;place-items:center;padding:8px;transition:transform .16s var(--ease-out)}',
+    '.la-btn:hover{transform:translateY(-2px)}.la-btn:active{transform:scale(.96)}.la-btn svg{width:46px;height:auto}',
+    '.la-badge{position:absolute;top:-6px;right:-6px;min-width:22px;height:22px;padding:0 6px;border-radius:11px;background:var(--bad);color:#fff;font:600 .75rem/22px var(--font);text-align:center}',
+    '.la-ojos{transform-box:fill-box;transform-origin:center;animation:la-parpadeo 4s steps(1,end) infinite}',
+    '@keyframes la-parpadeo{0%,93%{transform:scaleY(1)}94%,97%{transform:scaleY(.2)}98%,100%{transform:scaleY(1)}}',
+    '.la-panel{position:fixed;right:18px;bottom:calc(162px + env(safe-area-inset-bottom));z-index:61;width:min(380px,calc(100vw - 32px));max-height:min(620px,calc(100vh - 190px));display:flex;flex-direction:column;background:var(--surface);border:1px solid var(--line);border-radius:var(--r-xl);box-shadow:var(--sh-3);overflow:hidden;font-family:var(--font)}',
+    '.la-panel[hidden]{display:none}',
+    '.la-head{display:flex;align-items:center;gap:12px;padding:14px 16px;background:var(--granate);color:#fff}.la-head svg{width:40px;height:auto;flex:none}',
+    '.la-head b{display:block;font-size:var(--fs-md)}.la-head span{font-size:var(--fs-xs);color:var(--granate-200)}',
+    '.la-x{margin-left:auto;width:36px;height:36px;border-radius:10px;border:0;background:transparent;color:#fff;font-size:20px;cursor:pointer}.la-x:hover{background:var(--granate-h)}',
+    '.la-body{overflow:auto;padding:14px 16px;display:flex;flex-direction:column;gap:14px}',
+    '.la-sec h3{margin:0 0 8px;font-size:var(--fs-xs);font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--text-3)}',
+    '.la-av{display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border-radius:var(--r);font-size:var(--fs-sm);margin-bottom:6px}',
+    '.la-av.bad{background:var(--bad-bg);color:var(--bad)}.la-av.warn{background:var(--warn-bg);color:var(--warn)}.la-av.ok{background:var(--ok-bg);color:var(--ok)}.la-av.info{background:var(--granate-50);color:var(--granate-d)}',
+    '.la-av button{margin-left:auto;flex:none;border:1px solid currentColor;background:transparent;color:inherit;border-radius:8px;padding:4px 10px;font:600 var(--fs-xs) var(--font);cursor:pointer}',
+    '.la-kpis{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}',
+    '.la-kpi{padding:10px 12px;border:1px solid var(--line);border-radius:var(--r);background:var(--surface-2)}.la-kpi b{display:block;font-size:var(--fs-md)}.la-kpi span{font-size:var(--fs-xs);color:var(--text-3)}',
+    '.la-chips{display:flex;flex-wrap:wrap;gap:6px}.la-chips button{border:1px solid var(--line-2);background:var(--surface);border-radius:999px;padding:6px 10px;font:500 var(--fs-xs) var(--font);color:var(--text);cursor:pointer}.la-chips button:hover{border-color:var(--granate);color:var(--granate)}',
+    '.la-ask{display:flex;gap:8px;padding:12px 16px;border-top:1px solid var(--line);background:var(--surface-2)}.la-ask input{flex:1}',
+    '.la-resp{padding:12px;border-radius:var(--r);background:var(--granate-50);color:var(--granate-d);font-size:var(--fs-sm);line-height:1.5}.la-resp b{display:block;margin-bottom:4px}',
+    'body.con-abar .la-btn{bottom:calc(160px + env(safe-area-inset-bottom))}body.con-abar .la-panel{bottom:calc(236px + env(safe-area-inset-bottom))}',
+    '@media print{.la-btn,.la-panel{display:none}}',
+    'body.sin-sesion .la-btn,body.sin-sesion .la-panel{display:none}',
+    '.la-btn{touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}',
+    '.la-btn.arrastrando{transform:scale(1.08);cursor:grabbing;transition:none}',
+    '@media (max-width:719px){.la-btn{right:12px;bottom:calc(140px + env(safe-area-inset-bottom));width:52px;height:52px;border-radius:16px;padding:6px}.la-btn svg{width:38px}.la-panel{right:8px;bottom:calc(200px + env(safe-area-inset-bottom));max-height:calc(100dvh - 280px)}body.con-abar .la-btn{bottom:calc(210px + env(safe-area-inset-bottom))}body.con-abar .la-panel{bottom:calc(270px + env(safe-area-inset-bottom))}}',
+    '.bm-todo{transform-box:fill-box;transform-origin:center bottom;animation:bm-brinco 2.4s ease-in-out infinite}',
+    '@keyframes bm-brinco{0%,62%{transform:translateY(0) scale(1,1)}70%{transform:translateY(0) scale(1.04,.94)}80%{transform:translateY(-1.2px) scale(.98,1.04)}90%{transform:translateY(0) scale(1.03,.96)}100%{transform:translateY(0) scale(1,1)}}',
+    '.bm-ojos{transform-box:fill-box;transform-origin:center;animation:la-parpadeo 4s steps(1,end) infinite}',
+    '@media (prefers-reduced-motion:reduce){.la-ojos,.bm-todo,.bm-ojos{animation:none}}'
+  ].join('\n');
+  document.head.appendChild(css);
+
+  var btn = el('button', 'la-btn'); btn.type = 'button'; btn.setAttribute('aria-label', 'Abrir a LanAI, tu ayudante'); btn.setAttribute('aria-expanded', 'false');
+  btn.innerHTML = LANAI;
+  var badge = el('span', 'la-badge'); badge.hidden = true; btn.appendChild(badge);
+
+  var panel = el('section', 'la-panel'); panel.hidden = true; panel.setAttribute('role', 'dialog'); panel.setAttribute('aria-label', 'LanAI, tu ayudante');
+  var head = el('div', 'la-head'); head.innerHTML = LANAI;
+  var ht = el('div'); ht.appendChild(el('b', null, TEMP ? TEMP.saludo : 'Hola, soy LanAI')); ht.appendChild(el('span', null, 'Tu lana, AI Toque'));
+  var cerrar = el('button', 'la-x', '×'); cerrar.type = 'button'; cerrar.setAttribute('aria-label', 'Cerrar');
+  head.appendChild(ht); head.appendChild(cerrar);
+  var body = el('div', 'la-body');
+  var ask = el('form', 'la-ask');
+  var lbl = el('label', 'sr-only', 'Pregúntale a LanAI'); lbl.setAttribute('for', 'la-q'); lbl.style.cssText = 'position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)';
+  var inp = el('input', 'input'); inp.id = 'la-q'; inp.placeholder = 'Pregúntame algo de SUNAT…'; inp.autocomplete = 'off';
+  var send = el('button', 'btn primary', 'Preguntar'); send.type = 'submit';
+  ask.appendChild(lbl); ask.appendChild(inp); ask.appendChild(send);
+  panel.appendChild(head); panel.appendChild(body); panel.appendChild(ask);
+  document.body.appendChild(panel); document.body.appendChild(btn);
+  btn.title = 'LanAI · mantén presionado y arrastra para moverla';
+  if (typeof hacerArrastrable === 'function') hacerArrastrable(btn, 'lanai');
+  /* Si LanAI fue movida, el panel se abre junto a ella (arriba o abajo, izquierda o derecha) */
+  function ubicarPanel() {
+    var S = panel.style;
+    if (!btn.classList.contains('movido')) { S.left = S.right = S.top = S.bottom = S.maxHeight = ''; return; }
+    var r = btn.getBoundingClientRect(), vw = window.innerWidth, vh = window.innerHeight, izq = r.left + r.width / 2 < vw / 2;
+    S.left = izq ? Math.max(8, r.left) + 'px' : 'auto'; S.right = izq ? 'auto' : Math.max(8, vw - r.right) + 'px';
+    if (r.top > vh / 2) { S.bottom = (vh - r.top + 10) + 'px'; S.top = 'auto'; S.maxHeight = Math.max(240, r.top - 24) + 'px'; }
+    else { S.top = (r.bottom + 10) + 'px'; S.bottom = 'auto'; S.maxHeight = Math.max(240, vh - r.bottom - 24) + 'px'; }
+  }
+
+  function docs() { try { return typeof allDocs === 'function' ? allDocs() : []; } catch (e) { return []; } }
+  function avisos() {
+    var L = docs(), out = [];
+    if (!L.length || typeof ES_CPE !== 'function') return out;
+    var fuera = L.filter(function (d) { return typeof fueraDePlazo === 'function' && fueraDePlazo(d); });
+    var pend = L.filter(function (d) { return ES_CPE(d.tipo) && d.estado === 'pendiente' && fuera.indexOf(d) < 0; })
+      .sort(function (a, b) { return String(a.fecha).localeCompare(String(b.fecha)); });
+    var rech = L.filter(function (d) { return ES_CPE(d.tipo) && d.estado === 'rechazado'; });
+    var baja = L.filter(function (d) { return d.estado === 'baja_proceso'; });
+    fuera.forEach(function (d) { out.push({ n: 'bad', t: docNum(d) + ' pasó el plazo de 3 días: ya no se puede enviar. Emite uno nuevo con fecha de hoy.', d: d }); });
+    rech.forEach(function (d) { out.push({ n: 'bad', t: docNum(d) + ' fue rechazado por SUNAT. Revisa el motivo y emite uno nuevo.', d: d }); });
+    if (pend.length) {
+      var d0 = pend[0], vence = typeof addDays === 'function' && typeof PLAZO_ENVIO !== 'undefined' ? addDays(d0.fecha, PLAZO_ENVIO) : '';
+      out.push({ n: 'warn', t: (pend.length === 1 ? 'Tienes 1 comprobante sin enviar' : 'Tienes ' + pend.length + ' comprobantes sin enviar') + ' a SUNAT' + (vence ? '. El más antiguo vence el ' + vence.split('-').reverse().join('/') + '.' : '.'), d: d0 });
+    }
+    baja.forEach(function (d) { out.push({ n: 'info', t: 'La baja de ' + docNum(d) + ' sigue en proceso. Reviso su estado cada pocos minutos.', d: d }); });
+    return out;
+  }
+  function mes() {
+    var hoy = typeof todayISO === 'function' ? todayISO() : new Date().toISOString().slice(0, 10), ym = hoy.slice(0, 7);
+    var V = docs().filter(function (d) { return (d.tipo === '01' || d.tipo === '03') && ['aceptado', 'observado'].indexOf(d.estado) >= 0 && String(d.fecha).slice(0, 7) === ym && (d.moneda || 'PEN') === 'PEN'; });
+    var total = 0, porCli = {}, porHora = {};
+    V.forEach(function (d) {
+      var t = Number(typeof totalOf === 'function' ? totalOf(d) : (d.totales && d.totales.total)) || 0; total += t;
+      var c = (d.cliente && d.cliente.nombre) || 'Clientes varios'; porCli[c] = (porCli[c] || 0) + t;
+      var h = String(d.hora || '').slice(0, 2); if (h) porHora[h] = (porHora[h] || 0) + 1;
+    });
+    var top = Object.keys(porCli).sort(function (a, b) { return porCli[b] - porCli[a]; })[0];
+    var hora = Object.keys(porHora).sort(function (a, b) { return porHora[b] - porHora[a]; })[0];
+    return { n: V.length, total: total, top: top, hora: hora };
+  }
+  function responder(texto) {
+    var q = norm(texto).split(' ').filter(Boolean), best = null, score = 0;
+    FAQ.forEach(function (f) {
+      var s = 0, kq = norm(f.q);
+      q.forEach(function (w) { if (w.length > 2 && (f.k.indexOf(w) >= 0 || kq.indexOf(w) >= 0)) s++; });
+      if (s > score) { score = s; best = f; }
+    });
+    return score ? best : null;
+  }
+  function mostrarRespuesta(f, pregunta) {
+    var box = body.querySelector('.la-resp') || el('div', 'la-resp'); box.textContent = '';
+    if (f) { box.appendChild(el('b', null, f.q)); box.appendChild(document.createTextNode(f.a)); }
+    else { box.appendChild(el('b', null, pregunta)); box.appendChild(document.createTextNode('Todavía no sé responder eso. Escríbenos por WhatsApp al ' + wsp() + ' y te ayudamos al toque.')); }
+    if (!box.parentNode) body.appendChild(box);
+    box.scrollIntoView({ block: 'nearest' });
+  }
+  function pintar() {
+    body.textContent = '';
+    var A = avisos(), s1 = el('div', 'la-sec'); s1.appendChild(el('h3', null, 'Lo urgente'));
+    if (!A.length) s1.appendChild(el('div', 'la-av ok', 'Todo en orden: no tienes comprobantes pendientes ni con problemas.'));
+    A.slice(0, 5).forEach(function (a) {
+      var r = el('div', 'la-av ' + a.n); r.appendChild(el('span', null, a.t));
+      if (a.d && typeof openDrawer === 'function') { var b = el('button', null, 'Ver'); b.type = 'button'; b.onclick = function () { abrir(false); openDrawer(a.d.id); }; r.appendChild(b); }
+      s1.appendChild(r);
+    });
+    body.appendChild(s1);
+    var M = mes(), s2 = el('div', 'la-sec'); s2.appendChild(el('h3', null, 'Tu mes'));
+    var k = el('div', 'la-kpis');
+    [[typeof money === 'function' ? money(M.total) : 'S/ ' + M.total.toFixed(2), 'Vendido en el mes (soles)'], [String(M.n), 'Comprobantes aceptados'],
+     [M.top || '—', 'Tu mejor cliente'], [M.hora ? M.hora + ':00 h' : '—', 'Hora con más ventas']].forEach(function (x) {
+      var c = el('div', 'la-kpi'); c.appendChild(el('b', null, x[0])); c.appendChild(el('span', null, x[1])); k.appendChild(c);
+    });
+    s2.appendChild(k); body.appendChild(s2);
+    var s3 = el('div', 'la-sec'); s3.appendChild(el('h3', null, 'Pregúntame')); var ch = el('div', 'la-chips');
+    FAQ.slice(0, 6).forEach(function (f) { var b = el('button', null, f.q); b.type = 'button'; b.onclick = function () { mostrarRespuesta(f); }; ch.appendChild(b); });
+    s3.appendChild(ch); body.appendChild(s3);
+  }
+  function actualizarBadge() { var n = avisos().filter(function (a) { return a.n !== 'info'; }).length; badge.hidden = !n; badge.textContent = n > 9 ? '9+' : String(n); }
+  function abrir(si) {
+    if (si) ubicarPanel();
+    panel.hidden = !si; btn.setAttribute('aria-expanded', String(si));
+    if (si) { pintar(); setTimeout(function () { inp.focus(); }, 30); } else btn.focus();
+  }
+  btn.addEventListener('click', function () { abrir(panel.hidden); });
+  cerrar.addEventListener('click', function () { abrir(false); });
+  panel.addEventListener('keydown', function (e) { if (e.key === 'Escape') abrir(false); });
+  ask.addEventListener('submit', function (e) {
+    e.preventDefault(); var t = inp.value.trim(); if (!t) { inp.focus(); return; }
+    var f = responder(t);
+    if (!f && LANAI_IA_URL) {
+      fetch(LANAI_IA_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ pregunta: t, contexto: { avisos: avisos().map(function (a) { return a.t; }), mes: mes() } }) })
+        .then(function (r) { return r.json(); }).then(function (j) { mostrarRespuesta({ q: t, a: j.respuesta || 'No pude responder ahora.' }); })
+        .catch(function () { mostrarRespuesta(null, t); });
+    } else mostrarRespuesta(f, t);
+    inp.value = '';
+  });
+  setInterval(actualizarBadge, 60e3); setTimeout(actualizarBadge, 1500);
+})();
 
 </script>
 </body>

@@ -124,7 +124,7 @@ function faltaSOAP(d, res) {
 }
 const credenciales = (ruc, ambiente, usuarioSol, claveSol) => ambiente === 'beta' ? [`${ruc}MODDATOS`, 'MODDATOS'] : [`${ruc}${usuarioSol}`, claveSol];
 /** Consulta un ticket de resumen o baja. statusCode 0 = procesado, 98 = en proceso, 99 = procesado con errores. */
-async function consultarTicket({ ticket, ruc, ambiente = 'beta', usuarioSol, claveSol, endpoint, timeoutMs = 12000 }) {
+async function consultarTicket({ ticket, ruc, ambiente = 'beta', usuarioSol, claveSol, endpoint, timeoutMs = 30000 }) {
   const [u, p] = credenciales(ruc, ambiente, usuarioSol, claveSol);
   const { res, d } = await llamarSOAP(endpoint || ENDPOINTS[ambiente], 'getStatus', sobreOp(u, p, `<ser:getStatus><ticket>${esc(ticket)}</ticket></ser:getStatus>`), timeoutMs);
   const statusCode = texto(d, 'statusCode'), content = texto(d, 'content');
@@ -137,7 +137,7 @@ async function consultarTicket({ ticket, ruc, ambiente = 'beta', usuarioSol, cla
   return { estado: 'RECHAZADO', ticket, codigo: statusCode, descripcion: 'SUNAT procesó la baja con errores.', statusCode };
 }
 /** Envía una comunicación de baja (RA-AAAAMMDD-n) y espera su constancia. */
-async function emitirBaja({ xml, ruc, id, ambiente = 'beta', usuarioSol, claveSol, keyPem, certPem, endpoint, intentos = 3, esperaMs = 1500, timeoutTicketMs = 8000 }) {
+async function emitirBaja({ xml, ruc, id, ambiente = 'beta', usuarioSol, claveSol, keyPem, certPem, endpoint, intentos = 3, esperaMs = 1500, timeoutTicketMs = 20000 }) {
   const { xml: firmado, hash } = firmarXML(xml, { keyPem, certPem });
   const base = `${ruc}-${id}`, b64 = await zipBase64(`${base}.xml`, firmado);
   const [u, p] = credenciales(ruc, ambiente, usuarioSol, claveSol);

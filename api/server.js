@@ -142,8 +142,12 @@ http.createServer(async (req, res) => {
     if (req.method === 'GET' && p.startsWith('/baja/ticket/')) {
       const ticket = decodeURIComponent(p.slice(13)), ruc = String(env.SUNAT_RUC || q.get('ruc') || '');
       if (!/^[\w-]{6,40}$/.test(ticket) || !/^\d{11}$/.test(ruc)) return send(res, 400, { mensaje: 'Ticket o RUC inválido.' });
-      try { return send(res, 200, await consultarTicket({ ticket, ruc, ambiente: AMBIENTE, usuarioSol: env.SUNAT_USUARIO_SOL, claveSol: env.SUNAT_CLAVE_SOL })); }
-      catch (e) { return send(res, 502, { mensaje: `No se pudo consultar a SUNAT: ${e.message}` }); }
+      let r;
+      try { r = await consultarTicket({ ticket, ruc, ambiente: AMBIENTE, usuarioSol: env.SUNAT_USUARIO_SOL, claveSol: env.SUNAT_CLAVE_SOL }); }
+      catch (e) { return send(res, 502, { mensaje: e.name === 'AbortError' ? 'SUNAT aún no responde la consulta del ticket. Vuelve a consultar en unos minutos.' : `No se pudo consultar a SUNAT: ${e.message}` }); }
+      // guarda la respuesta definitiva en cada comprobante de la baja (la factura pasa a «anulado» solo si SUNAT acepta)
+      if (baseLista && r.estado !== 'EN_PROCESO') for (const k of base.clavesDeTicket(ticket)) { try { base.registrarEnvio(k, { canal: 'baja', ambiente: AMBIENTE, ...r, ticket }); } catch (e) { console.error('baja', k, e.message); } }
+      return send(res, 200, r);
     }
     if (!baseLista && /^\/(bitacora|archivo|documentos|correlativos|gre\/ticket)/.test(p)) return send(res, 503, { mensaje: 'La base de transacciones no está disponible (requiere Node 22.13+).' });
     if (req.method === 'GET' && p.startsWith('/gre/ticket/')) {

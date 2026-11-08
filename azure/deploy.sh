@@ -21,6 +21,10 @@ COS="granate-db-$SUF"; ST="granatest$SUF"; FN="granate-nube-$SUF"
 paso() { printf '\n\033[1;35m▸ %s\033[0m\n' "$*"; }
 
 paso "Suscripción: $(az account show --query name -o tsv) ($SUB)"
+# Proveedores que la suscripción debe tener registrados (las suscripciones nuevas o de estudiante no los traen activos)
+for p in Microsoft.DocumentDB Microsoft.Web Microsoft.Storage Microsoft.Insights Microsoft.OperationalInsights; do
+  [ "$(az provider show -n "$p" --query registrationState -o tsv 2>/dev/null)" = Registered ] || { echo "Registrando $p…"; az provider register -n "$p" --wait -o none; }
+done
 # Región: la primera candidata permitida por la suscripción y con Functions Flex Consumption
 FLEX="$(az functionapp list-flexconsumption-locations --query '[].name' -o tsv 2>/dev/null | tr '\t' '\n' | tr '[:upper:]' '[:lower:]' | tr -d ' ' || true)"
 PERM="$(az policy assignment show --name sys.regionrestriction --query 'parameters.listOfAllowedLocations.value' -o tsv 2>/dev/null | tr '\t' '\n' | tr '[:upper:]' '[:lower:]' || true)"
@@ -508,7 +512,7 @@ ZIP="$(mktemp -d)/granate-nube.zip"
 zip -qr "$ZIP" . -x '*.git*'
 az functionapp deployment source config-zip -g "$RG" -n "$FN" --src "$ZIP" -o none
 
-HOST="$(az functionapp show -g "$RG" -n "$FN" --query defaultHostName -o tsv)"
+HOST="$(az resource show -g "$RG" -n "$FN" --resource-type Microsoft.Web/sites --query properties.defaultHostName -o tsv)"
 paso "Comprobando la API"
 for i in 1 2 3 4 5 6; do
   if OUT="$(curl -fsS "https://$HOST/api/salud" 2>/dev/null)"; then echo "$OUT"; break; fi

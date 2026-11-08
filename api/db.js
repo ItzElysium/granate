@@ -56,7 +56,9 @@ function abrir() {
     envio: db.prepare('INSERT INTO envios (clave, canal, ambiente, estado, codigo, descripcion, observaciones, hash, ticket, xml_firmado, cdr_zip, ms, ts) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'),
     ultimoEnvio: db.prepare('SELECT * FROM envios WHERE clave = ? ORDER BY id DESC LIMIT 1'),
     envios: db.prepare('SELECT id, canal, ambiente, estado, codigo, descripcion, observaciones, hash, ticket, ms, ts, length(xml_firmado) AS xml_bytes, length(cdr_zip) AS cdr_bytes FROM envios WHERE clave = ? ORDER BY id'),
-    envioArchivo: db.prepare('SELECT xml_firmado, cdr_zip FROM envios WHERE clave = ? AND (xml_firmado IS NOT NULL OR cdr_zip IS NOT NULL) ORDER BY id DESC LIMIT 1'),
+    // XML y CDR del propio comprobante (billService o gre): una baja posterior no debe ocultarlos
+    envioArchivo: db.prepare("SELECT xml_firmado, cdr_zip FROM envios WHERE clave = ? AND canal IN ('billService', 'gre') AND (xml_firmado IS NOT NULL OR cdr_zip IS NOT NULL) ORDER BY id DESC LIMIT 1"),
+    clavesTicket: db.prepare("SELECT DISTINCT clave FROM envios WHERE ticket = ? AND canal = 'baja'"),
     getDoc: db.prepare('SELECT clave, id_app, ruc, tipo, serie, numero, fecha, cliente_doc, cliente_nombre, moneda, total, detraccion, operacion, estado, creado, actualizado FROM documentos WHERE clave = ?'),
     evento: db.prepare(`INSERT INTO eventos (id, ts, ruc, evento, doc_id, tipo, doc_num, cliente, monto, moneda, detalle, estado, usuario, origen) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       ON CONFLICT(id) DO UPDATE SET ts = excluded.ts, detalle = excluded.detalle, estado = excluded.estado`),
@@ -83,8 +85,21 @@ function registrarEnvio(k, { canal, ambiente, estado, codigo, descripcion, obser
   abrir();
   S.envio.run(k, canal, ambiente || null, estado || null, codigo != null ? String(codigo) : null, descripcion || null, JSON.stringify(observaciones || []), hash || null, ticket || null,
     xmlFirmado || null, cdrZipBase64 ? Buffer.from(cdrZipBase64, 'base64') : null, Number(ms) || null, ahora());
-  if (estado) S.estadoDoc.run(String(estado).toLowerCase(), ahora(), k);
+  const nuevo = estadoDocumento(canal, estado);
+  if (nuevo) S.estadoDoc.run(nuevo, ahora(), k);
 }
+/**
+ * Estado del comprobante según el envío. Una baja no reemplaza el estado del comprobante
+ * mientras SUNAT no la acepte: la factura sigue «aceptado» y la baja va en su propio registro.
+ */
+function estadoDocumento(canal, estado) {
+  if (!estado) return null;
+  const e = String(estado).toUpperCase();
+  if (canal === 'baja') return ['ACEPTADO', 'OBSERVADO'].includes(e) ? 'anulado' : null;
+  return e.toLowerCase();
+}
+/** Comprobantes incluidos en una comunicación de baja, por su ticket. */
+const clavesDeTicket = t => (abrir(), S.clavesTicket.all(String(t)).map(f => f.clave));
 const ultimoEnvio = k => (abrir(), S.ultimoEnvio.get(k));
 function evento(e, origen = 'web') {
   abrir();
@@ -129,7 +144,7 @@ function correlativos(ruc) {
   return [...g.entries()].map(([key, fs_]) => {
     const [tipo, serie] = key.split('|'), nums = new Set(fs_.map(f => f.numero)), max = Math.max(...nums), faltan = [];
     for (let n = 1; n <= max && faltan.length < 100; n++) if (!nums.has(n)) faltan.push(n);
-    return { tipo, serie, emitidos: nums.size, ultimo: max, faltan, pendientes: fs_.filter(f => !['aceptado', 'observado'].includes(String(f.estado || '').toLowerCase())).map(f => f.numero) };
+    return { tipo, serie, emitidos: nums.size, ultimo: max, faltan, pendientes: fs_.filter(f => !['aceptado', 'observado', 'anulado'].includes(String(f.estado || '').toLowerCase())).map(f => f.numero) };
   });
 }
 function resumen() {
@@ -137,4 +152,4 @@ function resumen() {
   const c = t => db.prepare(`SELECT count(*) AS n FROM ${t}`).get().n;
   return { ruta: DB_PATH, documentos: c('documentos'), envios: c('envios'), eventos: c('eventos'), archivos: c('archivos') };
 }
-module.exports = { abrir, clave, guardarDocumento, registrarEnvio, ultimoEnvio, evento, eventos, guardarArchivo, leerArchivo, ficha, archivosSunat, correlativos, resumen, DB_PATH };
+module.exports = { abrir, clave, guardarDocumento, registrarEnvio, estadoDocumento, clavesDeTicket, ultimoEnvio, evento, eventos, guardarArchivo, leerArchivo, ficha, archivosSunat, correlativos, resumen, DB_PATH };
