@@ -4,6 +4,8 @@
  *   GET  /health                       estado, ambiente y tamaño de la base
  *   POST /cpe/emitir                   factura, boleta, NC o ND → firma, sendBill, CDR (beta o producción)
  *   POST /gre/emitir                   guía de remisión remitente → API REST de SUNAT (solo producción)
+ *   POST /baja/emitir                  comunicación de baja (RA) de facturas y notas → sendSummary + getStatus
+ *   GET  /baja/ticket/:ticket          vuelve a consultar una baja que quedó en proceso
  *   GET  /gre/ticket/:ruc-09-serie-num vuelve a consultar una guía que quedó en proceso
  *   GET  /padron/ruc/:ruc · /padron/buscar?q= · /padron/estado
  *   POST /bitacora                     registra un movimiento de la app
@@ -24,7 +26,7 @@
 const http = require('http');
 const fs = require('fs');
 const crypto = require('crypto');
-const { emitir, emitirGRE } = require('./sunat');
+const { emitir, emitirGRE, emitirBaja, consultarTicket } = require('./sunat');
 const padron = require('./padron');
 const base = require('./db');
 
@@ -103,6 +105,21 @@ async function emitirGuia(body) {
   return [200, { ...out, ambiente: AMBIENTE, clave: k }];
 }
 
+async function emitirBajaCPE(body) {
+  const b = body.baja || {}, ruc = String(env.SUNAT_RUC || body.emisor?.ruc || '');
+  const lineas = Array.isArray(b.lineas) ? b.lineas : [];
+  if (!/^RA-\d{8}-\d{1,5}$/.test(String(b.id || '')) || !/^\d{11}$/.test(ruc) || !lineas.length || typeof body.xml !== 'string') return [400, { mensaje: 'Faltan el identificador RA-AAAAMMDD-n, el RUC, los comprobantes o el XML de la baja.' }];
+  if (!lineas.every(l => valido(l, /^(01|07|08)$/) && /^F/.test(l.serie))) return [400, { mensaje: 'La comunicación de baja es para facturas y sus notas (series F). Las boletas se anulan con resumen diario o nota de crédito.' }];
+  if (body.ambiente === 'produccion' && AMBIENTE !== 'produccion') return [409, { mensaje: 'Esta API está en ambiente beta. Configúrala para producción antes de dar de baja comprobantes reales.' }];
+  if (!body.xml.includes(`<cbc:ID>${b.id}</cbc:ID>`)) return [400, { mensaje: 'El identificador del XML no coincide con la baja.' }];
+  const t = Date.now();
+  const r = await emitirBaja({ xml: body.xml, ruc, id: b.id, ambiente: AMBIENTE, usuarioSol: env.SUNAT_USUARIO_SOL, claveSol: env.SUNAT_CLAVE_SOL, ...CERT });
+  if (baseLista) for (const l of lineas) { const k = base.clave(ruc, l.tipo, l.serie, l.numero); try { base.registrarEnvio(k, { canal: 'baja', ambiente: AMBIENTE, ...r, ms: Date.now() - t }); } catch { /* el comprobante puede no estar en esta base */ } bitacora(ruc, { id: l.id, tipo: l.tipo, serie: l.serie, numero: l.numero }, `sunat.baja_${String(r.estado).toLowerCase()}`, `${b.id} · [${r.codigo}] ${r.descripcion}${r.ticket ? ` · ticket ${r.ticket}` : ''}`); }
+  const { xmlFirmado, ...out } = r;
+  console.log(new Date().toISOString(), b.id, r.estado, r.codigo, r.ticket || '');
+  return [200, { ...out, ambiente: AMBIENTE, id: b.id, xmlFirmadoBase64: Buffer.from(xmlFirmado || '').toString('base64') }];
+}
+
 http.createServer(async (req, res) => {
   const url = new URL(req.url, 'http://x'), p = url.pathname, q = url.searchParams;
   try {
@@ -116,6 +133,17 @@ http.createServer(async (req, res) => {
       let body; try { body = await leerJSON(req); } catch { return send(res, 400, { mensaje: 'JSON inválido.' }); }
       try { const [st, out] = p === '/cpe/emitir' ? await emitirComprobante(body) : await emitirGuia(body); return send(res, st, out); }
       catch (e) { console.error(e); return send(res, e.status || 502, { mensaje: e.name === 'AbortError' ? 'SUNAT no respondió a tiempo. Reintenta con el mismo número.' : e.status ? e.message : `No se pudo comunicar con SUNAT: ${e.message}` }); }
+    }
+    if (req.method === 'POST' && p === '/baja/emitir') {
+      let body; try { body = await leerJSON(req); } catch { return send(res, 400, { mensaje: 'JSON inválido.' }); }
+      try { const [st, out] = await emitirBajaCPE(body); return send(res, st, out); }
+      catch (e) { console.error(e); return send(res, 502, { mensaje: e.name === 'AbortError' ? 'SUNAT no respondió a tiempo. Consulta la baja en unos minutos.' : `No se pudo comunicar con SUNAT: ${e.message}` }); }
+    }
+    if (req.method === 'GET' && p.startsWith('/baja/ticket/')) {
+      const ticket = decodeURIComponent(p.slice(13)), ruc = String(env.SUNAT_RUC || q.get('ruc') || '');
+      if (!/^[\w-]{6,40}$/.test(ticket) || !/^\d{11}$/.test(ruc)) return send(res, 400, { mensaje: 'Ticket o RUC inválido.' });
+      try { return send(res, 200, await consultarTicket({ ticket, ruc, ambiente: AMBIENTE, usuarioSol: env.SUNAT_USUARIO_SOL, claveSol: env.SUNAT_CLAVE_SOL })); }
+      catch (e) { return send(res, 502, { mensaje: `No se pudo consultar a SUNAT: ${e.message}` }); }
     }
     if (!baseLista && /^\/(bitacora|archivo|documentos|correlativos|gre\/ticket)/.test(p)) return send(res, 503, { mensaje: 'La base de transacciones no está disponible (requiere Node 22.13+).' });
     if (req.method === 'GET' && p.startsWith('/gre/ticket/')) {
