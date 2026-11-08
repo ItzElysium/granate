@@ -765,6 +765,45 @@ body.con-abar .wa-fab{bottom:calc(92px + env(safe-area-inset-bottom))}
 @media (max-width:560px){.vv-r{grid-template-columns:1fr auto}.vv-bar,.vv-c{display:none}}
 .tk-opts{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:10px}
 
+/* ===== modo nube: ingreso, cuenta y usuarios ===== */
+body.sin-sesion .app{grid-template-columns:minmax(0,1fr)}
+body.sin-sesion .nav{display:none}
+.login-wrap{min-height:calc(100dvh - 60px);display:grid;place-items:center;padding:24px 0}
+.login-card{width:min(460px,100%);background:var(--surface);border:1px solid var(--line);border-radius:var(--r-xl);box-shadow:var(--sh-2);padding:28px clamp(18px,4vw,32px)}
+.login-card h1{font-size:var(--fs-xl);font-weight:650;margin-top:22px}
+.login-card .sub{color:var(--text-2);margin:6px 0 20px}
+.login-brand{display:flex;align-items:center;gap:12px}
+.login-brand .brand-mark{width:40px;height:40px;flex:none}
+.login-brand b{display:block;font-size:var(--fs-md);line-height:1.2}
+.login-brand small{color:var(--text-3);font-size:var(--fs-xs)}
+.login-card .btn.lg,.btn.lg{min-height:48px;font-size:var(--fs-md);justify-content:center}
+.login-err{color:var(--bad);font-size:var(--fs-sm);min-height:1.2em;margin:0}
+.login-card .linkbtn{justify-self:center;align-self:center}
+.nube-est{display:flex;align-items:center;gap:8px;color:var(--nav-text)}
+.nube-est .dot.off{background:#E9B55A;box-shadow:0 0 0 3px rgba(233,181,90,.18)}
+.nube-est .dot.sync{background:#8FB7E8;box-shadow:0 0 0 3px rgba(143,183,232,.2)}
+.nube-user{display:flex;align-items:center;gap:8px;min-width:0}
+.nu-av{width:28px;height:28px;border-radius:50%;background:var(--granate);color:#fff;display:grid;place-items:center;font-size:.72rem;font-weight:650;flex:none;letter-spacing:.02em}
+.nu-av.lg{width:44px;height:44px;font-size:.95rem}
+.nu-t{display:flex;flex-direction:column;min-width:0;flex:1}
+.nu-t b{font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.nu-t small{color:inherit;opacity:.75;font-size:var(--fs-xs);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.nube-user .nu-t b{color:var(--nav-text)}
+.nube-me{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.nube-me .nu-t small{color:var(--text-3);opacity:1}
+.nube-me.sm{flex-wrap:nowrap}
+.tbl-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.usr-t td{vertical-align:middle}
+.usr-t tr.inactivo td{opacity:.6}
+.select.sm{min-height:36px;width:auto;padding-right:30px}
+.temp-box{display:flex;flex-direction:column;gap:4px;padding:14px 16px;border-radius:var(--r);background:var(--granate-50);border:1px dashed var(--granate-100)}
+.temp-box b{font-size:1.35rem;letter-spacing:.06em;color:var(--granate-p)}
+@media (max-width:1180px){ .nube-user .nu-t{display:none} .nube-user,.nube-est{justify-content:center} }
+.usr-est{display:flex;flex-direction:column;align-items:flex-start;gap:4px}
+.usr-est small{font-size:var(--fs-xs)}
+.usr-acc{display:flex;justify-content:flex-end;gap:4px;flex-wrap:wrap}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+
 </style>
 <script src="granate-config.js"></script>
 </head>
@@ -1484,6 +1523,7 @@ async function initData() {
     try { db = await Promise.race([C.use('db'), sleep(11000).then(() => null)]); } catch { db = null; }
     if (db) return startDb(db);
   }
+  if (nubeURL()) return startNube();
   startLocal();
 }
 /* Datos reales: desde esta época se borra lo de prueba (documentos, clientes, productos, bitácora y PDF) una sola vez
@@ -1551,18 +1591,22 @@ async function put(col, obj) {
   if (DB.mode === 'db') {
     try { await DB.db.collection(col).doc(obj.id).set(obj); }
     catch (e) { if (e?.code === 'unavailable') { await sleep(400 + Math.random() * 600); try { await DB.db.collection(col).doc(obj.id).set(obj); } catch (e2) { dbErr(e2); throw e2; } } else { dbErr(e); throw e; } }
-  } else persistLocal();
+  } else if (DB.mode === 'nube') nubeEncolar(col, obj);
+  else persistLocal();
   changed();
   return obj;
 }
 async function remove(col, id) {
   DB.cols[col].delete(id);
-  if (DB.mode === 'db') { try { await DB.db.collection(col).doc(id).delete(); } catch (e) { dbErr(e); } } else persistLocal();
+  if (DB.mode === 'db') { try { await DB.db.collection(col).doc(id).delete(); } catch (e) { dbErr(e); } } else if (DB.mode === 'nube') nubeEncolar(col, null, true, id); else persistLocal();
   changed();
 }
 async function putCfg(cfg) {
+  if (DB.mode === 'nube' && !puedeConfig()) { toast('Solo un administrador o contador puede cambiar la configuración.', 'warn'); throw Object.assign(new Error('permiso'), { avisado: true }); }
   DB.cfg = mergeCfg(cfg);
-  if (DB.mode === 'db') { try { await DB.db.doc('config/empresa').set(clone(DB.cfg)); } catch (e) { dbErr(e); throw e; } } else persistLocal();
+  if (DB.mode === 'db') { try { await DB.db.doc('config/empresa').set(clone(DB.cfg)); } catch (e) { dbErr(e); throw e; } }
+  else if (DB.mode === 'nube') { NUBE.cfgNube = true; nubeEncolar('config', { ...clone(DB.cfg), id: 'empresa' }); }
+  else persistLocal();
   changed();
 }
 function setReady() { if (DB.ready) { changed(); return; } DB.ready = true; if (DATOS_BORRADOS) setTimeout(() => toast('Se borraron los datos de prueba: empiezas con datos reales y la numeración de cada serie desde el N.° 1.', 'ok'), 600); if (!window.claude) { despertarAPI(); document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible' && !apiViva()) despertarAPI(); }); } UI.route = currentRoute(); if (UI.route === 'editor') { UI.route = 'inicio'; location.hash = 'inicio'; } render(); }
@@ -1582,7 +1626,7 @@ function changed() {
 }
 
 /* ---------- router ---------- */
-const ROUTES = ['inicio', 'cotizaciones', 'comprobantes', 'guias', 'historial', 'reportes', 'clientes', 'productos', 'personalizar', 'sunat', 'editor'];
+const ROUTES = ['inicio', 'cotizaciones', 'comprobantes', 'guias', 'historial', 'reportes', 'clientes', 'productos', 'personalizar', 'sunat', 'usuarios', 'editor'];
 const currentRoute = () => { const h = location.hash.slice(1); return ROUTES.includes(h) ? h : 'inicio'; };
 let suppressHash = false;
 function onHash() {
@@ -1611,9 +1655,10 @@ function go(r) { if (currentRoute() === r && UI.route === r) { render(); window.
 function render() {
   UI.pendingRender = false;
   const main = $('#main');
+  if (DB.mode === 'nube' && !NUBE.sesion) return renderLogin();
   if (!DB.ready) { main.innerHTML = loadingHTML(); renderNav(); return; }
   const a = document.activeElement, keep = a && a.id && main.contains(a) ? { id: a.id, s: a.selectionStart, e: a.selectionEnd } : null;
-  const V = { inicio: vInicio, reportes: vReportes, personalizar: vPersonalizar, cotizaciones: vCotizaciones, comprobantes: vComprobantes, guias: vGuias, historial: vHistorial, clientes: vClientes, productos: vProductos, sunat: vSunat, editor: vEditor }[UI.route] || vInicio;
+  const V = { inicio: vInicio, reportes: vReportes, personalizar: vPersonalizar, cotizaciones: vCotizaciones, comprobantes: vComprobantes, guias: vGuias, historial: vHistorial, clientes: vClientes, productos: vProductos, sunat: vSunat, usuarios: vUsuarios, editor: vEditor }[UI.route] || vInicio;
   main.innerHTML = V();
   renderNav();
   if (keep) { const el = document.getElementById(keep.id); if (el) { el.focus({ preventScroll: true }); try { if (keep.s != null) el.setSelectionRange(keep.s, keep.e); } catch { /* */ } } }
@@ -1643,10 +1688,11 @@ function renderNav() {
       ${item('productos', 'box', 'Productos', 'Productos', 0, 'hide-sm')}
       ${item('personalizar', 'brush', 'Personalizar', 'Diseño', 0, 'hide-sm')}
       ${item('sunat', 'shield', 'Integración SUNAT', 'SUNAT')}
+      ${DB.mode === 'nube' && nubeRol() === 'admin' ? item('usuarios', 'lock', 'Usuarios', 'Usuarios', 0, 'hide-sm') : ''}
     </ul>
     <div class="nav-foot">
       <div class="conn" title="${integ.modo === 'api' ? 'Conectado a tu API' : 'Simulador SUNAT'}"><span class="dot ${integ.modo === 'api' ? '' : 'sim'}"></span><span class="nf-txt">${integ.modo === 'api' ? `API · ${integ.ambiente === 'produccion' ? 'Producción' : 'Beta'}` : 'Simulador SUNAT'}</span></div>
-      <div class="nf-txt">${DB.mode === 'db' ? 'Datos sincronizados entre dispositivos' : DB.mode === 'local' ? 'Datos guardados en este navegador' : 'Cargando…'}</div>
+      ${DB.mode === 'nube' ? navNubeHTML() : `<div class="nf-txt">${DB.mode === 'db' ? 'Datos sincronizados entre dispositivos' : DB.mode === 'local' ? 'Datos guardados en este navegador' : 'Cargando…'}</div>`}
       ${typeof GRANATE_PRUEBA !== 'undefined' && GRANATE_PRUEBA ? `<span class="prueba-pill" title="Ambiente de prueba: sus datos se guardan aparte de la versión principal">Prueba</span><button class="linkbtn nf-txt" data-act="reset-demo" style="color:var(--nav-muted);text-align:left">Borrar todos los datos</button>` : ''}
     </div>`;
 }
@@ -1677,6 +1723,7 @@ function vInicio() {
   const h = new Date().getHours(), saludo = h < 12 ? 'Buenos días' : h < 19 ? 'Buenas tardes' : 'Buenas noches';
   const meta = (ic, txt) => `<span class="t-meta">${icon(ic, 'sm')}${txt}</span>`;
   return `
+  ${bannerLocalHTML()}
   ${!empresaLista(cfg) ? `<div class="banner"><div class="b-ic">${icon('building')}</div><div class="b-t"><b>Configura tu empresa para emitir comprobantes</b><span>RUC, razón social y dirección fiscal aparecen en cada factura y en el XML para SUNAT.</span></div><button class="btn primary" data-act="go" data-r="sunat">Configurar</button></div>` : ''}
   <div class="page-head launch-head"><div><p class="sub">${saludo} · ${esc(cfg.empresa.comercial || cfg.empresa.razon || 'Tu empresa')}</p><h1>¿Qué quieres hacer?</h1></div><div class="row-gap"><span class="faint num hide-sm">${fmtDate(t)}</span><button class="btn" data-act="go" data-r="personalizar">${icon('brush', 'sm')}Personalizar documentos</button></div></div>
   <div class="launch" role="navigation" aria-label="Acciones principales">
@@ -1903,6 +1950,7 @@ function vSunat() {
   return `
   <div class="page-head"><div><h1>Integración SUNAT</h1><p class="sub">Datos del emisor, series y conexión para emitir comprobantes electrónicos.</p></div>
     <div class="head-actions"><span class="save-state" id="cfg-state"></span><button class="btn primary" data-act="cfg-save" ${cfgSucio() ? '' : 'disabled'}>${icon('check')}Guardar cambios</button></div></div>
+  ${cuentaNubeHTML()}
   <div class="set">
     <div class="stack">
       <section class="panel"><div class="panel-h"><h2>Empresa emisora</h2>${empresaLista(c) ? `<span class="pill ok">${icon('check', 'sm')}Lista para emitir</span>` : `<span class="pill warn">${icon('alert', 'sm')}Incompleta</span>`}</div>
@@ -2134,7 +2182,8 @@ async function saveLogo(obj) {
   if (DB.mode === 'db') {
     try { if (obj) await DB.db.doc('config/logo').set({ ...obj, actualizado: new Date().toISOString() }); else await DB.db.doc('config/logo').delete(); }
     catch (e) { dbErr(e); throw e; }
-  } else persistLocal();
+  } else if (DB.mode === 'nube') { if (obj) nubeEncolar('config', { id: 'logo', ...obj }); else nubeEncolar('config', null, true, 'logo'); }
+  else persistLocal();
   changed();
 }
 
@@ -2489,7 +2538,7 @@ async function saveCot(btn) {
   try {
     await saveClientIfNeeded();
     const nueva = !d.numero;
-    if (!d.numero) d.numero = nextNumero('COT', d.serie);
+    if (!d.numero) d.numero = await reservarNumero('COT', d.serie);
     d.version = (Number(d.version) || 0) + 1;
     withTotals(d); const saved = await put('documentos', d);
     logEvent(nueva ? 'cotizacion.creada' : 'cotizacion.editada', saved, nueva ? '' : `Versión ${saved.version}`);
@@ -2512,7 +2561,7 @@ async function saveNV(btn) {
   try {
     await saveClientIfNeeded();
     const nueva = !d.numero;
-    if (!d.numero) { d.numero = nextNumero('NV', d.serie); d.hora = nowTime(); }
+    if (!d.numero) { d.numero = await reservarNumero('NV', d.serie); d.hora = nowTime(); }
     d.estado = 'emitida'; d.version = (Number(d.version) || 0) + 1;
     withTotals(d); const saved = await put('documentos', d);
     logEvent(nueva ? 'nota_venta.emitida' : 'nota_venta.editada', saved);
@@ -2540,7 +2589,7 @@ async function emit(btn) {
   btn?.classList.add('loading');
   try {
     await saveClientIfNeeded();
-    d.numero = nextNumero(d.tipo, d.serie); d.hora = nowTime(); d.estado = 'pendiente'; d.cobrado = d.formaPago === 'Credito' ? false : undefined;
+    d.numero = await reservarNumero(d.tipo, d.serie); d.hora = nowTime(); d.estado = 'pendiente'; d.cobrado = d.formaPago === 'Credito' ? false : undefined;
     withTotals(d); const saved = await put('documentos', d);
     logEvent('documento.emitido', saved, saved.totales?.detraccion ? `Detracción ${saved.detraccion.codigo} · ${money(saved.totales.detraccion)}` : (saved.guias || []).length ? `Guía ${saved.guias.map(guiaId).join(', ')}` : '');
     if (d.origenId) { const c = getDoc(d.origenId); if (c) { const cc = clone(c); cc.estado = c.tipo === 'NV' ? 'convertida' : 'facturada'; cc.facturaId = saved.id; await put('documentos', cc); logEvent(c.tipo === 'NV' ? 'nota_venta.convertida' : 'cotizacion.facturada', cc, `→ ${docNum(saved)}`); } }
@@ -3151,7 +3200,7 @@ async function flushCfg() {
   const draft = clone(UI.cfgDraft); draft.series = Object.fromEntries(Object.entries(draft.series).map(([k, v]) => [k, String(v).toUpperCase().slice(0, 4)]));
   const SECC = { empresa: 'datos del contribuyente', vendedores: 'responsables de ventas', soporte: 'soporte por WhatsApp', marca: 'título de la app', series: 'series', reglas: 'reglas de emisión', integracion: 'integración SUNAT', docs: 'diseño de documentos', igvRate: 'IGV', tipoCambio: 'tipo de cambio', incluyeIGV: 'precios con IGV', condiciones: 'condiciones', validezDias: 'validez' };
   const cambios = Object.keys(SECC).filter(k => JSON.stringify(draft[k]) !== JSON.stringify(DB.cfg[k])).map(k => SECC[k]);
-  try { await putCfg(draft); UI.cfgState = 'ok'; if (cambios.length) logEvent('config.actualizada', null, `Cambió: ${cambios.join(', ')}`); } catch { UI.cfgState = 'saving'; toast('No se pudo guardar. Intenta de nuevo.', 'bad'); pintarCfgBar(); return false; }
+  try { await putCfg(draft); UI.cfgState = 'ok'; if (cambios.length) logEvent('config.actualizada', null, `Cambió: ${cambios.join(', ')}`); } catch (e) { UI.cfgState = 'saving'; if (!e?.avisado) toast('No se pudo guardar. Intenta de nuevo.', 'bad'); pintarCfgBar(); return false; }
   UI.cfgDraft = clone(DB.cfg); pintarCfgBar();
   toast(cambios.length ? `Cambios guardados: ${cambios.join(', ')}` : 'Cambios guardados', 'ok');
   return true;
@@ -3455,7 +3504,10 @@ async function archivePDF(doc, nota = '') {
     const nombre = `${fresh.tipo === 'COT' ? 'Cotizacion' : TIPOS[fresh.tipo].corto.replace(/\s/g, '')}-${docNum(fresh)}${version > 1 ? `-v${version}` : ''}.pdf`;
     const row = { id: uid(), ts: new Date().toISOString(), docId: fresh.id, tipo: fresh.tipo, docNum: docNum(fresh), cliente: fresh.cliente?.nombre || '', total: fresh.tipo === '09' ? 0 : totalOf(fresh), moneda: fresh.moneda || 'PEN', estado: fresh.estado, version, nota, nombre, bytes: blob.size, donde: '', ref: '', url: '', usuario: DB.uid || '' };
     const base = apiBase();
-    if (base) {
+    if (DB.mode === 'nube') {
+      const j = await nubeFetch('/archivos', { method: 'POST', body: { nombre, tipo: 'application/pdf', base64: await blobB64(blob) }, timeout: 60000 });
+      row.donde = 'nube'; row.ref = j.ref;
+    } else if (base) {
       const r = await fetch(`${base}/archivo`, { method: 'POST', headers: apiHeaders({ 'Content-Type': 'application/json' }), body: JSON.stringify({ ruc: DB.cfg.empresa.ruc, docId: fresh.id, tipo: fresh.tipo, serie: fresh.serie, numero: fresh.numero, version, nombre, nota, pdfBase64: await blobB64(blob), documento: apiDoc(fresh) }) });
       if (!r.ok) throw new Error('api'); const j = await r.json(); row.donde = 'api'; row.ref = String(j.id);
     } else if (DB.assets) {
@@ -3470,6 +3522,7 @@ async function openArchived(id) {
   try {
     let blob = null;
     if (a.donde === 'local') blob = await idbGet(a.ref);
+    else if (a.donde === 'nube') blob = await nubeFetch(`/archivos/${encodeURIComponent(a.ref)}`, { raw: true, timeout: 60000 });
     else if (a.donde === 'assets') blob = await (await fetch(a.url || `/_blob/${a.ref}`)).blob();
     else if (a.donde === 'api') { const base = padronURL(); if (!base) throw new Error(); blob = await (await fetch(`${base}/archivo/${a.ref}/pdf`, { headers: apiHeaders() })).blob(); }
     if (!blob) { toast(a.donde === 'local' ? 'Esta copia se guardó en otro navegador o dispositivo.' : 'No se encontró la copia.', 'warn'); return; }
@@ -4372,6 +4425,402 @@ Object.assign(ACT, {
   'tk-pdf': async el => { el.classList.add('loading'); try { await descargarTicketPDF(getDoc(el.dataset.id)); } catch (e) { console.warn(e); toast('No se pudo generar el ticket.', 'bad'); } el.classList.remove('loading'); },
   'tk-ancho': el => { lsSet('granate.ticket', el.dataset.v); if (D?.id) renderDrawer(); },
   'share-pdf': async el => { el.classList.add('loading'); try { await compartirPDF(getDoc(el.dataset.id)); } catch (e) { console.warn(e); toast('No se pudo compartir el PDF.', 'bad'); } el.classList.remove('loading'); },
+});
+
+/* =====================================================================
+   Granate · modo nube (Azure Functions + Cosmos DB)
+   Sesión por usuario, copia local para trabajar sin señal, sincronización
+   cada 20 s y numeración reservada en el servidor (sin números repetidos).
+   ===================================================================== */
+const NUBE_SES = 'granate.nube.sesion';
+const NUBE = { sesion: null, desde: 0, pend: new Map(), timer: null, sincronizando: false, subiendo: false, offline: false, ultima: 0, error: '', vista: 'ingresar', usuarios: null, cargandoUsr: false, cfgNube: false, primera: true, cacheT: null, subirT: null, oyentes: false };
+const ROL_TXT = { admin: 'Administrador', contador: 'Contador', vendedor: 'Vendedor' };
+const ROL_DESC = { admin: 'Todo, incluida la configuración y los usuarios', contador: 'Todo, incluida la configuración; no gestiona usuarios', vendedor: 'Cotiza, factura y registra clientes y productos; no cambia la configuración' };
+function nubeURL() {
+  if (typeof GRANATE_PRUEBA !== 'undefined' && GRANATE_PRUEBA) return '';
+  if (window.claude && typeof window.claude.use === 'function') return '';
+  const u = String(window.GRANATE_NUBE || '').trim().replace(/\/+$/, '');
+  return /^https:\/\/|^http:\/\/localhost/.test(u) ? u : '';
+}
+const nubeRol = () => NUBE.sesion?.usuario?.rol || '';
+const puedeConfig = () => DB.mode !== 'nube' || ['admin', 'contador'].includes(nubeRol());
+const hhmm = ms => { const d = new Date(ms); return `${pad(d.getHours(), 2)}:${pad(d.getMinutes(), 2)}`; };
+const iniciales = n => String(n || '?').trim().split(/\s+/).slice(0, 2).map(p => p[0]).join('').toUpperCase();
+
+/* ---------- sesión ---------- */
+function leerSesion() { try { const s = JSON.parse(localStorage.getItem(NUBE_SES) || 'null'); return s && s.token && s.url === nubeURL() ? s : null; } catch { return null; } }
+function guardarSesion(s) { NUBE.sesion = s ? { ...s, url: nubeURL() } : null; try { if (s) localStorage.setItem(NUBE_SES, JSON.stringify(NUBE.sesion)); else localStorage.removeItem(NUBE_SES); } catch { /* sin almacenamiento */ } }
+function sesionVencida(msg) {
+  guardarSesion(null);
+  try { sessionStorage.setItem('granate.nube.aviso', msg || 'Tu sesión venció. Vuelve a ingresar.'); } catch { /* */ }
+  location.reload();
+}
+
+async function nubeFetch(path, { method = 'GET', body, raw = false, auth = true, timeout = 30000 } = {}) {
+  const ctl = new AbortController(), to = setTimeout(() => ctl.abort(), timeout);
+  let r;
+  try {
+    r = await fetch(nubeURL() + path, { method, signal: ctl.signal, headers: { ...(body ? { 'Content-Type': 'application/json' } : {}), ...(auth && NUBE.sesion?.token ? { Authorization: `Bearer ${NUBE.sesion.token}` } : {}) }, body: body ? JSON.stringify(body) : undefined });
+  } catch (e) { const x = new Error(e.name === 'AbortError' ? 'La nube tardó demasiado en responder. Revisa tu conexión.' : 'Sin conexión con la nube. Revisa tu internet.'); x.red = true; throw x; }
+  finally { clearTimeout(to); }
+  if (raw && r.ok) return r.blob();
+  let j = {}; try { j = await r.json(); } catch { /* sin cuerpo */ }
+  if (!r.ok) {
+    const x = new Error(j.mensaje || `La nube respondió ${r.status}.`); x.status = r.status;
+    if (r.status === 401 && auth && NUBE.sesion) sesionVencida(x.message);
+    throw x;
+  }
+  return j;
+}
+
+/* ---------- copia local (IndexedDB: cabe mucho más que localStorage) ---------- */
+const NIDB = { db: null };
+function nidb() { if (NIDB.db) return Promise.resolve(NIDB.db); return new Promise((ok, ko) => { try { const r = indexedDB.open('granate-nube', 1); r.onupgradeneeded = () => r.result.createObjectStore('cache'); r.onsuccess = () => { NIDB.db = r.result; ok(NIDB.db); }; r.onerror = () => ko(r.error); } catch (e) { ko(e); } }); }
+async function cacheLeer(k) { try { const db = await nidb(); return await new Promise((ok, ko) => { const r = db.transaction('cache').objectStore('cache').get(k); r.onsuccess = () => ok(r.result || null); r.onerror = () => ko(r.error); }); } catch { return null; } }
+async function cacheEscribir(k, v) { try { const db = await nidb(); await new Promise((ok, ko) => { const tx = db.transaction('cache', 'readwrite'); tx.objectStore('cache').put(v, k); tx.oncomplete = () => ok(); tx.onerror = () => ko(tx.error); }); } catch (e) { console.warn('copia local', e); } }
+const cacheKey = () => `emp:${NUBE.sesion?.empresa?.ruc || ''}`;
+function persistNube() {
+  clearTimeout(NUBE.cacheT);
+  NUBE.cacheT = setTimeout(() => {
+    if (!NUBE.sesion) return;
+    const cols = Object.fromEntries(Object.entries(DB.cols).map(([k, m]) => [k, k === 'movimientos' ? [...m.values()].sort((a, b) => (b.ts || '').localeCompare(a.ts || '')).slice(0, 5000) : [...m.values()]]));
+    cacheEscribir(cacheKey(), { desde: NUBE.desde, cfg: clone(DB.cfg), cfgNube: NUBE.cfgNube, logo: DB.logo, cols, pend: [...NUBE.pend.values()] });
+  }, 250);
+}
+
+/* ---------- arranque ---------- */
+async function startNube() {
+  DB.mode = 'nube';
+  NUBE.sesion = leerSesion();
+  if (!NUBE.sesion) { render(); return; }   // pantalla de ingreso
+  await abrirSesionNube();
+}
+async function abrirSesionNube() {
+  const c = await cacheLeer(cacheKey());
+  for (const k of Object.keys(DB.cols)) DB.cols[k] = new Map((c?.cols?.[k] || []).map(o => [o.id, o]));
+  DB.cfg = mergeCfg(c?.cfg || defaultConfig()); DB.logo = c?.logo || null;
+  NUBE.cfgNube = !!c?.cfgNube; NUBE.desde = c?.desde || 0; NUBE.primera = true;
+  NUBE.pend = new Map((c?.pend || []).map(p => [`${p.col}:${p.borrado ? p.id : p.obj?.id}`, p]));
+  DB.uid = NUBE.sesion.usuario.email;
+  document.body.classList.remove('sin-sesion');
+  setReady();
+  sincronizar(true);
+  clearInterval(NUBE.timer); NUBE.timer = setInterval(() => sincronizar(), 20000);
+  if (!NUBE.oyentes) {
+    NUBE.oyentes = true;
+    document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') sincronizar(); });
+    window.addEventListener('online', () => { NUBE.offline = false; sincronizar(); });
+    window.addEventListener('beforeunload', ev => { if (NUBE.pend.size && !NUBE.offline) { nubeSubir(); } });
+  }
+  const tok = NUBE.sesion.token;
+  nubeFetch('/auth/yo').then(s => { if (NUBE.sesion?.token !== tok) return; guardarSesion(s); renderNav(); if (s.usuario.debeCambiar) claveModal(true); }).catch(() => { /* sin señal: se sigue con la copia local */ });
+  if (NUBE.sesion.usuario.debeCambiar) setTimeout(() => { if (NUBE.sesion?.usuario?.debeCambiar) claveModal(true); }, 500);
+}
+
+/* ---------- sincronización ---------- */
+const mismo = (a, b) => JSON.stringify(a) === JSON.stringify(b);
+function aplicarItems(items) {
+  let n = 0;
+  for (const it of items || []) {
+    if (NUBE.pend.has(`${it.col}:${it.id}`)) continue;   // hay un cambio local más reciente por subir
+    if (it.col === 'config') {
+      if (it.id === 'empresa') { NUBE.cfgNube = true; if (it.borrado || !it.data) continue; const c = { ...it.data }; delete c.id; const m = mergeCfg(c); if (!mismo(m, DB.cfg)) { DB.cfg = m; n++; } }
+      else if (it.id === 'logo') { const l = it.borrado || !it.data?.dataUrl ? null : { dataUrl: it.data.dataUrl, w: it.data.w, h: it.data.h }; if (!mismo(l, DB.logo)) { DB.logo = l; n++; } }
+      continue;
+    }
+    const m = DB.cols[it.col]; if (!m) continue;
+    if (it.borrado) { if (m.delete(it.id)) n++; }
+    else if (!mismo(m.get(it.id), it.data)) { m.set(it.id, it.data); n++; }
+  }
+  return n;
+}
+async function sincronizar(primera = false) {
+  if (!NUBE.sesion || NUBE.sincronizando) return;
+  if (!primera && document.visibilityState === 'hidden') return;
+  NUBE.sincronizando = true;
+  try {
+    await nubeSubir();
+    let cont = null, hasta = NUBE.desde, n = 0, vueltas = 0;
+    do {
+      const j = await nubeFetch(`/datos?desde=${NUBE.desde}${cont ? `&cont=${encodeURIComponent(cont)}` : ''}`, { timeout: 45000 });
+      n += aplicarItems(j.items); hasta = Math.max(hasta, j.hasta || 0); cont = j.cont; vueltas++;
+    } while (cont && vueltas < 500);
+    NUBE.desde = hasta; NUBE.ultima = Date.now(); NUBE.offline = false; NUBE.error = '';
+    if (NUBE.primera) { NUBE.primera = false; configInicialNube(); }
+    persistNube();
+    if (n) changed();
+  } catch (e) { if (e.red) NUBE.offline = true; else NUBE.error = e.message; }
+  finally { NUBE.sincronizando = false; pintarEstadoNube(); }
+}
+function nubeEncolar(col, obj, borrado = false, id = '') {
+  const it = borrado ? { col, id, borrado: true } : { col, obj: clone(obj) };
+  NUBE.pend.set(`${col}:${borrado ? id : obj.id}`, it);
+  persistNube(); pintarEstadoNube();
+  clearTimeout(NUBE.subirT); NUBE.subirT = setTimeout(() => nubeSubir(), 150);
+}
+async function nubeSubir() {
+  if (NUBE.subiendo || !NUBE.pend.size || !NUBE.sesion) return;
+  NUBE.subiendo = true; pintarEstadoNube();
+  const quitar = (k, v) => { if (NUBE.pend.get(k) === v) NUBE.pend.delete(k); };
+  try {
+    while (NUBE.pend.size) {
+      const lote = [...NUBE.pend.entries()].slice(0, 25);
+      try { await nubeFetch('/datos', { method: 'POST', body: { items: lote.map(([, v]) => v) }, timeout: 60000 }); lote.forEach(([k, v]) => quitar(k, v)); }
+      catch (e) {
+        if (e.red || e.status === 401 || e.status === 429 || e.status >= 500) throw e;
+        // la nube rechazó algo del lote: se envía uno por uno y se descarta solo lo rechazado
+        for (const [k, v] of lote) {
+          try { await nubeFetch('/datos', { method: 'POST', body: { items: [v] } }); }
+          catch (e2) { if (e2.red || e2.status === 401 || e2.status >= 500) throw e2; toast(`La nube no aceptó un cambio: ${e2.message}`, 'bad'); }
+          quitar(k, v);
+        }
+      }
+      persistNube();
+    }
+    NUBE.offline = false;
+  } catch (e) { if (e.red) NUBE.offline = true; }
+  finally { NUBE.subiendo = false; persistNube(); pintarEstadoNube(); }
+}
+// Primera conexión de la empresa: si la nube aún no tiene configuración, se sube la de este equipo (datos de Master Steel, cuentas, responsables, logo).
+function configInicialNube() {
+  if (NUBE.cfgNube || !puedeConfig() || NUBE.pend.has('config:empresa')) return;
+  const loc = leerLocalGuardado();
+  const c = loc?.cfg ? limpiarCfgDemo(loc.cfg) : clone(DB.cfg);
+  if (NUBE.sesion?.empresa?.ruc && !c.empresa.ruc) c.empresa.ruc = NUBE.sesion.empresa.ruc;
+  DB.cfg = mergeCfg(c); NUBE.cfgNube = true;
+  nubeEncolar('config', { ...clone(DB.cfg), id: 'empresa' });
+  if (loc?.logo?.dataUrl && !DB.logo) { DB.logo = loc.logo; nubeEncolar('config', { id: 'logo', ...loc.logo }); }
+  changed();
+}
+async function reservarNumero(tipo, serie) {
+  if (DB.mode !== 'nube') return nextNumero(tipo, serie);
+  try { return (await nubeFetch('/numero', { method: 'POST', body: { tipo, serie } })).numero; }
+  catch (e) { toast(e.red ? 'Sin conexión: para numerar el documento se necesita internet. Tu borrador sigue aquí; inténtalo al volver la señal.' : e.message, 'bad'); throw e; }
+}
+
+/* ---------- datos guardados solo en este equipo (versión anterior a la nube) ---------- */
+function leerLocalGuardado() { try { const r = JSON.parse(localStorage.getItem(LS_KEY) || 'null'); return r && r.epoca === DATOS_EPOCA ? r : null; } catch { return null; } }
+const marcaSubida = r => [(r.documentos || []).length, (r.clientes || []).length, (r.productos || []).length].join(':');
+function datosLocales() {
+  if (DB.mode !== 'nube' || !NUBE.sesion || !puedeConfig()) return null;
+  const r = leerLocalGuardado(); if (!r) return null;
+  const n = { documentos: (r.documentos || []).length, clientes: (r.clientes || []).length, productos: (r.productos || []).length };
+  if (!n.documentos && !n.clientes && !n.productos) return null;
+  try { if (localStorage.getItem(`granate.nube.subido.${NUBE.sesion.empresa.ruc}`) === marcaSubida(r)) return null; } catch { /* */ }
+  return { r, n };
+}
+function bannerLocalHTML() {
+  const L = datosLocales(); if (!L) return '';
+  const p = [L.n.documentos && `${L.n.documentos} documento${L.n.documentos === 1 ? '' : 's'}`, L.n.clientes && `${L.n.clientes} cliente${L.n.clientes === 1 ? '' : 's'}`, L.n.productos && `${L.n.productos} producto${L.n.productos === 1 ? '' : 's'}`].filter(Boolean).join(', ');
+  return `<div class="banner"><div class="b-ic">${icon('upload')}</div><div class="b-t"><b>Este equipo tiene datos guardados solo aquí</b><span>${p}. Súbelos a la nube para verlos desde tus otros equipos.</span></div><button class="btn" data-act="nube-local-no" style="background:transparent;color:#fff;border-color:#5a3a42">Ahora no</button><button class="btn primary" data-act="nube-local-subir">${icon('upload', 'sm')}Subir a la nube</button></div>`;
+}
+async function subirDatosLocales(btn) {
+  const L = datosLocales(); if (!L) return;
+  btn?.classList.add('loading');
+  let n = 0, rep = 0;
+  const num = d => `${d.tipo}|${d.serie}|${d.numero}`;
+  const enNube = new Set(allDocs().filter(d => d.numero).map(num));
+  for (const col of ['clientes', 'productos', 'documentos', 'movimientos', 'archivo']) {
+    for (const o of L.r[col] || []) {
+      if (!o?.id || DB.cols[col].has(o.id)) continue;
+      if (col === 'documentos' && o.numero && enNube.has(num(o))) rep++;
+      DB.cols[col].set(o.id, o); NUBE.pend.set(`${col}:${o.id}`, { col, obj: clone(o) }); n++;
+    }
+  }
+  try { localStorage.setItem(`granate.nube.subido.${NUBE.sesion.empresa.ruc}`, marcaSubida(L.r)); } catch { /* */ }
+  persistNube(); changed(); await nubeSubir();
+  btn?.classList.remove('loading');
+  toast(NUBE.pend.size ? `${n} registros listos; se terminarán de subir al recuperar la señal.` : `Listo: ${n} registros de este equipo ya están en la nube.`, NUBE.pend.size ? 'warn' : 'ok');
+  if (rep) setTimeout(() => toast(`${rep} documento${rep === 1 ? '' : 's'} tienen el mismo número que otro ya registrado en la nube. Revísalos en Comprobantes.`, 'warn'), 1200);
+}
+
+/* ---------- pantalla de ingreso ---------- */
+function renderLogin() {
+  document.body.classList.add('sin-sesion');
+  $('#nav').innerHTML = '';
+  let aviso = ''; try { aviso = sessionStorage.getItem('granate.nube.aviso') || ''; sessionStorage.removeItem('granate.nube.aviso'); } catch { /* */ }
+  const e = DB.cfg.empresa || {};
+  const ins = NUBE.vista === 'instalar';
+  $('#main').innerHTML = `<div class="login-wrap"><div class="login-card">
+    <div class="login-brand">${BRAND}<div><b>${esc(marcaTitulo())}</b><small>${esc(DB.cfg.marca?.sub || 'Facturación electrónica')}</small></div></div>
+    ${ins ? `<h1>Primera instalación</h1><p class="sub">Crea la empresa en la nube y tu usuario administrador. Necesitas el código de instalación que te entregó DataPrix.</p>
+      <div class="stack" style="gap:12px">
+        <div class="field"><label for="li-codigo">Código de instalación</label><input class="input num" id="li-codigo" autocomplete="off" placeholder="GRN-XXXX-XXXX" style="text-transform:uppercase" data-enter="login-instalar"></div>
+        <div class="grid g2"><div class="field"><label for="li-ruc">RUC de la empresa</label><input class="input num" id="li-ruc" inputmode="numeric" maxlength="11" value="${esc(e.ruc || '')}" data-enter="login-instalar"></div>
+        <div class="field"><label for="li-razon">Razón social</label><input class="input" id="li-razon" value="${esc(e.razon || '')}" data-enter="login-instalar"></div></div>
+        <div class="field"><label for="li-nombre">Tu nombre</label><input class="input" id="li-nombre" autocomplete="name" data-enter="login-instalar"></div>
+        <div class="field"><label for="li-email">Tu correo</label><input class="input" id="li-email" type="email" autocomplete="email" data-enter="login-instalar"></div>
+        <div class="grid g2"><div class="field"><label for="li-clave">Contraseña</label><input class="input" id="li-clave" type="password" autocomplete="new-password" minlength="8" data-enter="login-instalar"><span class="hint">Mínimo 8 caracteres</span></div>
+        <div class="field"><label for="li-clave2">Repite la contraseña</label><input class="input" id="li-clave2" type="password" autocomplete="new-password" data-enter="login-instalar"></div></div>
+        <p class="login-err" id="login-err" role="alert">${esc(aviso)}</p>
+        <button class="btn primary lg" data-act="login-instalar">${icon('check')}Crear empresa y administrador</button>
+        <button class="linkbtn" data-act="login-modo" data-v="ingresar">${icon('back', 'sm')}Ya tengo usuario</button>
+      </div>`
+    : `<h1>Ingresa a tu cuenta</h1><p class="sub">Tus cotizaciones, comprobantes y clientes, en todos tus equipos.</p>
+      <div class="stack" style="gap:12px">
+        <div class="field"><label for="li-email">Correo</label><input class="input" id="li-email" type="email" autocomplete="username" inputmode="email" data-enter="login-ir"></div>
+        <div class="field"><label for="li-clave">Contraseña</label><input class="input" id="li-clave" type="password" autocomplete="current-password" data-enter="login-ir"></div>
+        <p class="login-err" id="login-err" role="alert">${esc(aviso)}</p>
+        <button class="btn primary lg" data-act="login-ir">Ingresar ${icon('arrow', 'sm')}</button>
+        <p class="hint" style="text-align:center">¿Olvidaste tu contraseña? Pide al administrador que te asigne una nueva.</p>
+        <button class="linkbtn faint" data-act="login-modo" data-v="instalar" style="margin:4px auto 0">Primera instalación de la empresa</button>
+      </div>`}
+  </div></div>`;
+  pintarWaFab();
+  setTimeout(() => $(ins ? '#li-codigo' : '#li-email')?.focus(), 30);
+}
+function loginErr(msg) { const el = $('#login-err'); if (el) el.textContent = msg; }
+async function loginIr(btn) {
+  const email = String($('#li-email')?.value || '').trim(), clave = String($('#li-clave')?.value || '');
+  if (!email || !clave) return loginErr('Escribe tu correo y tu contraseña.');
+  btn = btn?.closest?.('button') || $('[data-act="login-ir"]'); btn?.classList.add('loading'); loginErr('');
+  try { const s = await nubeFetch('/auth/ingresar', { method: 'POST', body: { email, clave }, auth: false }); guardarSesion(s); await abrirSesionNube(); toast(`Hola, ${s.usuario.nombre.split(' ')[0]}`); }
+  catch (e) { loginErr(e.message); btn?.classList.remove('loading'); }
+}
+async function loginInstalar(btn) {
+  const v = id => String($(id)?.value || '').trim();
+  const b = { codigo: v('#li-codigo'), ruc: v('#li-ruc'), razon: v('#li-razon'), nombre: v('#li-nombre'), email: v('#li-email'), clave: String($('#li-clave')?.value || '') };
+  if (!b.codigo || !b.ruc || !b.nombre || !b.email || !b.clave) return loginErr('Completa todos los campos.');
+  if (!validRUC(b.ruc)) return loginErr('El RUC no es válido: revisa los 11 dígitos.');
+  if (b.clave.length < 8) return loginErr('La contraseña debe tener al menos 8 caracteres.');
+  if (b.clave !== String($('#li-clave2')?.value || '')) return loginErr('Las contraseñas no coinciden.');
+  btn = btn?.closest?.('button') || $('[data-act="login-instalar"]'); btn?.classList.add('loading'); loginErr('');
+  try {
+    const s = await nubeFetch('/auth/instalar', { method: 'POST', body: b, auth: false, timeout: 60000 });
+    guardarSesion(s); await abrirSesionNube();
+    toast('Empresa instalada en la nube. Ahora agrega a tu equipo en «Usuarios».', 'ok', { label: 'Ir a Usuarios', fn: () => go('usuarios') });
+  } catch (e) { loginErr(e.message); btn?.classList.remove('loading'); }
+}
+
+/* ---------- barra lateral y cuenta ---------- */
+function estadoNubeTxt() {
+  const p = NUBE.pend.size;
+  if (NUBE.offline) return [`Sin conexión${p ? ` · ${p} cambio${p === 1 ? '' : 's'} por subir` : ' · usando la copia de este equipo'}`, 'off'];
+  if (p || NUBE.subiendo) return ['Guardando en la nube…', 'sync'];
+  if (NUBE.error) return ['La nube no respondió bien · se reintenta', 'off'];
+  return [NUBE.ultima ? `En la nube · actualizado ${hhmm(NUBE.ultima)}` : 'Conectando con la nube…', ''];
+}
+function navNubeHTML() {
+  const u = NUBE.sesion?.usuario || {}, [t, c] = estadoNubeTxt();
+  return `<div class="nube-est ${c}" id="nube-est" title="Datos sincronizados entre todos tus equipos"><span class="dot ${c}"></span><span class="nf-txt">${esc(t)}</span></div>
+    <div class="nube-user"><span class="nu-av" aria-hidden="true">${esc(iniciales(u.nombre))}</span><span class="nu-t nf-txt"><b>${esc(u.nombre || '')}</b><small>${esc(ROL_TXT[u.rol] || '')}</small></span><button class="linkbtn nf-txt" data-act="nube-salir">Salir</button></div>`;
+}
+function pintarEstadoNube() {
+  const el = $('#nube-est'); if (!el) return;
+  const [t, c] = estadoNubeTxt();
+  el.className = `nube-est ${c}`; el.querySelector('.dot').className = `dot ${c}`; el.querySelector('.nf-txt').textContent = t;
+}
+function cuentaNubeHTML() {
+  if (DB.mode !== 'nube' || !NUBE.sesion) return '';
+  const u = NUBE.sesion.usuario, [t, c] = estadoNubeTxt();
+  return `<section class="panel" style="margin-bottom:18px"><div class="panel-h"><h2>Tu cuenta</h2><span class="pill ${c === 'off' ? 'warn' : 'ok'}">${icon(c === 'off' ? 'alert' : 'check', 'sm')}${esc(t)}</span></div>
+    <div class="panel-b"><div class="nube-me"><span class="nu-av lg">${esc(iniciales(u.nombre))}</span><div class="nu-t"><b>${esc(u.nombre)}</b><small>${esc(u.email)} · ${esc(ROL_TXT[u.rol] || '')} de ${esc(NUBE.sesion.empresa.razon || NUBE.sesion.empresa.ruc)}</small></div>
+      <div class="row-gap" style="margin-left:auto;flex-wrap:wrap">${u.rol === 'admin' && UI.route !== 'usuarios' ? `<button class="btn" data-act="go" data-r="usuarios">${icon('users', 'sm')}Usuarios</button>` : ''}<button class="btn" data-act="nube-clave">${icon('lock', 'sm')}Cambiar mi contraseña</button><button class="btn ghost" data-act="nube-salir">Salir</button></div></div>
+      ${!puedeConfig() ? `<p class="hint" style="margin-top:12px">${icon('info', 'sm')} Tu rol es Vendedor: puedes ver la configuración, pero solo un administrador o contador puede cambiarla.</p>` : ''}</div></section>`;
+}
+
+/* ---------- usuarios ---------- */
+async function cargarUsuarios(forzar = false) {
+  if (nubeRol() !== 'admin' || NUBE.cargandoUsr || (NUBE.usuarios && !forzar)) return;
+  NUBE.cargandoUsr = true;
+  try { NUBE.usuarios = (await nubeFetch('/usuarios')).usuarios; NUBE.usrT = Date.now(); } catch (e) { NUBE.usuarios = NUBE.usuarios || []; toast(e.message, 'bad'); }
+  finally { NUBE.cargandoUsr = false; if (UI.route === 'usuarios') render(); }
+}
+function vUsuarios() {
+  if (DB.mode !== 'nube' || !NUBE.sesion) return `<div class="page-head"><div><h1>Usuarios</h1><p class="sub">Disponible cuando la app está conectada a la nube.</p></div></div>`;
+  const admin = nubeRol() === 'admin', yo = NUBE.sesion.usuario.email;
+  if (admin && (!NUBE.usuarios || Date.now() - (NUBE.usrT || 0) > 15000) && !NUBE.cargandoUsr) setTimeout(() => cargarUsuarios(true), 0);
+  const lista = NUBE.usuarios || [];
+  const fila = u => `<tr${u.activo ? '' : ' class="inactivo"'}><td><div class="nube-me sm"><span class="nu-av">${esc(iniciales(u.nombre))}</span><div class="nu-t"><b>${esc(u.nombre)}${u.email === yo ? ' <span class="faint">(tú)</span>' : ''}</b><small>${esc(u.email)}</small></div></div></td>
+    <td>${u.email === yo ? esc(ROL_TXT[u.rol]) : `<select class="select sm" data-usr-rol="${esc(u.email)}" aria-label="Rol de ${esc(u.nombre)}" ${u.activo ? '' : 'disabled'}>${Object.entries(ROL_TXT).map(([k, v]) => `<option value="${k}" ${k === u.rol ? 'selected' : ''}>${v}</option>`).join('')}</select>`}</td>
+    <td><div class="usr-est">${!u.activo ? pill({ x: ['neutral', 'ban', 'Desactivado'] }, 'x') : u.debeCambiar ? pill({ x: ['warn', 'clock', 'Clave temporal'] }, 'x') : pill({ x: ['ok', 'check', 'Activo'] }, 'x')}<small class="faint">${u.ultimoIngreso ? `Último ingreso ${fmtDate(tsDay(u.ultimoIngreso))} ${tsHora(u.ultimoIngreso)}` : 'Aún no ingresa'}</small></div></td>
+    <td><div class="usr-acc">${u.email === yo ? '' : `${u.activo ? `<button class="btn ghost sm" data-act="usr-clave" data-email="${esc(u.email)}" title="Generar una contraseña temporal nueva">${icon('lock', 'sm')}Clave nueva</button>` : ''}<button class="btn ghost sm" data-act="usr-activo" data-email="${esc(u.email)}" data-v="${u.activo ? 0 : 1}">${icon(u.activo ? 'ban' : 'refresh', 'sm')}${u.activo ? 'Desactivar' : 'Reactivar'}</button>`}</div></td></tr>`;
+  return `<div class="page-head"><div><h1>Usuarios y acceso</h1><p class="sub">Quién puede entrar a la facturación de ${esc(NUBE.sesion.empresa.razon || DB.cfg.empresa.razon)}.</p></div>${admin ? `<div class="head-actions"><button class="btn primary" data-act="usr-nuevo">${icon('plus')}Agregar usuario</button></div>` : ''}</div>
+    ${cuentaNubeHTML()}
+    ${admin ? `<section class="panel"><div class="panel-h"><h2>Equipo</h2><span class="faint">${lista.filter(u => u.activo).length} activo${lista.filter(u => u.activo).length === 1 ? '' : 's'}</span></div>
+      <div class="panel-b" style="padding-top:8px">${NUBE.usuarios ? `<div class="tbl-wrap"><table class="t usr-t"><thead><tr><th>Persona</th><th>Rol</th><th>Estado</th><th><span class="sr-only">Acciones</span></th></tr></thead><tbody>${lista.map(fila).join('')}</tbody></table></div>` : `<div class="skel" style="height:120px;border-radius:10px"></div>`}
+      <dl class="kv" style="margin-top:16px">${Object.entries(ROL_TXT).map(([k, v]) => `<dt>${v}</dt><dd style="font-weight:450">${ROL_DESC[k]}</dd>`).join('')}</dl></div></section>`
+    : `<p class="hint">Solo un administrador puede agregar o desactivar usuarios.</p>`}`;
+}
+function usuarioNuevoModal() {
+  openModal(`<div class="modal-h"><h2>Agregar usuario</h2><button class="btn ghost icon-only" data-act="modal-close" aria-label="Cerrar">${icon('x')}</button></div>
+    <div class="modal-b stack" style="gap:12px">
+      <div class="field"><label for="un-nombre">Nombre y apellido</label><input class="input" id="un-nombre" maxlength="80" autocomplete="off" data-enter="usr-crear"></div>
+      <div class="field"><label for="un-email">Correo</label><input class="input" id="un-email" type="email" autocomplete="off" data-enter="usr-crear"></div>
+      <div class="field"><label for="un-rol">Rol</label><select class="select" id="un-rol">${Object.entries(ROL_TXT).map(([k, v]) => `<option value="${k}" ${k === 'vendedor' ? 'selected' : ''}>${v} · ${ROL_DESC[k]}</option>`).join('')}</select></div>
+      <p class="hint">Te mostraremos una contraseña temporal para que se la envíes. La cambiará al ingresar por primera vez.</p></div>
+    <div class="modal-f"><button class="btn" data-act="modal-close">Cancelar</button><button class="btn primary" data-act="usr-crear">${icon('check')}Crear usuario</button></div>`);
+  setTimeout(() => $('#un-nombre')?.focus(), 50);
+}
+function claveTemporalModal(u, temp, nuevo) {
+  const link = location.href.split('#')[0];
+  const msg = `Hola ${u.nombre.split(' ')[0]}, ${nuevo ? 'ya tienes usuario' : 'te asigné una nueva contraseña'} para la facturación de ${NUBE.sesion.empresa.razon || DB.cfg.empresa.razon}.\nIngresa en: ${link}\nCorreo: ${u.email}\nContraseña temporal: ${temp}\nAl entrar te pedirá cambiarla.`;
+  openModal(`<div class="modal-h"><h2>${nuevo ? 'Usuario creado' : 'Nueva contraseña temporal'}</h2><button class="btn ghost icon-only" data-act="modal-close" aria-label="Cerrar">${icon('x')}</button></div>
+    <div class="modal-b stack" style="gap:12px"><p><b>${esc(u.nombre)}</b> · ${esc(u.email)} · ${esc(ROL_TXT[u.rol])}</p>
+      <div class="temp-box"><span class="hint">Contraseña temporal</span><b class="num">${esc(temp)}</b></div>
+      <p class="hint">Se muestra solo esta vez. Envíasela por un canal privado; al ingresar deberá cambiarla.</p></div>
+    <div class="modal-f"><button class="btn" data-act="usr-copiar" data-t="${esc(msg)}">${icon('copy', 'sm')}Copiar mensaje</button><a class="btn primary" href="https://wa.me/?text=${encodeURIComponent(msg)}" target="_blank" rel="noopener" data-act="usr-wa">${icon('chat', 'sm')}Enviar por WhatsApp</a></div>`);
+}
+function claveModal(forzado = false) {
+  if (!NUBE.sesion || $('#modal').open && $('#cl-nueva')) return;
+  openModal(`<div class="modal-h"><h2>${forzado ? 'Crea tu contraseña' : 'Cambiar mi contraseña'}</h2>${forzado ? '' : `<button class="btn ghost icon-only" data-act="modal-close" aria-label="Cerrar">${icon('x')}</button>`}</div>
+    <div class="modal-b stack" style="gap:12px">${forzado ? '<p>Estás usando una contraseña temporal. Crea una tuya para continuar.</p>' : ''}
+      <div class="field"><label for="cl-actual">${forzado ? 'Contraseña temporal' : 'Contraseña actual'}</label><input class="input" id="cl-actual" type="password" autocomplete="current-password" data-enter="nube-clave-ok"></div>
+      <div class="field"><label for="cl-nueva">Nueva contraseña</label><input class="input" id="cl-nueva" type="password" autocomplete="new-password" data-enter="nube-clave-ok"><span class="hint">Mínimo 8 caracteres</span></div>
+      <div class="field"><label for="cl-nueva2">Repite la nueva contraseña</label><input class="input" id="cl-nueva2" type="password" autocomplete="new-password" data-enter="nube-clave-ok"></div>
+      <p class="login-err" id="cl-err" role="alert"></p></div>
+    <div class="modal-f">${forzado ? '<button class="btn ghost" data-act="nube-salir">Salir</button>' : '<button class="btn" data-act="modal-close">Cancelar</button>'}<button class="btn primary" data-act="nube-clave-ok">${icon('check')}Guardar contraseña</button></div>`);
+  if (forzado) $('#modal').addEventListener('cancel', ev => ev.preventDefault(), { once: true });
+  setTimeout(() => $('#cl-actual')?.focus(), 50);
+}
+async function patchUsuario(email, body) { const j = await nubeFetch(`/usuarios/${encodeURIComponent(email)}`, { method: 'PATCH', body }); NUBE.usuarios = (NUBE.usuarios || []).map(u => (u.email === email ? j.usuario : u)); return j; }
+
+Object.assign(ACT, {
+  'login-ir': el => loginIr(el),
+  'login-instalar': el => loginInstalar(el),
+  'login-modo': el => { NUBE.vista = el.dataset.v; renderLogin(); },
+  'nube-salir': async () => {
+    if (NUBE.pend.size && !(await confirmDlg({ title: 'Hay cambios sin subir', body: `${NUBE.pend.size} cambio${NUBE.pend.size === 1 ? '' : 's'} aún no llegan a la nube (sin conexión). Se guardan en este equipo y se subirán cuando vuelvas a ingresar aquí.`, ok: 'Salir de todos modos' }))) return;
+    guardarSesion(null); location.hash = 'inicio'; location.reload();
+  },
+  'nube-clave': () => claveModal(false),
+  'nube-clave-ok': async () => {
+    const a = String($('#cl-actual')?.value || ''), n = String($('#cl-nueva')?.value || ''), err = m => { const e = $('#cl-err'); if (e) e.textContent = m; };
+    if (!a || !n) return err('Completa las contraseñas.');
+    if (n.length < 8) return err('La nueva contraseña debe tener al menos 8 caracteres.');
+    if (n !== String($('#cl-nueva2')?.value || '')) return err('Las contraseñas nuevas no coinciden.');
+    try { const s = await nubeFetch('/auth/clave', { method: 'POST', body: { actual: a, nueva: n } }); guardarSesion(s); closeModal(); toast('Contraseña actualizada'); renderNav(); }
+    catch (e) { err(e.message); }
+  },
+  'nube-local-subir': el => subirDatosLocales(el),
+  'nube-local-no': () => { const L = datosLocales(); if (L) try { localStorage.setItem(`granate.nube.subido.${NUBE.sesion.empresa.ruc}`, marcaSubida(L.r)); } catch { /* */ } render(); },
+  'usr-nuevo': () => usuarioNuevoModal(),
+  'usr-crear': async el => {
+    const nombre = String($('#un-nombre')?.value || '').trim(), email = String($('#un-email')?.value || '').trim(), rol = $('#un-rol')?.value || 'vendedor';
+    if (nombre.length < 3) return toast('Escribe el nombre de la persona.', 'warn');
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) return toast('Escribe un correo válido.', 'warn');
+    const b = el?.closest?.('button') || $('[data-act="usr-crear"]'); b?.classList.add('loading');
+    try { const j = await nubeFetch('/usuarios', { method: 'POST', body: { nombre, email, rol } }); NUBE.usuarios = [...(NUBE.usuarios || []).filter(u => u.email !== j.usuario.email), j.usuario]; claveTemporalModal(j.usuario, j.claveTemporal, true); render(); }
+    catch (e) { toast(e.message, 'bad'); b?.classList.remove('loading'); }
+  },
+  'usr-clave': async el => {
+    const u = (NUBE.usuarios || []).find(x => x.email === el.dataset.email); if (!u) return;
+    if (!(await confirmDlg({ title: `¿Nueva contraseña para ${u.nombre}?`, body: 'Su contraseña actual dejará de funcionar y se cerrará su sesión en todos sus equipos.', ok: 'Generar contraseña' }))) return;
+    try { const j = await patchUsuario(u.email, { nuevaClave: true }); claveTemporalModal(j.usuario, j.claveTemporal, false); render(); } catch (e) { toast(e.message, 'bad'); }
+  },
+  'usr-activo': async el => {
+    const u = (NUBE.usuarios || []).find(x => x.email === el.dataset.email); if (!u) return;
+    const act = el.dataset.v === '1';
+    if (!act && !(await confirmDlg({ title: `¿Desactivar a ${u.nombre}?`, body: 'Ya no podrá ingresar y se cerrará su sesión en todos sus equipos. Sus documentos se conservan.', ok: 'Desactivar', danger: true }))) return;
+    try { await patchUsuario(u.email, { activo: act }); toast(act ? `${u.nombre} puede ingresar de nuevo` : `${u.nombre} fue desactivado`); render(); } catch (e) { toast(e.message, 'bad'); }
+  },
+  'usr-copiar': async el => { try { await navigator.clipboard.writeText(el.dataset.t); toast('Mensaje copiado'); } catch { toast('No se pudo copiar. Selecciona el texto manualmente.', 'warn'); } },
+  'usr-wa': () => { /* el enlace abre WhatsApp */ },
+});
+document.addEventListener('change', async ev => {
+  const s = ev.target.closest?.('[data-usr-rol]'); if (!s) return;
+  const email = s.dataset.usrRol, rol = s.value;
+  try { await patchUsuario(email, { rol }); toast(`Rol actualizado a ${ROL_TXT[rol]}`); render(); } catch (e) { toast(e.message, 'bad'); render(); }
 });
 
 </script>
