@@ -1,3 +1,6 @@
-// Configuración de la web publicada (GitHub Pages). Cambia aquí la URL de tu API sin recompilar la app.
-// La app la usa por defecto para el padrón SUNAT; cada usuario puede cambiarla en «Integración SUNAT».
+// Configuración de la web publicada (GitHub Pages). Cambia aquí las URL sin recompilar la app.
+// API SUNAT y padrón RUC (Render). Cada usuario puede cambiarla en «Integración SUNAT».
 window.GRANATE_API_DEFAULT = 'https://granate-api.onrender.com';
+// Nube de datos (Azure Functions + Cosmos DB): usuarios, datos compartidos entre equipos y numeración única.
+// Déjala vacía ('') para volver al modo «datos guardados en este navegador».
+window.GRANATE_NUBE = 'https://granate-nube-9c16b6.azurewebsites.net/api';
