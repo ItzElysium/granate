@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#121012">
-<title>Granate · Cotiza y Factura</title>
+<title>Master Steel Callao S.A.C. · Facturación electrónica</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap">
@@ -707,6 +707,63 @@ details.more>.inner{padding:0 18px 18px}
 .sf-act{display:flex;gap:2px;flex:none}
 .combo-note.warn{display:flex;gap:6px;align-items:flex-start;color:var(--warn-ink,#8a5a00);background:var(--warn-50,#fff7e6);margin:0 8px 6px;border-radius:8px;padding:8px 10px}
 .combo-note.warn svg{flex:none;margin-top:1px}
+.brand-name{font-size:.9rem;line-height:1.2;letter-spacing:-.01em;word-break:break-word}
+/* días de crédito */
+.dias{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.chip-dias{height:36px;padding:0 12px;border-radius:999px;border:1px solid var(--line);background:var(--surface);font:inherit;font-size:var(--fs-sm);cursor:pointer;color:var(--text)}
+.chip-dias[aria-pressed="true"]{background:var(--granate);border-color:var(--granate);color:#fff}
+.dias-in{width:84px;height:36px;text-align:center}
+/* desglose por ítem */
+.it-brk{grid-column:1/-1;font-size:var(--fs-xs);color:var(--text-3);display:flex;flex-wrap:wrap;gap:4px 14px;padding:2px 2px 0}
+.it-brk b{color:var(--text-2);font-weight:600}
+/* guardado explícito de configuración */
+.save-state.warn{color:var(--warn-ink,#8a5a00)}
+.cfg-bar{position:sticky;bottom:0;z-index:30;margin:18px -4px 0;padding:10px 4px calc(10px + env(safe-area-inset-bottom))}
+.cfg-bar-in{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;background:#141113;color:#fff;border-radius:14px;padding:10px 12px 10px 16px;box-shadow:0 10px 30px rgba(20,17,19,.25)}
+.cfg-bar-in svg{vertical-align:-3px;margin-right:6px}
+.cfg-bar .btn:not(.primary){background:transparent;color:#fff;border-color:rgba(255,255,255,.3)}
+/* responsables de ventas */
+.vend-row{display:flex;gap:8px;align-items:center}.vend-row .select,.vend-row .input{flex:1;min-width:0}
+.vend.need .select{border-color:var(--bad,#b42318)}
+.req{color:var(--bad,#b42318)}
+.vend-list{display:flex;flex-wrap:wrap;gap:8px}
+.vend-chip{display:inline-flex;align-items:center;gap:6px;padding:4px 4px 4px 10px;border:1px solid var(--line);border-radius:999px;background:var(--surface);font-size:var(--fs-sm)}
+/* botón flotante de WhatsApp de soporte */
+.wa-fab{position:fixed;right:18px;bottom:calc(18px + env(safe-area-inset-bottom));z-index:60;display:inline-flex;align-items:center;justify-content:center;gap:8px;height:56px;min-width:56px;padding:0 14px;border-radius:999px;background:#25D366;color:#fff;text-decoration:none;font-weight:650;box-shadow:0 8px 24px rgba(0,0,0,.22);transition:transform .15s ease,box-shadow .15s ease}
+.wa-fab:hover{transform:translateY(-2px);box-shadow:0 12px 28px rgba(0,0,0,.26)}
+.wa-fab:focus-visible{outline:3px solid #141113;outline-offset:3px}
+body.con-abar .wa-fab{bottom:calc(92px + env(safe-area-inset-bottom))}
+.wa-fab-txt{display:none}.wa-fab:hover .wa-fab-txt,.wa-fab:focus-visible .wa-fab-txt{display:inline}
+#main{padding-bottom:88px}
+@media print{.wa-fab{display:none}}
+/* reporte rápido en Comprobantes */
+.rq-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;margin-bottom:14px}
+@media (max-width:1100px){.rq-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media (max-width:640px){.rq-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.rq{display:flex;flex-direction:column;align-items:flex-start;gap:2px;text-align:left;padding:12px 14px;border:1px solid var(--line);border-radius:14px;background:var(--surface);font:inherit;color:var(--text);cursor:pointer;min-width:0}
+.rq[aria-pressed="true"]{border-color:var(--granate);box-shadow:inset 0 0 0 1px var(--granate)}
+.rq-t{font-size:var(--fs-xs);color:var(--text-3);font-weight:600;text-transform:uppercase;letter-spacing:.04em}
+.rq b{font-size:1.5rem;line-height:1.1}
+.rq-s{font-size:var(--fs-xs);color:var(--text-2)}
+.rq-e{display:flex;flex-wrap:wrap;gap:4px;margin-top:4px}.rq-e i{font-style:normal;font-size:11px;padding:1px 7px;border-radius:999px;background:var(--soft,#f4efef)}
+.rq-e i.ok{background:#E6F4EA;color:#1D6B3A}.rq-e i.warn{background:#FFF4E0;color:#8A5A00}.rq-e i.bad{background:#FDECEA;color:#B42318}
+.seg-scroll{overflow-x:auto;max-width:100%;scrollbar-width:none}
+/* entregar al cliente: ticket, A4, WhatsApp */
+.entrega{display:grid;grid-template-columns:1fr;gap:6px}
+.ent{display:grid;grid-template-columns:30px 1fr;grid-template-rows:auto auto;column-gap:10px;align-items:center;text-align:left;padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:var(--surface);font:inherit;color:var(--text);cursor:pointer}
+.ent svg{grid-row:1/3;width:22px;height:22px;color:var(--granate)}
+.ent b{font-size:var(--fs-sm)}.ent small{font-size:var(--fs-xs);color:var(--text-3)}
+.ent.sug{border-color:var(--granate);box-shadow:inset 0 0 0 1px var(--granate)}
+.ent:hover{background:var(--granate-50)}
+.seg.sm button{height:30px;padding:0 10px;font-size:var(--fs-xs)}
+/* ventas por responsable */
+.vv{display:flex;flex-direction:column;gap:10px}
+.vv-r{display:grid;grid-template-columns:minmax(110px,180px) 1fr auto auto;gap:12px;align-items:center}
+.vv-n{font-weight:600;font-size:var(--fs-sm);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.vv-bar{height:10px;border-radius:999px;background:var(--granate-50);overflow:hidden}.vv-bar i{display:block;height:100%;background:var(--granate);border-radius:999px}
+.vv-t{font-weight:650}.vv-c{font-size:var(--fs-xs)}
+@media (max-width:560px){.vv-r{grid-template-columns:1fr auto}.vv-bar,.vv-c{display:none}}
+.tk-opts{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:10px}
 
 </style>
 <script src="granate-config.js"></script>
@@ -907,14 +964,50 @@ function numeroALetras(num, moneda = 'PEN') {
 
 /* ---------- numeración ---------- */
 const docNum = d => (d.numero ? `${d.serie}-${pad(d.numero, d.tipo === 'COT' || d.tipo === 'NV' ? 6 : 8)}` : `${d.serie}-borrador`);
+const esOV = d => d?.tipo === 'COT' && d.clase === 'OV';
+const nombreDoc = d => (esOV(d) ? 'Orden de venta' : TIPOS[d.tipo]?.corto || d.tipo);
 const docIdSunat = d => `${d.serie}-${d.numero}`;
 const fileBase = (d, ruc) => `${ruc}-${d.tipo}-${d.serie}-${d.numero}`;
 
+/* ---------- plazos SUNAT ----------
+   Factura, boleta y sus notas: se envían el día de emisión o hasta 3 días calendario después (R.S. 000003-2023/SUNAT).
+   Comunicación de baja: hasta 7 días calendario desde el día siguiente a la constancia (CDR), si no se entregó al cliente. */
+const PLAZO_ENVIO = 3, PLAZO_BAJA = 7;
+const fechaMinEmision = (hoy = todayISO()) => addDays(hoy, -PLAZO_ENVIO);
+const fueraDePlazo = (d, hoy = todayISO()) => ES_CPE(d.tipo) && d.estado === 'pendiente' && !!d.fecha && d.fecha < fechaMinEmision(hoy);
+function bajaInfo(d, hoy = todayISO()) {
+  if (!d || !ES_CPE(d.tipo)) return { aplica: false };
+  const emitido = ['aceptado', 'observado'].includes(d.estado);
+  const esB = d.tipo === '03' || /^B/.test(d.serie || '');
+  const cdr = String(d.sunat?.fecha || '').slice(0, 10) || d.fecha, limite = addDays(cdr, PLAZO_BAJA);
+  return { aplica: true, emitido, boleta: esB, cdr, limite, enPlazo: emitido && hoy <= limite, diasRestantes: Math.round((Date.parse(limite) - Date.parse(hoy)) / 864e5) };
+}
+/* Comunicación de baja (VoidedDocuments, UBL 2.0): facturas y notas vinculadas, todas de la misma fecha de emisión. */
+function buildBaja(b, cfg) {
+  const e = cfg.empresa, X = s => String(s ?? '').replace(/[<>&"]/g, c => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;', '"': '&quot;' }[c]));
+  return ['<?xml version="1.0" encoding="UTF-8"?>',
+    '<VoidedDocuments xmlns="urn:sunat:names:specification:ubl:peru:schema:xsd:VoidedDocuments-1" xmlns:cac="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2" xmlns:cbc="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2" xmlns:ds="http://www.w3.org/2000/09/xmldsig#" xmlns:ext="urn:oasis:names:specification:ubl:schema:xsd:CommonExtensionComponents-2" xmlns:sac="urn:sunat:names:specification:ubl:peru:schema:xsd:SunatAggregateComponents-1">',
+    '  <ext:UBLExtensions><ext:UBLExtension><ext:ExtensionContent></ext:ExtensionContent></ext:UBLExtension></ext:UBLExtensions>',
+    '  <cbc:UBLVersionID>2.0</cbc:UBLVersionID>', '  <cbc:CustomizationID>1.0</cbc:CustomizationID>',
+    `  <cbc:ID>${X(b.id)}</cbc:ID>`, `  <cbc:ReferenceDate>${X(b.fechaReferencia)}</cbc:ReferenceDate>`, `  <cbc:IssueDate>${X(b.fecha)}</cbc:IssueDate>`,
+    '  <cac:Signature>', `    <cbc:ID>${X(e.ruc)}</cbc:ID>`, `    <cac:SignatoryParty><cac:PartyIdentification><cbc:ID>${X(e.ruc)}</cbc:ID></cac:PartyIdentification><cac:PartyName><cbc:Name><![CDATA[${e.razon}]]></cbc:Name></cac:PartyName></cac:SignatoryParty>`,
+    '    <cac:DigitalSignatureAttachment><cac:ExternalReference><cbc:URI>#SignatureSP</cbc:URI></cac:ExternalReference></cac:DigitalSignatureAttachment>', '  </cac:Signature>',
+    `  <cac:AccountingSupplierParty><cbc:CustomerAssignedAccountID>${X(e.ruc)}</cbc:CustomerAssignedAccountID><cbc:AdditionalAccountID>6</cbc:AdditionalAccountID><cac:Party><cac:PartyLegalEntity><cbc:RegistrationName><![CDATA[${e.razon}]]></cbc:RegistrationName></cac:PartyLegalEntity></cac:Party></cac:AccountingSupplierParty>`,
+    ...b.lineas.map((l, i) => `  <sac:VoidedDocumentsLine><cbc:LineID>${i + 1}</cbc:LineID><cbc:DocumentTypeCode>${X(l.tipo)}</cbc:DocumentTypeCode><sac:DocumentSerialID>${X(l.serie)}</sac:DocumentSerialID><sac:DocumentNumberID>${Number(l.numero)}</sac:DocumentNumberID><sac:VoidReasonDescription><![CDATA[${String(l.motivo || 'ANULACION').slice(0, 100)}]]></sac:VoidReasonDescription></sac:VoidedDocumentsLine>`),
+    '</VoidedDocuments>'].join('\n');
+}
+
 /* ---------- configuración por defecto ---------- */
+// Emisor por defecto mientras el facturador se valida con Master Steel (datos del padrón RUC de SUNAT).
+const MASTER_STEEL = { ruc: '20610416153', razon: 'MASTER STEEL CALLAO S.A.C.', comercial: 'Master Steel Callao', direccion: 'MZA. B LOTE. 15 URB. RES. LOS PARQUES DE OQUEN', ubigeo: '070101', distrito: 'Callao', provincia: 'Callao', departamento: 'Callao', telefono: '', email: '', cuentas: '' };
+const RUC_DEMO_VIEJO = '20000000001';
 function defaultConfig() {
   return {
-    empresa: { ruc: '', razon: '', comercial: '', direccion: '', ubigeo: '', distrito: '', provincia: '', departamento: '', telefono: '', email: '', cuentas: '' },
-    series: { '01': 'F001', '03': 'B001', '07F': 'FC01', '07B': 'BC01', '08F': 'FD01', '08B': 'BD01', '09': 'T001', NV: 'NV01', COT: 'C001' },
+    empresa: { ...MASTER_STEEL },
+    marca: { titulo: 'MASTER STEEL CALLAO S.A.C.', sub: 'Facturación electrónica' },
+    vendedores: [],
+    soporte: { whatsapp: '5198209844', mensaje: 'Hola, necesito ayuda con el facturador electrónico de Master Steel.' },
+    series: { '01': 'F001', '03': 'B001', '07F': 'FC01', '07B': 'BC01', '08F': 'FD01', '08B': 'BD01', '09': 'T001', NV: 'NV01', COT: 'C001', OV: 'OV01' },
     igvRate: 0.18, incluyeIGV: false, tipoCambio: 3.5, validezDias: 15,
     condiciones: 'Precios en la moneda indicada. Tiempo de entrega a coordinar desde la orden de compra.',
     integracion: { modo: 'simulador', url: apiDefault(), ambiente: 'beta' },
@@ -971,6 +1064,10 @@ function mergeCfg(c) {
   const m = { ...d, ...o, empresa: { ...d.empresa, ...(o.empresa || {}) }, series: { ...d.series, ...(o.series || {}) }, integracion: { ...d.integracion, ...(o.integracion || {}) }, reglas: { ...d.reglas, ...(o.reglas || {}) }, docs: mergeDocs(o.docs) };
   const def = apiDefault();
   if (def && !String(m.integracion.url || '').trim() && !m.integracion.manual) m.integracion.url = def;
+  // datos de la demo anterior o sin emisor: pasa a Master Steel Callao
+  if (!String(o.empresa?.ruc || '').trim() || o.empresa?.ruc === RUC_DEMO_VIEJO) { m.empresa = { ...MASTER_STEEL }; if (m.docs?.cot?.firmaCargo === 'Granate Demo') m.docs.cot.firmaCargo = MASTER_STEEL.comercial; }
+  m.marca = { ...d.marca, ...(o.marca || {}) };
+  m.soporte = { ...d.soporte, ...(o.soporte || {}) }; m.vendedores = Array.isArray(o.vendedores) ? o.vendedores.filter(Boolean) : d.vendedores;
   return m;
 }
 const empresaLista = cfg => validRUC(cfg.empresa.ruc) && cfg.empresa.razon.trim().length > 2 && cfg.empresa.direccion.trim().length > 3;
@@ -979,9 +1076,18 @@ const empresaLista = cfg => validRUC(cfg.empresa.ruc) && cfg.empresa.razon.trim(
 const GUIA_RE = /^[A-Z0-9]{4}-\d{1,8}$/;
 const guiaId = g => `${g.serie}-${Number(g.numero)}`;
 function validarDoc(doc, cfg, toPEN) {
+  /* responsable de ventas obligatorio en facturas y boletas; crédito con vencimiento posterior a la emisión */
+  const eV = [];
+  if (['01', '03'].includes(doc.tipo) && !String(doc.vendedor || '').trim()) eV.push('Indica el responsable de ventas.');
+  if (doc.tipo === '01' && doc.formaPago === 'Credito' && !(String(doc.vence || '') > String(doc.fecha || ''))) eV.push('Al crédito, el vencimiento debe ser posterior a la fecha de emisión: indica los días de crédito.');
   if (doc.tipo === '09') return validarGRE(doc, cfg);
-  const e = [];
+  const e = [...eV];
   const isCPE = ES_CPE(doc.tipo), isNV = doc.tipo === 'NV';
+  if (isCPE && doc.fecha) {
+    const hoy = todayISO(), min = fechaMinEmision(hoy), f = x => x.split('-').reverse().slice(0, 2).join('/');
+    if (doc.fecha > hoy) e.push('La fecha de emisión no puede ser posterior a hoy.');
+    else if (doc.fecha < min) e.push(`Fecha de emisión fuera de plazo: hoy ${f(hoy)} lo más antiguo que se puede enviar a SUNAT es con fecha ${f(min)}. Con fecha ${f(doc.fecha)} ya no tendría validez como comprobante electrónico.`);
+  }
   const cli = doc.cliente || {};
   if (isCPE && !empresaLista(cfg)) e.push('Completa RUC, razón social y dirección fiscal de tu empresa en «Integración SUNAT».');
   if (!cli.nombre || cli.nombre.trim().length < 2) e.push('Indica el cliente (nombre o razón social).');
@@ -1205,13 +1311,14 @@ async function sha256b64(text) {
 /* ---------- datos de demostración (ficticios) ---------- */
 function buildSeed(today) {
   const cfg = defaultConfig();
-  cfg.empresa = { ruc: '20000000001', razon: 'Comercial Granate Demo S.A.C.', comercial: 'Granate Demo', direccion: 'Av. Ejemplo 123, Of. 401', ubigeo: '150131', distrito: 'San Isidro', provincia: 'Lima', departamento: 'Lima', telefono: '(01) 000 0000', email: 'ventas@empresa-demo.pe', cuentas: '' };
+  cfg.empresa = { ...MASTER_STEEL };
   cfg.docs.cuentas = [
     { banco: 'BCP', tipo: 'Corriente', moneda: 'PEN', numero: '000-0000000-0-00', cci: '00200000000000000000', enCot: true, enFac: true },
     { banco: 'Interbank', tipo: 'Corriente', moneda: 'USD', numero: '000-0000000000', cci: '00300000000000000000', enCot: true, enFac: true },
   ];
   cfg.docs.detraccion = '00-000-000000';
-  cfg.docs.cot.firmaNombre = 'Equipo comercial'; cfg.docs.cot.firmaCargo = 'Granate Demo';
+  cfg.docs.cot.firmaNombre = 'Equipo comercial'; cfg.docs.cot.firmaCargo = 'Master Steel Callao';
+  cfg.vendedores = ['Carlos Ramírez', 'Lucía Torres', 'Miguel Salazar'];
   const C = [
     { tipoDoc: '6', numDoc: '20000000028', nombre: 'Constructora Demo Norte S.A.C.', direccion: 'Av. Demo 456, Trujillo, La Libertad', ubigeo: '130101', email: 'compras@constructora-demo.pe', telefono: '' },
     { tipoDoc: '6', numDoc: '20000000036', nombre: 'Agroexportadora Demo Sur S.A.', direccion: 'Panamericana Sur km 300, Ica', ubigeo: '110101', email: 'logistica@agro-demo.pe', telefono: '' },
@@ -1221,13 +1328,16 @@ function buildSeed(today) {
     { tipoDoc: '1', numDoc: '00000001', nombre: 'Carlos Mendoza (demo)', direccion: 'Jr. Prueba 55, Lince, Lima', ubigeo: '150116', email: '', telefono: '' },
   ].map(c => ({ ...c, id: uid(), demo: true }));
   const P = [
-    { codigo: 'P001', desc: 'Consultoría especializada (hora)', unidad: 'HUR', precio: 180, afect: '10', detraccion: '022' },
-    { codigo: 'P002', desc: 'Implementación de dashboard BI', unidad: 'ZZ', precio: 4800, afect: '10', detraccion: '037' },
-    { codigo: 'P003', desc: 'Licencia plataforma analítica (usuario/mes)', unidad: 'ZZ', precio: 95, afect: '10', detraccion: '037' },
-    { codigo: 'P004', desc: 'Taller de capacitación in-house (8 h)', unidad: 'ZZ', precio: 2200, afect: '10', detraccion: '037' },
-    { codigo: 'P005', desc: 'Laptop 14" Core i7 · 16 GB · 512 GB SSD', unidad: 'NIU', precio: 3650, afect: '10', pesoKg: 2.1 },
-    { codigo: 'P006', desc: 'Monitor 27" QHD', unidad: 'NIU', precio: 980, afect: '10', pesoKg: 6.5 },
-    { codigo: 'P007', desc: 'Soporte y mantenimiento mensual', unidad: 'ZZ', precio: 1150, afect: '10', detraccion: '037' },
+    { codigo: 'P001', desc: 'Asesoría técnica en estructuras metálicas (hora)', unidad: 'HUR', precio: 180, afect: '10', detraccion: '022' },
+    { codigo: 'P002', desc: 'Fabricación de estructura metálica por encargo', unidad: 'ZZ', precio: 4800, afect: '10', detraccion: '025' },
+    { codigo: 'P003', desc: 'Habilitado de fierro por encargo (corte y doblado, por tonelada)', unidad: 'ZZ', precio: 95, afect: '10', detraccion: '025' },
+    { codigo: 'P004', desc: 'Montaje de cobertura metálica', unidad: 'ZZ', precio: 2200, afect: '10', detraccion: '030' },
+    { codigo: 'P005', desc: 'Plancha LAC 1/4" × 1.20 × 2.40 m', unidad: 'NIU', precio: 520, afect: '10', pesoKg: 143.6 },
+    { codigo: 'P006', desc: 'Tubo cuadrado LAC 2" × 2.0 mm × 6 m', unidad: 'NIU', precio: 68, afect: '10', pesoKg: 18.6 },
+    { codigo: 'P007', desc: 'Mantenimiento de estructuras metálicas (mensual)', unidad: 'ZZ', precio: 1150, afect: '10', detraccion: '020' },
+    { codigo: 'P008', desc: 'Fierro corrugado ASTM A615 1/2" × 9 m', unidad: 'NIU', precio: 39.5, afect: '10', pesoKg: 8.94 },
+    { codigo: 'P009', desc: 'Ángulo LAC 2" × 3/16" × 6 m', unidad: 'NIU', precio: 92, afect: '10', pesoKg: 21.4 },
+    { codigo: 'P010', desc: 'Viga H A36 6" × 6 m', unidad: 'NIU', precio: 1180, afect: '10', pesoKg: 222 },
   ].map(p => ({ ...p, id: uid(), demo: true }));
   const docs = [];
   const cliSnap = i => { const c = C[i]; return { id: c.id, tipoDoc: c.tipoDoc, numDoc: c.numDoc, nombre: c.nombre, direccion: c.direccion, ubigeo: c.ubigeo, email: c.email, telefono: c.telefono }; };
@@ -1238,6 +1348,8 @@ function buildSeed(today) {
     const serie = tipo === 'COT' ? cfg.series.COT : tipo === '07' ? cfg.series['07F'] : tipo === '08' ? cfg.series['08F'] : cfg.series[tipo];
     const d = { id: uid(), tipo, serie, numero, fecha, hora: '10:30:00', moneda: 'PEN', incluyeIGV: false, igvRate: 0.18, cliente: cliSnap(ci), items: items(its), formaPago: 'Contado', cuotas: [], obs: '', estado: tipo === 'COT' ? 'enviada' : tipo === 'NV' ? 'emitida' : 'aceptado', creado: fecha + 'T10:30:00', demo: true, ...extra };
     if (tipo === 'COT') { d.vence = d.vence || addDays(fecha, 15); d.condiciones = cfg.condiciones; }
+    if (['01', '03', 'NV', 'COT'].includes(tipo)) d.vendedor = d.vendedor || cfg.vendedores[(numero + ci) % cfg.vendedores.length];
+    if (tipo === '01') { d.diasCredito = d.diasCredito || 30; if (d.formaPago !== 'Credito') d.vence = fecha; }
     if (['01', '03'].includes(tipo)) { d.operacion = d.operacion || sugerirOperacion(d.items); d.guias = d.guias || []; }
     if (tipo === '01' && d.operacion === 'servicios') {
       const cods = d.items.map(it => P.find(p => p.codigo === it.codigo)?.detraccion).filter(Boolean);
@@ -1329,7 +1441,7 @@ const IC = {
   copy: 'M9 9h11v11H9zM5 15H4V4h11v1', chat: 'M21 12a8 8 0 0 1-11.6 7.1L4 20.5l1.4-5.1A8 8 0 1 1 21 12z',
   edit: 'M4 20h4L19 9l-4-4L4 16zM14 6l4 4', arrow: 'M5 12h14M13 6l6 6-6 6', chev: 'M6 9l6 6 6-6', back: 'M15 6l-6 6 6 6',
   alert: 'M12 3 2 20h20zM12 10v4M12 17.5v.5', clock: 'M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM12 7v5l3 2',
-  code: 'M8 8l-4 4 4 4M16 8l4 4-4 4M14 5l-4 14', refresh: 'M20 11a8 8 0 0 0-14.3-4.9L4 8M4 4v4h4M4 13a8 8 0 0 0 14.3 4.9L20 16M20 20v-4h-4',
+  code: 'M8 8l-4 4 4 4M16 8l4 4-4 4M14 5l-4 14', info: 'M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18ZM12 11v5M12 8h.01', printer: 'M7 9V3h10v6M7 18H5a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2M7 14h10v7H7z', share: 'M4 12v7a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-7M16 6l-4-4-4 4M12 2v13', refresh: 'M20 11a8 8 0 0 0-14.3-4.9L4 8M4 4v4h4M4 13a8 8 0 0 0 14.3 4.9L20 16M20 20v-4h-4',
   undo: 'M9 14 4 9l5-5M4 9h10a6 6 0 0 1 0 12h-3', coins: 'M12 3v18M16.5 7.5c0-1.7-2-3-4.5-3S7.5 5.8 7.5 7.5s2 3 4.5 3.5 4.5 1.8 4.5 3.5-2 3-4.5 3-4.5-1.3-4.5-3',
   server: 'M4 4h16v6H4zM4 14h16v6H4zM8 7h.01M8 17h.01', building: 'M4 21V5a1 1 0 0 1 1-1h9a1 1 0 0 1 1 1v16M15 9h4a1 1 0 0 1 1 1v11M3 21h18M8 8h3M8 12h3M8 16h3',
   calendar: 'M4 6h16v15H4zM4 10h16M8 3v4M16 3v4', chart: 'M4 20h16M7 16v-5M12 16V6M17 16v-8', up: 'M6 15l6-6 6 6', down: 'M6 9l6 6 6-6', lock: 'M6 11h12v10H6zM8.5 11V8a3.5 3.5 0 0 1 7 0v3', upload: 'M12 16V4M7 9l5-5 5 5M5 20h14', brush: 'M14 4l6 6-8.5 8.5a3 3 0 0 1-2.1.9H5v-4.4a3 3 0 0 1 .9-2.1zM12.5 5.5l6 6', play: 'M7 4v16l13-8z', dup: 'M8 8h12v12H8zM4 16V4h12', pdf: 'M14 3H6a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8zM14 3v5h5M12 11v6M9.5 14.5 12 17l2.5-2.5',
@@ -1359,9 +1471,9 @@ const sunatDocs = () => allDocs().filter(d => ES_SUNAT(d.tipo));
 const toPEN = (n, cur) => (cur === 'USD' ? (Number(n) || 0) * (Number(DB.cfg.tipoCambio) || 1) : Number(n) || 0);
 const byRecent = (a, b) => (b.fecha || '').localeCompare(a.fecha || '') || (b.numero || 0) - (a.numero || 0) || (b.creado || '').localeCompare(a.creado || '');
 const totalOf = d => d.totales?.total ?? calc(d).total;
-const cotEstado = d => (d.estado === 'enviada' && d.vence && d.vence < todayISO() ? 'vencida' : d.estado);
+const cotEstado = d => (d.estado === 'enviada' && d.clase !== 'OV' && d.vence && d.vence < todayISO() ? 'vencida' : d.estado);
 function nextNumero(tipo, serie) { let m = 0; for (const d of DB.cols.documentos.values()) if (d.tipo === tipo && d.serie === serie && d.numero > m) m = d.numero; return m + 1; }
-function serieFor(tipo, ref) { const s = DB.cfg.series; if (tipo === '07' || tipo === '08') return ref?.tipo === '03' ? s[tipo + 'B'] : s[tipo + 'F']; return s[tipo]; }
+function serieFor(tipo, ref, clase) { const s = DB.cfg.series; if (tipo === '07' || tipo === '08') return ref?.tipo === '03' ? s[tipo + 'B'] : s[tipo + 'F']; if (tipo === 'COT' && clase === 'OV') return s.OV || 'OV01'; return s[tipo]; }
 const withTotals = d => { const c = calc(d); d.totales = { gravada: c.gravada, exonerada: c.exonerada, inafecta: c.inafecta, igv: c.igv, total: c.total }; if (d.tipo === '01') { const sp = spot(d, DB.cfg.tipoCambio); d.totales.detraccion = sp.aplica ? sp.monto : 0; d.totales.neto = sp.neto; } return d; };
 
 async function initData() {
@@ -1468,7 +1580,14 @@ function onHash() {
   }
   if (r === 'editor' && !E) { location.hash = 'cotizaciones'; return; }
   if (r !== 'editor') E = null;
-  if (['sunat', 'personalizar'].includes(UI.route) && r !== UI.route) { flushCfg(); UI.cfgDraft = null; UI.cfgState = ''; }
+  if (['sunat', 'personalizar'].includes(UI.route) && r !== UI.route) {
+    if (cfgSucio()) {
+      const dest = r; suppressHash = true; location.hash = UI.route;
+      confirmDlg({ title: '¿Guardar los cambios?', body: 'Modificaste datos de la configuración y aún no los guardas. Guárdalos para salir, o quédate y usa «Descartar» si no los quieres.', ok: 'Guardar y salir' }).then(async yes => { if (!yes) return; if (await flushCfg() === false) return; UI.cfgDraft = null; UI.cfgState = ''; location.hash = dest; });
+      return;
+    }
+    UI.cfgDraft = null; UI.cfgState = '';
+  }
   UI.route = r; render(); window.scrollTo(0, 0);
 }
 function go(r) { if (currentRoute() === r && UI.route === r) { render(); window.scrollTo(0, 0); } else location.hash = r; }
@@ -1485,16 +1604,18 @@ function render() {
   if (keep) { const el = document.getElementById(keep.id); if (el) { el.focus({ preventScroll: true }); try { if (keep.s != null) el.setSelectionRange(keep.s, keep.e); } catch { /* */ } } }
   afterRender();
 }
-function afterRender() { observePapers(); hydrateQR(); if (UI.route === 'historial') hydrateUsers(); if (UI.route === 'sunat' && padronURL(UI.cfgDraft || DB.cfg) && !UI.padronEstado) loadPadronEstado(); }
+function afterRender() { pintarWaFab(); if (['sunat', 'personalizar'].includes(UI.route)) pintarCfgBar(); else $('#cfg-bar')?.remove(); observePapers(); hydrateQR(); if (UI.route === 'historial') hydrateUsers(); if (UI.route === 'sunat' && padronURL(UI.cfgDraft || DB.cfg) && !UI.padronEstado) loadPadronEstado(); }
 const loadingHTML = () => `<div class="page-head"><div><div class="skel" style="width:240px;height:30px"></div><div class="skel" style="width:320px;height:16px;margin-top:10px"></div></div></div><div class="skel" style="height:104px;border-radius:14px"></div><div class="dash"><div class="skel" style="height:300px;border-radius:14px"></div><div class="skel" style="height:300px;border-radius:14px"></div></div>`;
 
+const marcaTitulo = () => String(DB.cfg.marca?.titulo || DB.cfg.empresa?.razon || 'Facturador electrónico');
 function renderNav() {
+  const tt = `${marcaTitulo()} · ${typeof GRANATE_PRUEBA !== 'undefined' && GRANATE_PRUEBA ? 'PRUEBA' : 'Facturación electrónica'}`; if (document.title !== tt) document.title = tt;
   const pend = cpes().filter(d => d.estado === 'pendiente' || d.estado === 'rechazado').length, gpend = gres().filter(d => d.estado === 'pendiente' || d.estado === 'rechazado').length;
   const apr = cots().filter(d => d.estado === 'aprobada').length;
   const integ = DB.cfg.integracion || {};
   const item = (r, ic, long, short, badge, cls = '') => `<li class="${cls}"><a class="nav-link" href="#${r}" ${UI.route === r || (r === 'cotizaciones' && UI.route === 'editor' && E?.doc.tipo === 'COT') || (r === 'comprobantes' && UI.route === 'editor' && E && !['COT', '09'].includes(E.doc.tipo)) || (r === 'guias' && UI.route === 'editor' && E?.doc.tipo === '09') ? 'aria-current="page"' : ''}>${icon(ic)}<span class="nl-long">${long}</span><span class="nl-short">${short}</span>${badge ? `<span class="badge" aria-label="${badge} pendientes">${badge}</span>` : ''}</a></li>`;
   $('#nav').innerHTML = `
-    <div class="brand">${BRAND}<div class="brand-txt"><div class="brand-name">Granate</div><div class="brand-sub">Cotiza y factura</div></div></div>
+    <div class="brand">${BRAND}<div class="brand-txt"><div class="brand-name" title="${esc(marcaTitulo())}">${esc(marcaTitulo())}</div><div class="brand-sub">${esc(DB.cfg.marca?.sub || 'Facturación electrónica')}</div></div></div>
     <button class="nav-cta" data-act="new" data-tipo="COT" aria-label="Nueva cotización">${icon('plus')}<span>Nueva cotización</span></button>
     <ul class="nav-list">
       ${item('inicio', 'home', 'Inicio', 'Inicio')}
@@ -1517,7 +1638,7 @@ function renderNav() {
 
 /* ---------- piezas comunes ---------- */
 const PILL_COT = { borrador: ['neutral', 'edit', 'Borrador'], enviada: ['', 'send', 'Enviada'], aprobada: ['ok', 'check', 'Aprobada'], rechazada: ['bad', 'x', 'Rechazada'], facturada: ['brand', 'receipt', 'Facturada'], vencida: ['warn', 'clock', 'Vencida'] };
-const PILL_CPE = { borrador: ['neutral', 'edit', 'Borrador'], pendiente: ['warn', 'clock', 'Por enviar'], aceptado: ['ok', 'check', 'Aceptado'], observado: ['warn', 'alert', 'Observado'], rechazado: ['bad', 'x', 'Rechazado'] };
+const PILL_CPE = { borrador: ['neutral', 'edit', 'Borrador'], pendiente: ['warn', 'clock', 'Por enviar'], aceptado: ['ok', 'check', 'Aceptado'], observado: ['warn', 'alert', 'Observado'], rechazado: ['bad', 'x', 'Rechazado'], anulado: ['neutral', 'ban', 'Anulado (baja)'], baja_proceso: ['warn', 'clock', 'Baja en proceso'] };
 const PILL_NV = { borrador: ['neutral', 'edit', 'Borrador'], emitida: ['warn', 'tag', 'Sin comprobante'], convertida: ['ok', 'check', 'Convertida'], anulada: ['bad', 'ban', 'Anulada'] };
 const pill = (map, k) => { const [c, i, l] = map[k] || ['neutral', 'clock', k]; return `<span class="pill ${c}">${icon(i, 'sm')}${l}</span>`; };
 const docPill = d => (d.tipo === 'COT' ? pill(PILL_COT, cotEstado(d)) : d.tipo === 'NV' ? pill(PILL_NV, d.estado) : pill(PILL_CPE, d.estado));
@@ -1599,6 +1720,12 @@ function pendientes() {
 
   return todo;
 }
+function ventasVendedorHTML(all, ym) {
+  const m = new Map();
+  all.filter(d => ES_CPE(d.tipo) && ['aceptado', 'observado'].includes(d.estado) && d.fecha.startsWith(ym)).forEach(d => { const k = d.vendedor || (d.ref && getDoc(d.ref.id)?.vendedor) || 'Sin responsable'; const r = m.get(k) || { n: 0, t: 0 }; if (!ES_NOTA(d.tipo)) r.n++; r.t += signedTotal(d); m.set(k, r); });
+  const rows = [...m.entries()].sort((a, b) => b[1].t - a[1].t), tot = rows.reduce((a, [, r]) => a + r.t, 0) || 1;
+  return `<section class="panel"><div class="panel-h"><h2>Ventas por responsable</h2><span class="hint">Este mes · soles, neto de notas de crédito</span></div><div class="panel-b">${rows.length ? `<div class="vv">${rows.map(([k, r]) => `<div class="vv-r"><span class="vv-n">${esc(k)}</span><span class="vv-bar"><i style="width:${Math.max(2, Math.round((r.t / tot) * 100))}%"></i></span><span class="num vv-t">${money(r2(r.t))}</span><span class="num faint vv-c">${r.n} comp.</span></div>`).join('')}</div>` : '<p class="hint" style="margin:0">Aún no hay ventas aceptadas este mes.</p>'}</div></section>`;
+}
 function vReportes() {
   const cfg = DB.cfg, t = todayISO(), ym = t.slice(0, 7), prevYm = addMonths(t.slice(0, 7) + '-01', -1).slice(0, 7);
   const all = allDocs();
@@ -1641,6 +1768,7 @@ function vReportes() {
   </section>
   <div class="dash">
     <div class="col">
+      ${ventasVendedorHTML(all, ym)}
       <section class="panel"><div class="panel-h"><h2>Facturación neta por mes</h2><span class="hint">Soles · aceptado por SUNAT, menos notas de crédito</span></div>
         <div class="panel-b chart" id="chart-fact">${barChart(series)}<div class="tip" role="status"></div></div></section>
       <section class="panel"><div class="panel-h"><h2>Embudo de cotizaciones</h2><span class="hint">Últimos 90 días</span></div>
@@ -1677,19 +1805,20 @@ function barChart(series) {
 
 /* ================= COTIZACIONES ================= */
 function vCotizaciones() {
-  const list = cots().sort(byRecent);
+  const todas = cots().sort(byRecent), CL = UI.cotClase || 'todas';
+  const list = todas.filter(d => CL === 'todas' || (CL === 'OV' ? esOV(d) : !esOV(d)));
   const F = [['todas', 'Todas'], ['borrador', 'Borradores'], ['enviada', 'Enviadas'], ['aprobada', 'Aprobadas'], ['facturada', 'Facturadas'], ['rechazada', 'Rechazadas']];
   const cnt = k => (k === 'todas' ? list.length : list.filter(d => (k === 'enviada' ? ['enviada', 'vencida'].includes(cotEstado(d)) : d.estado === k)).length);
   const q = UI.cotQ.trim().toLowerCase();
   const rows = list.filter(d => UI.cotF === 'todas' || (UI.cotF === 'enviada' ? ['enviada', 'vencida'].includes(cotEstado(d)) : d.estado === UI.cotF))
     .filter(d => !q || docNum(d).toLowerCase().includes(q) || (d.cliente?.nombre || '').toLowerCase().includes(q) || (d.cliente?.numDoc || '').includes(q));
   return `
-  <div class="page-head"><div><h1>Cotizaciones</h1><p class="sub">Crea, comparte y convierte en factura con un toque.</p></div>
-    <div class="head-actions"><button class="btn primary" data-act="new" data-tipo="COT">${icon('plus')}Nueva cotización</button></div></div>
-  <div class="toolbar"><div class="chips" role="group" aria-label="Filtrar por estado">${F.map(([k, l]) => `<button class="chip" data-act="cotf" data-f="${k}" aria-pressed="${UI.cotF === k}">${l}<span class="count">${cnt(k)}</span></button>`).join('')}</div>
+  <div class="page-head"><div><h1>Cotizaciones y órdenes de venta</h1><p class="sub">La cotización es la propuesta; la orden de venta es el pedido confirmado. Ambas se facturan con un toque.</p></div>
+    <div class="head-actions"><button class="btn" data-act="new-ov">${icon('plus')}Orden de venta</button><button class="btn primary" data-act="new" data-tipo="COT">${icon('plus')}Nueva cotización</button></div></div>
+  <div class="toolbar"><div class="seg" role="group" aria-label="Clase">${[['todas', 'Todas'], ['COT', 'Cotizaciones'], ['OV', 'Órdenes de venta']].map(([k, l]) => `<button data-act="cot-clase" data-v="${k}" aria-pressed="${CL === k}">${l} <span class="num faint">${k === 'todas' ? todas.length : todas.filter(d => (k === 'OV') === esOV(d)).length}</span></button>`).join('')}</div><div class="chips" role="group" aria-label="Filtrar por estado">${F.map(([k, l]) => `<button class="chip" data-act="cotf" data-f="${k}" aria-pressed="${UI.cotF === k}">${l}<span class="count">${cnt(k)}</span></button>`).join('')}</div>
     <div class="search">${icon('search')}<input class="input" id="q-cot" data-search="cotQ" placeholder="Buscar cliente o número" value="${esc(UI.cotQ)}" aria-label="Buscar cotizaciones"></div></div>
   <section class="panel">${rows.length ? `<div class="table-wrap"><table class="t"><thead><tr><th>Número</th><th>Cliente</th><th class="hide-sm">Fecha</th><th class="hide-md">Válida hasta</th><th class="num">Total</th><th>Estado</th><th class="act"><span class="sr">Acciones</span></th></tr></thead><tbody>
-    ${rows.map(d => `<tr data-act="open" data-id="${d.id}"><td class="docid">${docNum(d)}</td><td class="who">${esc(d.cliente?.nombre || '—')}<small>${DOCID[d.cliente?.tipoDoc] || ''} ${esc(d.cliente?.numDoc || '')}</small></td><td class="hide-sm tnum">${fmtDay(d.fecha)}</td><td class="hide-md tnum">${fmtDay(d.vence)}</td><td class="num"><b>${money(totalOf(d), d.moneda)}</b></td><td>${docPill(d)}</td><td class="act">${d.estado === 'aprobada' ? `<button class="btn sm dark" data-act="convert" data-id="${d.id}">Facturar</button>` : d.estado === 'borrador' ? `<button class="btn sm" data-act="edit" data-id="${d.id}">Editar</button>` : ''}</td></tr>`).join('')}
+    ${rows.map(d => `<tr data-act="open" data-id="${d.id}"><td class="docid">${docNum(d)}${esOV(d) ? '<small style="display:block;font-weight:600;color:var(--granate);font-size:var(--fs-xs)">Orden de venta</small>' : ''}</td><td class="who">${esc(d.cliente?.nombre || '—')}<small>${DOCID[d.cliente?.tipoDoc] || ''} ${esc(d.cliente?.numDoc || '')}</small></td><td class="hide-sm tnum">${fmtDay(d.fecha)}</td><td class="hide-md tnum">${fmtDay(d.vence)}</td><td class="num"><b>${money(totalOf(d), d.moneda)}</b></td><td>${docPill(d)}</td><td class="act">${d.estado === 'aprobada' ? `<button class="btn sm dark" data-act="convert" data-id="${d.id}">Facturar</button>` : d.estado === 'borrador' ? `<button class="btn sm" data-act="edit" data-id="${d.id}">Editar</button>` : ''}</td></tr>`).join('')}
   </tbody></table></div>` : (list.length ? emptyHTML('search', 'Sin resultados', 'Prueba con otro filtro o término de búsqueda.') : emptyHTML('quote', 'Tu primera cotización', 'Arma una propuesta con tu catálogo en menos de un minuto y compártela por WhatsApp.', `<button class="btn primary" data-act="new" data-tipo="COT">${icon('plus')}Crear cotización</button>`))}</section>`;
 }
 
@@ -1699,20 +1828,22 @@ function vComprobantes() {
   const isNV = UI.cpeT === 'NV';
   const F = isNV ? [['todos', 'Todas'], ['emitida', 'Sin comprobante'], ['convertida', 'Convertidas'], ['anulada', 'Anuladas'], ['borrador', 'Borradores']] : [['todos', 'Todos'], ['aceptado', 'Aceptados'], ['pendiente', 'Por enviar'], ['rechazado', 'Rechazados'], ['borrador', 'Borradores']];
   if (!F.some(([k]) => k === UI.cpeF)) UI.cpeF = 'todos';
-  const T = [['all', 'Todos'], ['01', 'Facturas'], ['03', 'Boletas'], ['07', 'N. crédito'], ['08', 'N. débito'], ['NV', 'N. venta']];
+  const T = [['all', 'Todos'], ['01', 'Facturas'], ['03', 'Boletas'], ['07', 'N. crédito'], ['08', 'N. débito'], ['09', 'Guías remitente'], ['31', 'Guías transportista'], ['NV', 'N. venta']];
+  const esG = ['09', '31'].includes(UI.cpeT);
   const q = UI.cpeQ.trim().toLowerCase();
-  const base = list.filter(d => UI.cpeT === 'all' || d.tipo === UI.cpeT);
+  const base = esG ? gres().filter(g => UI.cpeT === '09' || esGRT(g)) : list.filter(d => UI.cpeT === 'all' || d.tipo === UI.cpeT);
   const rows = base.filter(d => UI.cpeF === 'todos' || d.estado === UI.cpeF).filter(d => !q || docNum(d).toLowerCase().includes(q) || (d.cliente?.nombre || '').toLowerCase().includes(q) || (d.cliente?.numDoc || '').includes(q));
   const cnt = k => (k === 'todos' ? base.length : base.filter(d => d.estado === k).length);
   const pay = d => { if (d.tipo === 'NV') return '<span class="faint">Interno</span>'; const s = payState(d); return s === 'Vencido' ? `<span class="pill bad">${icon('alert', 'sm')}Vencido</span>` : s === 'Por cobrar' ? `<span class="pill warn">${icon('clock', 'sm')}Por cobrar</span>` : s === 'Cobrado' ? `<span class="pill neutral">Crédito · cobrado</span>` : `<span class="faint">${s}</span>`; };
   return `
-  <div class="page-head"><div><h1>Comprobantes electrónicos</h1><p class="sub">Facturas, boletas, notas de crédito y débito con su estado ante SUNAT${isNV ? ' · las notas de venta son internas y no se declaran' : ''}.</p></div>
-    <div class="head-actions">${isNV ? `<button class="btn primary" data-act="new" data-tipo="NV">${icon('plus')}Nota de venta</button>` : `<button class="btn" data-act="new" data-tipo="03">${icon('plus')}Boleta</button><button class="btn primary" data-act="new" data-tipo="01">${icon('plus')}Factura</button>`}</div></div>
+  <div class="page-head"><div><h1>Comprobantes electrónicos</h1><p class="sub">Facturas, boletas, notas de crédito y débito y guías de remisión con su estado ante SUNAT${isNV ? ' · las notas de venta son internas y no se declaran' : ''}.</p></div>
+    <div class="head-actions">${esG ? `<button class="btn primary" data-act="new" data-tipo="09">${icon('plus')}Nueva guía</button>` : isNV ? `<button class="btn primary" data-act="new" data-tipo="NV">${icon('plus')}Nota de venta</button>` : `<button class="btn" data-act="new" data-tipo="03">${icon('plus')}Boleta</button><button class="btn primary" data-act="new" data-tipo="01">${icon('plus')}Factura</button>`}</div></div>
   ${isNV ? `<div class="alert warn" style="margin-bottom:14px">${icon('tag')}<div><b>La nota de venta no es comprobante de pago.</b> Úsala como pedido o constancia interna y conviértela en boleta o factura al concretar la venta: vender sin comprobante es infracción ante SUNAT.</div></div>` : ''}
-  <div class="toolbar"><div class="seg" role="group" aria-label="Tipo">${T.map(([k, l]) => `<button data-act="cpet" data-t="${k}" aria-pressed="${UI.cpeT === k}">${l}</button>`).join('')}</div>
+  ${reporteRapidoHTML()}
+  <div class="toolbar"><div class="seg seg-scroll" role="group" aria-label="Tipo">${T.map(([k, l]) => `<button data-act="cpet" data-t="${k}" aria-pressed="${UI.cpeT === k}">${l}</button>`).join('')}</div>
     <div class="chips" role="group" aria-label="Estado SUNAT">${F.map(([k, l]) => `<button class="chip" data-act="cpef" data-f="${k}" aria-pressed="${UI.cpeF === k}">${l}<span class="count">${cnt(k)}</span></button>`).join('')}</div>
     <div class="search">${icon('search')}<input class="input" id="q-cpe" data-search="cpeQ" placeholder="Buscar cliente o número" value="${esc(UI.cpeQ)}" aria-label="Buscar comprobantes"></div></div>
-  <section class="panel">${rows.length ? `<div class="table-wrap"><table class="t"><thead><tr><th>Número</th><th>Cliente</th><th class="hide-sm">Emisión</th><th class="hide-md">Pago</th><th class="num">Total</th><th>SUNAT</th><th class="act"><span class="sr">Acciones</span></th></tr></thead><tbody>
+  <section class="panel">${esG ? guiasTablaHTML(UI.cpeT === '31') : rows.length ? `<div class="table-wrap"><table class="t"><thead><tr><th>Número</th><th>Cliente</th><th class="hide-sm">Emisión</th><th class="hide-md">Pago</th><th class="num">Total</th><th>SUNAT</th><th class="act"><span class="sr">Acciones</span></th></tr></thead><tbody>
     ${rows.map(d => `<tr data-act="open" data-id="${d.id}"><td class="docid">${docNum(d)}<small style="display:block;font-weight:400;color:var(--text-3);font-size:var(--fs-xs)">${TIPOS[d.tipo].corto}${guiaPendiente(d) ? ' · <span style="color:var(--warn-ink, #8a5a00);font-weight:600">guía pendiente</span>' : ''}</small></td><td class="who">${esc(d.cliente?.nombre || '—')}<small>${DOCID[d.cliente?.tipoDoc] || ''} ${esc(d.cliente?.numDoc || '')}</small></td><td class="hide-sm tnum">${fmtDay(d.fecha)}</td><td class="hide-md">${pay(d)}</td><td class="num"><b>${d.tipo === '07' ? '−' : ''}${money(totalOf(d), d.moneda)}</b>${d.totales?.detraccion ? `<small class="faint" style="display:block">Detr. ${money0(d.totales.detraccion)}</small>` : ''}</td><td>${docPill(d)}</td><td class="act">${d.estado === 'pendiente' ? `<button class="btn sm primary" data-act="send" data-id="${d.id}">${icon('send', 'sm')}Enviar</button>` : d.estado === 'borrador' ? `<button class="btn sm" data-act="edit" data-id="${d.id}">Editar</button>` : d.tipo === 'NV' && d.estado === 'emitida' ? `<button class="btn sm dark" data-act="convert" data-id="${d.id}">Convertir</button>` : ''}</td></tr>`).join('')}
   </tbody></table></div>` : (list.length ? emptyHTML('search', 'Sin resultados', 'Prueba con otro filtro o término de búsqueda.') : emptyHTML('receipt', 'Aún no emites comprobantes', 'Convierte una cotización aprobada o crea una factura desde cero.', `<button class="btn primary" data-act="new" data-tipo="01">${icon('plus')}Nueva factura</button>`))}</section>`;
 }
@@ -1752,11 +1883,11 @@ function vSunat() {
   const inClaude = !!(window.claude && window.claude.use);
   const f = (path, label, val, attrs = '', cls = '') => `<div class="field ${cls}"><label for="cf-${path.replace(/\./g, '-')}">${label}</label><input class="input" id="cf-${path.replace(/\./g, '-')}" data-cfg="${path}" value="${esc(val)}" ${attrs}></div>`;
   const rucOk = validRUC(e.ruc);
-  const nextN = t => pad(nextNumero(/^0[78][FB]$/.test(t) ? t.slice(0, 2) : t, c.series[t]), t === 'COT' || t === 'NV' ? 6 : 8);
+  const nextN = t => pad(nextNumero(/^0[78][FB]$/.test(t) ? t.slice(0, 2) : t === 'OV' ? 'COT' : t, c.series[t]), t === 'COT' || t === 'NV' || t === 'OV' ? 6 : 8);
   const demoN = allDocs().filter(d => d.demo).length + [...DB.cols.clientes.values()].filter(x => x.demo).length + [...DB.cols.productos.values()].filter(x => x.demo).length;
   return `
   <div class="page-head"><div><h1>Integración SUNAT</h1><p class="sub">Datos del emisor, series y conexión para emitir comprobantes electrónicos.</p></div>
-    <div class="head-actions"><span class="save-state ${UI.cfgState === 'ok' ? 'ok' : ''}" id="cfg-state">${UI.cfgState === 'saving' ? 'Guardando…' : UI.cfgState === 'ok' ? icon('check', 'sm') + 'Cambios guardados' : 'Se guarda automáticamente'}</span></div></div>
+    <div class="head-actions"><span class="save-state" id="cfg-state"></span><button class="btn primary" data-act="cfg-save" ${cfgSucio() ? '' : 'disabled'}>${icon('check')}Guardar cambios</button></div></div>
   <div class="set">
     <div class="stack">
       <section class="panel"><div class="panel-h"><h2>Empresa emisora</h2>${empresaLista(c) ? `<span class="pill ok">${icon('check', 'sm')}Lista para emitir</span>` : `<span class="pill warn">${icon('alert', 'sm')}Incompleta</span>`}</div>
@@ -1771,9 +1902,18 @@ function vSunat() {
           ${f('empresa.email', 'Correo de facturación', e.email, 'type="email"', 'spanall')}
           <div class="alert brand spanall">${icon('brush')}<div>Logo, color, cuentas bancarias y el orden de cada sección se configuran en <button class="linkbtn" data-act="go" data-r="personalizar">Personalizar documentos</button>.</div></div>
         </div></div></section>
+      <section class="panel"><div class="panel-h"><h2>Responsables de ventas</h2><span class="hint">Obligatorio en facturas y boletas</span></div>
+        <div class="panel-b"><div class="vend-list">${(c.vendedores || []).map(v => `<span class="vend-chip">${icon('users', 'sm')}${esc(v)}<button class="btn ghost sm icon-only" data-act="vend-del" data-v="${esc(v)}" aria-label="Quitar a ${esc(v)}">${icon('x', 'sm')}</button></span>`).join('') || '<span class="hint">Aún no hay responsables: agrega al menos uno para poder facturar.</span>'}</div>
+          <div class="vend-row" style="margin-top:10px"><input class="input" id="cfg-vend-new" placeholder="Nombre y apellido" maxlength="60" autocomplete="off" data-enter="vend-add-cfg"><button class="btn" data-act="vend-add-cfg">${icon('plus', 'sm')}Agregar</button></div></div></section>
+      <section class="panel"><div class="panel-h"><h2>Título y soporte</h2></div>
+        <div class="panel-b"><div class="grid g2">
+          ${f('marca.titulo', 'Título de la app', c.marca?.titulo || '', 'maxlength="60"')}
+          ${f('soporte.whatsapp', 'WhatsApp de soporte (con código de país)', c.soporte?.whatsapp || '', 'inputmode="tel" maxlength="16"')}
+          ${f('soporte.mensaje', 'Mensaje inicial del chat de soporte', c.soporte?.mensaje || '', 'maxlength="200"', 'spanall')}
+        </div><p class="hint" style="margin-top:8px">El título aparece en el menú y en la pestaña del navegador. El botón verde de WhatsApp se muestra en todas las pantallas.</p></div></section>
       <section class="panel"><div class="panel-h"><h2>Series y numeración</h2><span class="hint">Próximo número entre paréntesis</span></div>
         <div class="panel-b"><div class="grid g3">
-          ${[['01', 'Factura'], ['03', 'Boleta'], ['COT', 'Cotización'], ['07F', 'N. crédito de factura'], ['07B', 'N. crédito de boleta'], ['09', 'Guía de remisión'], ['08F', 'N. débito de factura'], ['08B', 'N. débito de boleta'], ['NV', 'Nota de venta (interna)']].map(([k, l]) => `<div class="field"><label for="cf-series-${k}">${l} <span class="faint num">(${nextN(k)})</span></label><input class="input num" id="cf-series-${k}" data-cfg="series.${k}" value="${esc(c.series[k])}" maxlength="4" style="text-transform:uppercase"></div>`).join('')}
+          ${[['01', 'Factura'], ['03', 'Boleta'], ['COT', 'Cotización'], ['OV', 'Orden de venta'], ['07F', 'N. crédito de factura'], ['07B', 'N. crédito de boleta'], ['09', 'Guía de remisión'], ['08F', 'N. débito de factura'], ['08B', 'N. débito de boleta'], ['NV', 'Nota de venta (interna)']].map(([k, l]) => `<div class="field"><label for="cf-series-${k}">${l} <span class="faint num">(${nextN(k)})</span></label><input class="input num" id="cf-series-${k}" data-cfg="series.${k}" value="${esc(c.series[k])}" maxlength="4" style="text-transform:uppercase"></div>`).join('')}
         </div><p class="hint" style="margin-top:10px">Facturas y sus notas inician con F; boletas y sus notas con B; la guía de remisión remitente con T. Cuatro caracteres alfanuméricos.</p></div></section>
       <section class="panel"><div class="panel-h"><h2>Reglas de emisión</h2><span class="hint">Se validan antes de enviar a SUNAT</span></div>
         <div class="panel-b"><ul class="rules">
@@ -1811,7 +1951,7 @@ function vSunat() {
           ` : `<div class="alert brand">${icon('shield')}<div>El simulador genera el XML UBL 2.1 real, aplica las validaciones de SUNAT y devuelve una respuesta tipo CDR. Los comprobantes no tienen validez tributaria.</div></div>`}
         </div></section>
       <section class="panel"><div class="panel-h"><h2>Cómo se conecta</h2></div>
-        <div class="panel-b"><div class="arch">${archSVG()}</div>
+        <div class="panel-b"><div class="alert info" style="margin-bottom:12px">${icon('info')}<div><b>Se envían a SUNAT:</b> facturas, boletas, notas de crédito y débito (de facturas y de boletas) y guías de remisión. <b>No se envían:</b> cotizaciones, órdenes de venta y notas de venta, que son documentos internos.</div></div><div class="arch">${archSVG()}</div>
           <details class="more" style="margin-top:14px"><summary>${icon('server')}Endpoints de SUNAT${icon('chev')}</summary><div class="inner"><table class="ep"><tbody>${SUNAT_EP.map(([n, u, d]) => `<tr><td>${n}</td><td><code>${esc(u)}</code><div class="hint">${esc(d)}</div></td></tr>`).join('')}</tbody></table></div></details>
           <details class="more" style="margin-top:10px"><summary>${icon('code')}Contrato de tu API${icon('chev')}</summary><div class="inner">
             <p class="hint" style="margin-bottom:8px">La web envía JSON y el XML sin firmar; tu API firma (XMLDSig), comprime en ZIP, llama a <code>sendBill</code> y devuelve el resultado del CDR.</p>
@@ -1909,7 +2049,7 @@ function vPersonalizar() {
   }).join('');
   return `
   <div class="page-head"><div><button class="btn ghost sm" data-act="go" data-r="inicio">${icon('back', 'sm')}Inicio</button><h1 style="margin-top:8px">Personalizar documentos</h1><p class="sub">Logo, color, cuentas bancarias y el orden de cada sección. Se aplica a la vista previa, al PDF y a lo que compartes.</p></div>
-    <div class="head-actions" style="align-items:center"><span class="save-state ${UI.cfgState === 'ok' ? 'ok' : ''}" id="cfg-state">${UI.cfgState === 'saving' ? 'Guardando…' : UI.cfgState === 'ok' ? icon('check', 'sm') + 'Cambios guardados' : 'Se guarda automáticamente'}</span>
+    <div class="head-actions" style="align-items:center"><span class="save-state" id="cfg-state"></span><button class="btn primary" data-act="cfg-save" ${cfgSucio() ? '' : 'disabled'}>${icon('check')}Guardar cambios</button>
       <div class="seg brand" role="group" aria-label="Documento a personalizar">${[['cot', 'Cotización'], ['fac', 'Factura y boleta']].map(([k, l]) => `<button data-act="ps-tipo" data-v="${k}" aria-pressed="${tipo === k}">${l}</button>`).join('')}</div></div></div>
   <div class="seg ed-tabs" role="group" aria-label="Vista">${[['datos', 'Ajustes'], ['preview', 'Vista previa']].map(([k, l]) => `<button data-act="ps-tab" data-v="${k}" aria-pressed="${(UI.psTab || 'datos') === k}">${l}</button>`).join('')}</div>
   <div class="ed ps" id="ps" data-tab="${UI.psTab || 'datos'}">
@@ -1999,7 +2139,19 @@ function newDoc(tipo, base = {}) {
   Object.assign(d, base);
   if (tipo === '09' && base.cliente) { d.traslado.llegada = { ubigeo: base.cliente.ubigeo || '', direccion: base.cliente.direccion || '' }; }
   if (['01', '03'].includes(tipo) && !d.operacion && d.items.length) d.operacion = sugerirOperacion(d.items);
+  if (tipo === '01') { d.diasCredito = Number(d.diasCredito) || 30; if (d.formaPago === 'Credito') aplicarDias(d); else d.vence = d.fecha; }
+  if (['01', '03', 'NV', 'COT'].includes(tipo) && !d.vendedor) { const v = lsGet('granate.vendedor'); if (v && (cfg.vendedores || []).includes(v)) d.vendedor = v; else if ((cfg.vendedores || []).length === 1) d.vendedor = cfg.vendedores[0]; }
   return d;
+}
+const lsGet = k => { try { return localStorage.getItem(k) || ''; } catch { return ''; } };
+const lsSet = (k, v) => { try { localStorage.setItem(k, v); } catch { /* */ } };
+/* contado: vence el mismo día de emisión · crédito: vence a los N días y la última cuota vence ese día */
+function aplicarDias(d) {
+  if (d.tipo !== '01') return;
+  if (d.formaPago !== 'Credito') { d.vence = d.fecha; return; }
+  const n = Math.max(1, Math.round(Number(d.diasCredito) || 30)); d.diasCredito = n; d.vence = addDays(d.fecha, n);
+  if (!d.cuotas.length) d.cuotas = [{ monto: 0, fecha: d.vence }];
+  const k = d.cuotas.length; d.cuotas.forEach((q, i) => { q.fecha = addDays(d.fecha, Math.max(1, Math.round(n * (i + 1) / k))); });
 }
 function openEditor(doc, isNew, cliMode) { E = { doc: clone(doc), isNew, tab: 'datos', dirty: false, cli: cliMode || (doc.cliente?.nombre ? 'card' : 'search'), cliQ: '', saveCli: true, errors: [], guiaExt: null }; closeDrawer(); suppressHash = false; if (currentRoute() === 'editor') { UI.route = 'editor'; render(); } else location.hash = 'editor'; }
 const copyItems = items => clone(items || []).map(it => ({ ...it, id: uid() }));
@@ -2007,7 +2159,7 @@ function startNew(tipo) { openEditor(newDoc(tipo), true); }
 function startConvert(id, tipo) {
   const c = getDoc(id); if (!c) return;
   tipo = tipo || (c.cliente?.tipoDoc === '6' ? '01' : '03');
-  const base = { cliente: clone(c.cliente), items: copyItems(c.items), moneda: c.moneda, incluyeIGV: c.incluyeIGV, origenId: c.id };
+  const base = { cliente: clone(c.cliente), items: copyItems(c.items), moneda: c.moneda, incluyeIGV: c.incluyeIGV, origenId: c.id, ...(c.vendedor ? { vendedor: c.vendedor } : {}) };
   if (c.tipo === '09') { // facturar los bienes de una guía: precios del catálogo y la guía ya vinculada
     base.items = c.items.map(it => { const p = [...DB.cols.productos.values()].find(x => x.codigo && x.codigo === it.codigo); return { id: uid(), codigo: it.codigo, desc: it.desc, unidad: it.unidad, cant: it.cant, precio: p ? p.precio : 0, afect: p?.afect || '10' }; });
     base.operacion = 'bienes'; base.guias = [{ id: c.id, serie: c.serie, numero: c.numero }]; base.moneda = 'PEN'; base.incluyeIGV = false; delete base.origenId; base.greId = c.id;
@@ -2029,7 +2181,7 @@ function startDuplicate(id) {
   const s = getDoc(id); if (!s) return;
   if (s.tipo === '09') { const nd = newDoc('09', { cliente: clone(s.cliente), items: copyItems(s.items), obs: s.obs || '' }); nd.traslado = { ...clone(s.traslado), fechaInicio: todayISO() }; return openEditor(nd, true, 'card'); }
   const tipo = ES_NOTA(s.tipo) ? '01' : s.tipo;
-  const nd = newDoc(tipo, { cliente: clone(s.cliente), items: copyItems(s.items), moneda: s.moneda, incluyeIGV: s.incluyeIGV, formaPago: s.formaPago === 'Credito' && tipo === '01' ? 'Credito' : 'Contado', cuotas: [] });
+  const nd = newDoc(tipo, { cliente: clone(s.cliente), items: copyItems(s.items), moneda: s.moneda, incluyeIGV: s.incluyeIGV, formaPago: s.formaPago === 'Credito' && tipo === '01' ? 'Credito' : 'Contado', cuotas: [], diasCredito: s.diasCredito || 30, ...(s.vendedor ? { vendedor: s.vendedor } : {}) });
   if (['01', '03'].includes(tipo)) { nd.operacion = s.operacion || sugerirOperacion(nd.items); if (s.detraccion?.codigo) nd.detraccion = { codigo: s.detraccion.codigo, noSujeta: false, motivo: '' }; }
   if (nd.formaPago === 'Credito') { nd.cuotas = [{ monto: 0, fecha: addDays(nd.fecha, 30) }]; E = { doc: nd }; splitCuotas(1); }
   openEditor(nd, true, 'card');
@@ -2045,7 +2197,7 @@ const TITULO_NUEVO = { COT: 'Nueva cotización', '01': 'Nueva factura', '03': 'N
 function vEditor() {
   const d = E.doc; if (d.tipo === '09') return vEditorGRE();
   const isCot = d.tipo === 'COT', isNota = ES_NOTA(d.tipo), isNV = d.tipo === 'NV', isVenta = ['01', '03'].includes(d.tipo), cfg = DB.cfg;
-  const title = E.isNew ? TITULO_NUEVO[d.tipo] : `Editar ${TIPOS[d.tipo].corto.toLowerCase()}`;
+  const title = E.isNew ? (esOV(d) ? 'Nueva orden de venta' : TITULO_NUEVO[d.tipo]) : `Editar ${nombreDoc(d).toLowerCase()}`;
   const nro = isCot || isNV ? `${d.serie}-${pad(d.numero || nextNumero(d.tipo, d.serie), 6)}` : `${d.serie}-${pad(nextNumero(d.tipo, d.serie), 8)}`;
   const sub = isCot || isNV ? `N.° ${nro}${d.numero ? '' : ' · se asigna al guardar'}` : `N.° ${nro} · se confirma al emitir`;
   const origen = d.origenId && getDoc(d.origenId);
@@ -2053,7 +2205,7 @@ function vEditor() {
   let n = 0; const N = () => ++n;
   return `
   <div class="page-head"><div><button class="btn ghost sm" data-act="back">${icon('back', 'sm')}Volver</button><h1 style="margin-top:8px">${title}</h1><p class="sub num">${sub}</p></div>
-    ${E.isNew && !isNota && !d.origenId && !d.greId ? `<div class="seg brand" role="group" aria-label="Tipo de documento">${['COT', '01', '03', 'NV'].map(t => `<button data-act="ed-tipo" data-v="${t}" aria-pressed="${d.tipo === t}">${t === 'NV' ? 'N. venta' : TIPOS[t].corto}</button>`).join('')}</div>` : ''}</div>
+    ${E.isNew && !isNota && !d.origenId && !d.greId ? `<div class="seg brand" role="group" aria-label="Tipo de documento">${['COT', 'OV', '01', '03', 'NV'].map(t => `<button data-act="ed-tipo" data-v="${t}" aria-pressed="${t === 'OV' ? esOV(d) : t === 'COT' ? d.tipo === 'COT' && !esOV(d) : d.tipo === t}">${t === 'NV' ? 'N. venta' : t === 'OV' ? 'Orden de venta' : TIPOS[t].corto}</button>`).join('')}</div>` : ''}${copiarBtnHTML(d)}</div>
   ${!isCot && !isNV && !empresaLista(cfg) ? `<div class="alert brand" style="margin-bottom:14px">${icon('building')}<div>Para emitir necesitas los datos de tu empresa. <button class="linkbtn" data-act="go" data-r="sunat">Completar en Integración SUNAT</button></div></div>` : ''}
   ${isVenta && E.isNew && !origen && !d.greId && cotsFacturables().length ? `<div class="alert brand" style="margin-bottom:14px;align-items:center">${icon('quote')}<div style="flex:1"><b>¿Ya lo cotizaste?</b> Jala cliente, productos y precios de una cotización y factura en segundos.</div><button class="btn primary sm" data-act="cot-pick">${icon('download', 'sm')}Jalar de cotización</button></div>` : ''}
   ${origen ? `<div class="alert info" style="margin-bottom:14px">${icon(origen.tipo === 'NV' ? 'tag' : 'quote')}<div>Generada desde ${origen.tipo === 'NV' ? 'la nota de venta' : 'la cotización'} <b>${docNum(origen)}</b>. Al emitir, pasará a «${origen.tipo === 'NV' ? 'Convertida' : 'Facturada'}».</div></div>` : ''}
@@ -2064,7 +2216,7 @@ function vEditor() {
       <div id="ed-errors">${errorsHTML()}</div>
       ${isNota ? refHTML() : ''}
       ${isVenta ? `<section class="sec"><header><h2><span class="n">${N()}</span>¿Qué vas a ${d.tipo === '01' ? 'facturar' : 'vender'}?</h2></header><div class="body" id="ed-op">${opHTML()}</div></section>` : ''}
-      <section class="sec"><header><h2><span class="n">${N()}</span>Cliente</h2></header><div class="body" id="ed-cli">${cliHTML()}</div></section>
+      <section class="sec"><header><h2><span class="n">${N()}</span>Cliente</h2></header><div class="body"><div id="ed-cli">${cliHTML()}</div>${['01', '03', 'NV', 'COT'].includes(d.tipo) ? `<div id="ed-vend-box">${vendedorHTML()}</div>` : ''}</div></section>
       <section class="sec"><header><h2><span class="n">${N()}</span>${isNota && d.tipo === '08' ? 'Cargos adicionales' : 'Productos y servicios'}</h2><label class="switch"><input type="checkbox" data-ed-bool="incluyeIGV" ${d.incluyeIGV ? 'checked' : ''}><span class="track"></span><span class="muted" style="font-size:var(--fs-sm)">Precios con IGV</span></label></header>
         <div class="body"><div id="ed-items">${itemsHTML(c)}</div>
           <div class="add-row"><button class="btn dark" data-act="picker">${icon('box')}Agregar del catálogo</button><button class="btn" data-act="add-line">${icon('plus')}Línea libre</button></div></div></section>
@@ -2210,6 +2362,10 @@ function docHint(c) {
   if (c.tipoDoc === '1') return /^\d{8}$/.test(n) ? '<span style="color:var(--ok)">DNI con formato válido</span>' : `${Math.max(0, 8 - n.length)} dígitos más`;
   return '';
 }
+function vendedorHTML() {
+  const d = E.doc, vs = DB.cfg.vendedores || [], req = ['01', '03'].includes(d.tipo), falta = req && !d.vendedor;
+  return `<div class="field vend ${falta ? 'need' : ''}" style="margin-top:14px"><label for="ed-vend">Responsable de ventas ${req ? '<span class="req" aria-hidden="true">*</span>' : '<span class="faint">(opcional)</span>'}</label><div class="vend-row"><select class="select" id="ed-vend" data-ed="vendedor" ${req ? 'required' : ''}><option value="">${vs.length ? 'Elige al responsable…' : 'Agrega al primer responsable →'}</option>${vs.map(v => `<option ${d.vendedor === v ? 'selected' : ''}>${esc(v)}</option>`).join('')}${d.vendedor && !vs.includes(d.vendedor) ? `<option selected>${esc(d.vendedor)}</option>` : ''}</select><button class="btn" data-act="vend-add" type="button">${icon('plus', 'sm')}Nuevo</button></div>${req ? '<span class="hint">Obligatorio: cada comprobante queda asignado a quien hizo la venta.</span>' : ''}</div>`;
+}
 function itemsHTML(c) {
   const d = E.doc; c = c || calc(d);
   if (!d.items.length) return `<div class="items-empty"><b>Aún no hay ítems.</b><br><span class="muted">Toca «Agregar del catálogo» para sumar productos con un toque.</span></div>`;
@@ -2221,13 +2377,18 @@ function itemsHTML(c) {
     <div class="c-p"><input class="input price" data-it="precio" data-i="${i}" value="${esc(it.precio)}" inputmode="decimal" aria-label="Precio del ítem ${i + 1}"></div>
     <div class="amt num" data-amt="${i}">${money(d.incluyeIGV ? c.lines[i].total : c.lines[i].valor, d.moneda)}</div>
     <div class="c-del"><button class="btn ghost sm icon-only" data-act="del-it" data-i="${i}" aria-label="Quitar ítem ${i + 1}">${icon('trash', 'sm')}</button></div>
+    <div class="it-brk num" data-brk="${i}">${brkHTML(c.lines[i], d)}</div>
   </div>`).join('')}</div>`;
+}
+function brkHTML(l, d) {
+  if (!l) return '';
+  return l.afect === '10' ? `<span>Valor sin IGV <b>${money(l.valor, d.moneda)}</b></span><span>IGV <b>${money(l.igv, d.moneda)}</b></span><span>Total <b>${money(l.total, d.moneda)}</b></span>` : `<span>Valor <b>${money(l.valor, d.moneda)}</b></span><span>${esc(AFECT[l.afect] || 'Sin IGV')}</span><span>Total <b>${money(l.total, d.moneda)}</b></span>`;
 }
 function condHTML() {
   const d = E.doc, isCot = d.tipo === 'COT', t = todayISO();
   return `<div class="grid g3">
-    <div class="field"><label for="ed-fecha">Fecha de emisión</label><input type="date" class="input" id="ed-fecha" data-ed="fecha" value="${d.fecha}" ${isCot ? '' : `max="${t}"`}></div>
-    ${isCot ? `<div class="field"><label for="ed-vence">Válida hasta</label><input type="date" class="input" id="ed-vence" data-ed="vence" value="${d.vence || ''}"></div>` : !ES_NOTA(d.tipo) && d.formaPago !== 'Credito' ? `<div class="field"><label for="ed-vence">Vencimiento <span class="faint">(opcional)</span></label><input type="date" class="input" id="ed-vence" data-ed="vence" value="${d.vence || ''}"></div>` : '<div></div>'}
+    <div class="field"><label for="ed-fecha">Fecha de emisión</label><input type="date" class="input" id="ed-fecha" data-ed="fecha" value="${d.fecha}" ${isCot ? '' : `max="${t}"`} ${ES_CPE(d.tipo) ? `min="${fechaMinEmision(t)}" aria-describedby="fecha-hint"` : ''}>${ES_CPE(d.tipo) ? `<span class="hint" id="fecha-hint">SUNAT acepta hasta 3 días atrás: desde el ${fmtDate(fechaMinEmision(t))}.</span>` : ''}</div>
+    ${isCot ? `<div class="field"><label for="ed-vence">${d.clase === 'OV' ? 'Entrega estimada' : 'Válida hasta'}</label><input type="date" class="input" id="ed-vence" data-ed="vence" value="${d.vence || ''}"></div>` : d.tipo === '01' ? `<div class="field"><label for="ed-vence-ro">Vencimiento</label><input type="date" class="input" id="ed-vence-ro" value="${d.vence || d.fecha}" disabled><span class="hint" id="vence-hint">${d.formaPago === 'Credito' ? `${d.diasCredito} días de crédito` : 'Al contado vence el mismo día de emisión'}</span></div>` : !ES_NOTA(d.tipo) ? `<div class="field"><label for="ed-vence">Vencimiento <span class="faint">(opcional)</span></label><input type="date" class="input" id="ed-vence" data-ed="vence" value="${d.vence || ''}"></div>` : '<div></div>'}
     <div class="field"><span class="lbl">Moneda</span><div class="seg" role="group">${[['PEN', 'Soles'], ['USD', 'Dólares']].map(([k, l]) => `<button data-act="ed-moneda" data-v="${k}" aria-pressed="${d.moneda === k}">${l}</button>`).join('')}</div></div>
   </div>
   ${d.tipo === '01' ? `<div class="field" style="margin-top:16px"><span class="lbl">Forma de pago</span><div><div class="seg brand" role="group">${[['Contado', 'Contado'], ['Credito', 'Crédito']].map(([k, l]) => `<button data-act="ed-pago" data-v="${k}" aria-pressed="${d.formaPago === k}">${l}</button>`).join('')}</div></div></div><div id="ed-pago">${cuotasHTML()}</div>` : ''}
@@ -2238,13 +2399,21 @@ const objetivoCuotas = d => { const sp = spot(d, DB.cfg.tipoCambio); return sp.a
 function cuotasHTML() {
   const d = E.doc; if (d.formaPago !== 'Credito') return '';
   const total = objetivoCuotas(d), sum = r2(d.cuotas.reduce((a, q) => a + (Number(q.monto) || 0), 0)), ok = Math.abs(sum - total) <= 0.01;
-  return `<div class="cuotas">${d.cuotas.map((q, i) => `<div class="cuota"><span class="c-n">Cuota ${i + 1}</span><input type="date" class="input" data-cuota="fecha" data-i="${i}" value="${q.fecha}" aria-label="Vencimiento cuota ${i + 1}"><input class="input price" data-cuota="monto" data-i="${i}" value="${q.monto}" inputmode="decimal" aria-label="Monto cuota ${i + 1}"><button class="btn ghost sm icon-only" data-act="cuota-del" data-i="${i}" aria-label="Quitar cuota ${i + 1}" ${d.cuotas.length < 2 ? 'disabled' : ''}>${icon('trash', 'sm')}</button></div>`).join('')}
+  return `<div class="field" style="margin-top:14px"><span class="lbl">Días de crédito</span><div class="dias">${[7, 15, 30, 45, 60, 90].map(n => `<button class="chip-dias" data-act="ed-dias" data-v="${n}" aria-pressed="${Number(d.diasCredito) === n}">${n} días</button>`).join('')}<input class="input dias-in num" data-ed="diasCredito" inputmode="numeric" value="${esc(d.diasCredito || '')}" aria-label="Días de crédito (otro)"></div><p class="hint" id="dias-hint">Vence el <b>${fmtDate(d.vence)}</b>${d.cuotas.length > 1 ? ' · las cuotas se reparten hasta esa fecha' : ''}.</p></div>
+  <div class="cuotas">${d.cuotas.map((q, i) => `<div class="cuota"><span class="c-n">Cuota ${i + 1}</span><input type="date" class="input" data-cuota="fecha" data-i="${i}" value="${q.fecha}" aria-label="Vencimiento cuota ${i + 1}"><input class="input price" data-cuota="monto" data-i="${i}" value="${q.monto}" inputmode="decimal" aria-label="Monto cuota ${i + 1}"><button class="btn ghost sm icon-only" data-act="cuota-del" data-i="${i}" aria-label="Quitar cuota ${i + 1}" ${d.cuotas.length < 2 ? 'disabled' : ''}>${icon('trash', 'sm')}</button></div>`).join('')}
     <div class="row-gap"><button class="btn sm" data-act="cuota-add">${icon('plus', 'sm')}Cuota</button><button class="btn sm ghost" data-act="cuota-split">Repartir en partes iguales</button><span class="hint num ${ok ? 'ok' : 'bad'}" id="cuota-sum">Suma ${money(sum, d.moneda)} de ${money(total, d.moneda)}${spot(d, DB.cfg.tipoCambio).aplica ? ' (neto sin detracción)' : ''}</span></div></div>`;
+}
+function syncVence() {
+  const d = E.doc, ro = $('#ed-vence-ro'); if (ro) ro.value = d.vence || d.fecha;
+  const h = $('#vence-hint'); if (h) h.textContent = d.formaPago === 'Credito' ? `${d.diasCredito} días de crédito` : 'Al contado vence el mismo día de emisión';
+  const dh = $('#dias-hint'); if (dh) dh.innerHTML = `Vence el <b>${fmtDate(d.vence)}</b>${d.cuotas.length > 1 ? ' · las cuotas se reparten hasta esa fecha' : ''}.`;
 }
 function splitCuotas(n) {
   const d = E.doc, total = objetivoCuotas(d); n = Math.max(1, n || d.cuotas.length || 1);
   const each = r2(total / n);
-  d.cuotas = Array.from({ length: n }, (_, i) => ({ monto: i === n - 1 ? r2(total - each * (n - 1)) : each, fecha: addDays(d.fecha, 30 * (i + 1)) }));
+  const dias = Math.max(1, Math.round(Number(d.diasCredito) || 30 * n));
+  d.cuotas = Array.from({ length: n }, (_, i) => ({ monto: i === n - 1 ? r2(total - each * (n - 1)) : each, fecha: addDays(d.fecha, Math.max(1, Math.round(dias * (i + 1) / n))) }));
+  if (d.tipo === '01') d.vence = d.cuotas[n - 1].fecha;
 }
 function totalsHTML(c, d) {
   return `<div class="totals" aria-live="polite">
@@ -2261,7 +2430,7 @@ function refreshCalc(full) {
   const d = E.doc; if (d.tipo === '09') { refreshGRE(full); return; }
   if (d.tipo === '01' && autoSpot(d) && d.formaPago === 'Credito') { splitCuotas(d.cuotas.length); const pg = $('#ed-pago'); if (pg) pg.innerHTML = cuotasHTML(); }
   const c = calc(d);
-  c.lines.forEach((l, i) => { const el = $(`[data-amt="${i}"]`); if (el) el.textContent = money(d.incluyeIGV ? l.total : l.valor, d.moneda); });
+  c.lines.forEach((l, i) => { const el = $(`[data-amt="${i}"]`); if (el) el.textContent = money(d.incluyeIGV ? l.total : l.valor, d.moneda); const b = $(`[data-brk="${i}"]`); if (b) b.innerHTML = brkHTML(l, d); });
   $('#ed-totals').innerHTML = totalsHTML(c, d);
   $('#ab-total').textContent = money(c.total, d.moneda);
   const cs = $('#cuota-sum'); if (cs) { const obj = objetivoCuotas(d), sum = r2(d.cuotas.reduce((a, q) => a + (Number(q.monto) || 0), 0)), ok = Math.abs(sum - obj) <= 0.01; cs.textContent = `Suma ${money(sum, d.moneda)} de ${money(obj, d.moneda)}${spot(d, DB.cfg.tipoCambio).aplica ? ' (neto sin detracción)' : ''}`; cs.className = `hint num ${ok ? 'ok' : 'bad'}`; }
@@ -2340,6 +2509,8 @@ async function saveNV(btn) {
 async function emit(btn) {
   const d = E.doc;
   if (d.tipo === '01' && d.formaPago === 'Credito') d.vence = d.cuotas.length ? d.cuotas[d.cuotas.length - 1].fecha : d.vence;
+  if (d.tipo === '01' && d.formaPago !== 'Credito') d.vence = d.fecha;
+  if (d.vendedor) lsSet('granate.vendedor', d.vendedor);
   if (d.tipo === '01' && d.detraccion && !spot(d, DB.cfg.tipoCambio).sobre) d.detraccion = { ...d.detraccion, codigo: d.operacion === 'servicios' ? d.detraccion.codigo : '' };
   const errs = validarDoc(d, DB.cfg, toPEN); if (errs.length) return showErrors(errs);
   if (d.tipo === '01' && d.operacion === 'bienes') {
@@ -2525,7 +2696,7 @@ function lumin(hex) { const n = parseInt(String(hex || '#7A1F2E').slice(1), 16),
 const onColor = hex => (lumin(hex) > 0.18 ? '#141113' : '#ffffff');
 const hexRGB = hex => { const n = parseInt(String(hex || '#7A1F2E').slice(1), 16); return [(n >> 16) & 255, (n >> 8) & 255, n & 255]; };
 const BANCOS = ['BCP', 'BBVA', 'Interbank', 'Scotiabank', 'BanBif', 'Banco de la Nación', 'Banco Pichincha', 'Banco GNB', 'Mibanco', 'Caja Arequipa', 'Caja Huancayo', 'Caja Piura'];
-const docTitulo = (d, cfg) => (d.tipo === 'COT' ? (cfg.docs.cot.titulo || 'Cotización') : TIPOS[d.tipo].impreso);
+const docTitulo = (d, cfg) => (esOV(d) ? 'Orden de venta' : d.tipo === 'COT' ? (cfg.docs.cot.titulo || 'Cotización') : TIPOS[d.tipo].impreso);
 function cuentasDoc(d, cfg) {
   const k = d.tipo === 'COT' ? 'enCot' : 'enFac';
   return (cfg.docs.cuentas || []).filter(c => c[k] !== false && (c.numero || c.cci));
@@ -2543,16 +2714,16 @@ function paperHTML(d, cfg = DB.cfg, logo = DB.logo) {
   if (d.tipo === '09') return paperGRE(d, cfg, logo);
   const e = cfg.empresa, c = calc(d), isCot = d.tipo === 'COT', isNV = d.tipo === 'NV', cur = d.moneda, cli = d.cliente || {};
   const P = isCot ? cfg.docs.cot : cfg.docs.fac, color = cfg.docs.color || '#7A1F2E';
-  const stamp = !isCot && d.estado === 'borrador' ? '<div class="stamp draft">BORRADOR</div>' : !isCot && d.estado === 'rechazado' ? '<div class="stamp bad">RECHAZADO</div>' : d.estado === 'anulada' ? '<div class="stamp bad">ANULADA</div>' : '';
+  const stamp = !isCot && d.estado === 'borrador' ? '<div class="stamp draft">BORRADOR</div>' : !isCot && d.estado === 'rechazado' ? '<div class="stamp bad">RECHAZADO</div>' : ['anulada', 'anulado'].includes(d.estado) ? '<div class="stamp bad">ANULADA</div>' : '';
   const SL = spotLegend(d, cfg);
-  const rightRows = [['Fecha de emisión', fmtDate(d.fecha)], isCot ? ['Válida hasta', fmtDate(d.vence)] : d.vence ? ['Vencimiento', fmtDate(d.vence)] : null, ['Moneda', cur === 'USD' ? 'Dólares (USD)' : 'Soles (PEN)'], d.tipo === '01' ? ['Forma de pago', d.formaPago === 'Credito' ? 'Crédito' : 'Contado'] : null, ['01', '03'].includes(d.tipo) && d.operacion ? ['Operación', d.operacion === 'bienes' ? 'Venta de bienes' : 'Prestación de servicios'] : null, (d.guias || []).length ? ['Guía de remisión', d.guias.map(g => `${g.serie}-${pad(g.numero, 8)}`).join(', ')] : null].filter(Boolean);
+  const rightRows = [['Fecha de emisión', fmtDate(d.fecha)], isCot ? [esOV(d) ? 'Entrega estimada' : 'Válida hasta', fmtDate(d.vence)] : d.vence ? ['Vencimiento', fmtDate(d.vence)] : null, ['Moneda', cur === 'USD' ? 'Dólares (USD)' : 'Soles (PEN)'], d.tipo === '01' ? ['Forma de pago', d.formaPago === 'Credito' ? 'Crédito' : 'Contado'] : null, ['01', '03'].includes(d.tipo) && d.operacion ? ['Operación', d.operacion === 'bienes' ? 'Venta de bienes' : 'Prestación de servicios'] : null, d.vendedor ? ['Vendedor', esc(d.vendedor)] : null, (d.guias || []).length ? ['Guía de remisión', d.guias.map(g => `${g.serie}-${pad(g.numero, 8)}`).join(', ')] : null].filter(Boolean);
   const sec = (t, body) => `<div class="p-sec"><h4>${t}</h4>${body}</div>`;
   const cuentas = cuentasDoc(d, cfg);
   const B = {
     cliente: () => `<div class="p-cli"><div><div class="r"><span>Señor(es)</span><span><b>${esc(cli.nombre || '—')}</b></span></div><div class="r"><span>${DOCID[cli.tipoDoc] || 'Doc.'}</span><span class="num">${cli.tipoDoc === '0' ? '—' : esc(cli.numDoc || '—')}</span></div><div class="r"><span>Dirección</span><span>${esc(cli.direccion || '—')}</span></div></div><div>${rightRows.map(([k, v]) => `<div class="r"><span>${k}</span><span class="num">${v}</span></div>`).join('')}</div></div>`
       + (ES_NOTA(d.tipo) && d.ref ? `<div class="p-note p-ref"><b>Documento que modifica:</b> ${TIPOS[d.ref.tipo]?.corto || ''} ${esc(d.ref.serie)}-${pad(d.ref.numero, 8)} · <b>Motivo:</b> ${esc(d.ref.motivo)} ${esc((d.tipo === '08' ? MOTIVOS_ND : MOTIVOS_NC)[d.ref.motivo] || '')}${d.ref.sustento ? ` · ${esc(d.ref.sustento)}` : ''}</div>` : ''),
-    items: () => `<table><thead><tr><th style="width:28px">#</th>${P.mostrarCodigo ? '<th style="width:70px">Código</th>' : ''}<th>Descripción</th>${P.mostrarUnidad ? '<th style="width:48px">Und.</th>' : ''}<th class="r" style="width:56px">Cant.</th><th class="r" style="width:90px">${d.incluyeIGV ? 'P. unit.' : 'V. unit.'}</th><th class="r" style="width:96px">Importe</th></tr></thead>
-      <tbody>${c.lines.length ? c.lines.map((l, i) => `<tr><td>${i + 1}</td>${P.mostrarCodigo ? `<td>${esc(l.codigo || '—')}</td>` : ''}<td>${esc(l.desc || '—')}${l.afect !== '10' ? ` <span style="color:#6E6367">(${AFECT[l.afect]})</span>` : ''}</td>${P.mostrarUnidad ? `<td>${esc(l.unidad)}</td>` : ''}<td class="r">${nf2.format(l.q).replace(/\.00$/, '')}</td><td class="r">${nf2.format(d.incluyeIGV ? l.pu : l.vu)}</td><td class="r">${nf2.format(d.incluyeIGV ? l.total : l.valor)}</td></tr>`).join('') : `<tr><td colspan="7" style="color:#8A7F83;text-align:center;padding:22px">Agrega productos o servicios</td></tr>`}</tbody></table>`,
+    items: () => `<table><thead><tr><th style="width:28px">#</th>${P.mostrarCodigo ? '<th style="width:70px">Código</th>' : ''}<th>Descripción</th>${P.mostrarUnidad ? '<th style="width:48px">Und.</th>' : ''}<th class="r" style="width:46px">Cant.</th><th class="r" style="width:72px">V. unit.</th><th class="r" style="width:80px">Valor venta</th><th class="r" style="width:64px">IGV</th><th class="r" style="width:84px">Total</th></tr></thead>
+      <tbody>${c.lines.length ? c.lines.map((l, i) => `<tr><td>${i + 1}</td>${P.mostrarCodigo ? `<td>${esc(l.codigo || '—')}</td>` : ''}<td>${esc(l.desc || '—')}${l.afect !== '10' ? ` <span style="color:#6E6367">(${AFECT[l.afect]})</span>` : ''}</td>${P.mostrarUnidad ? `<td>${esc(l.unidad)}</td>` : ''}<td class="r">${nf2.format(l.q).replace(/\.00$/, '')}</td><td class="r">${nf2.format(l.vu)}</td><td class="r">${nf2.format(l.valor)}</td><td class="r">${nf2.format(l.igv)}</td><td class="r"><b>${nf2.format(l.total)}</b></td></tr>`).join('') : `<tr><td colspan="9" style="color:#8A7F83;text-align:center;padding:22px">Agrega productos o servicios</td></tr>`}</tbody></table>`,
     totales: () => `<div class="p-totrow"><div class="words">SON: ${numeroALetras(c.total, cur)}</div><div class="p-tot"><div class="tr"><span>Op. gravadas</span><span>${money(c.gravada, cur)}</span></div>${c.exonerada ? `<div class="tr"><span>Op. exoneradas</span><span>${money(c.exonerada, cur)}</span></div>` : ''}${c.inafecta ? `<div class="tr"><span>Op. inafectas</span><span>${money(c.inafecta, cur)}</span></div>` : ''}<div class="tr"><span>IGV ${r2(c.rate * 100)}%</span><span>${money(c.igv, cur)}</span></div><div class="tr grand"><span>Total</span><span>${money(c.total, cur)}</span></div></div></div>`,
     pago: () => {
       const parts = [];
@@ -2637,6 +2808,8 @@ function renderDrawer() {
     if (['aceptado', 'observado'].includes(d.estado)) A.push(`<a class="btn" href="${esc(wa)}" target="_blank" rel="noopener">${icon('chat')}WhatsApp</a>`);
     if (d.tipo === '01' && d.formaPago === 'Credito' && d.estado === 'aceptado' && !d.cobrado) A.push(`<button class="btn dark" data-act="cobrado" data-id="${d.id}">${icon('coins')}Registrar cobro</button>`);
     if (['01', '03'].includes(d.tipo) && d.estado === 'aceptado') A.push(`<button class="btn ghost" data-act="nc" data-id="${d.id}">${icon('undo')}Nota de crédito</button>`, `<button class="btn ghost" data-act="nd" data-id="${d.id}">${icon('plusdoc')}Nota de débito</button>`);
+    if (ES_CPE(d.tipo) && ['aceptado', 'observado'].includes(d.estado)) A.push(`<button class="btn ghost danger" data-act="baja" data-id="${d.id}">${icon('ban')}Anular en SUNAT</button>`);
+    if (d.estado === 'baja_proceso') A.unshift(`<button class="btn dark" data-act="baja-consultar" data-id="${d.id}">${icon('refresh')}Consultar baja</button>`);
     const fBorr = d.tipo === '09' && d.vinculaFacturaId && getDoc(d.vinculaFacturaId);
     if (fBorr && fBorr.estado === 'borrador') A.unshift(`<button class="btn primary" data-act="edit" data-id="${fBorr.id}">${icon('receipt')}Volver a la factura</button>`);
     else if (d.tipo === '09' && ['aceptado', 'observado'].includes(d.estado) && !d.facturaId && d.traslado?.motivo !== '04') A.push(`<button class="btn dark" data-act="convert" data-id="${d.id}" data-tipo="${d.cliente?.tipoDoc === '6' ? '01' : '03'}">${icon('receipt')}Facturar estos bienes</button>`);
@@ -2663,6 +2836,8 @@ function renderDrawer() {
       ${d.estado === 'borrador' ? '<p class="muted">Este borrador aún no tiene número ni se ha enviado.</p>' : timelineHTML(d)}
       ${d.sunat && d.estado !== 'borrador' ? `<dl class="kv">${d.sunat.codigo ? `<dt>Código</dt><dd class="num">${esc(d.sunat.codigo)}</dd>` : ''}${d.sunat.hash ? `<dt>Hash</dt><dd class="num" style="font-size:var(--fs-xs)">${esc(d.sunat.hash)}</dd>` : ''}${d.sunat.fecha ? `<dt>Respuesta</dt><dd class="num">${fmtDate(d.sunat.fecha.slice(0, 10))} ${d.sunat.fecha.slice(11, 16)}</dd>` : ''}<dt>Canal</dt><dd>${d.sunat.modo === 'api' ? 'Tu API' : 'Simulador'} · ${d.sunat.ambiente === 'produccion' ? 'Producción' : 'Beta'}</dd>${d.sunat.ultimoError ? `<dt>Último error</dt><dd style="color:var(--bad)">${esc(d.sunat.ultimoError)}</dd>` : ''}</dl>` : ''}
     </div></section>
+    ${entregaHTML(d)}
+    ${bajaPanelHTML(d)}
     ${archivosSunatHTML(d)}
     ${d.tipo === '09' ? greSideHTML(d) : ''}
     ${SLd ? `<section class="panel"><div class="panel-h"><h2>Detracción (SPOT)</h2><span class="pill brand">${SLd.sp.porcentaje}%</span></div><div class="panel-b"><dl class="kv"><dt>Tipo</dt><dd>${esc(SLd.sp.codigo)} · ${esc(SLd.sp.desc)}</dd><dt>Monto</dt><dd class="num">${money(SLd.sp.monto)}</dd><dt>Neto a cobrar</dt><dd class="num">${money(SLd.sp.neto, d.moneda)}</dd><dt>Cuenta BN</dt><dd class="num">${esc(DB.cfg.docs.detraccion || '—')}</dd></dl></div></section>` : ''}
@@ -2672,7 +2847,7 @@ function renderDrawer() {
     ${d.estado !== 'borrador' ? `<details class="more" id="xml-det"><summary>${icon('code')}XML UBL 2.1${d.tipo === '09' ? ' · DespatchAdvice' : ''}${xmlGuardado(d) ? ' · firmado' : ''}${icon('chev')}</summary><div class="inner"><div class="code" id="xml-view">${hlXML(xmlGuardado(d) || buildXML(d, DB.cfg))}</div><div class="row-gap" style="margin-top:10px"><button class="btn sm" data-act="copy-xml" data-id="${d.id}">${icon('copy', 'sm')}Copiar XML</button><button class="btn sm" data-act="sf-xml" data-id="${d.id}">${icon('download', 'sm')}Descargar XML</button><span class="hint" id="xml-hint">${xmlGuardado(d) ? 'Firmado digitalmente: es el XML que recibió SUNAT.' : 'Sin firma: tu API agrega la firma XMLDSig al enviar.'}</span></div></div></details>` : ''}`;
   dl.innerHTML = `
     <div class="drawer-h"><button class="btn ghost icon-only" data-act="close-drawer" aria-label="Cerrar">${icon('x')}</button>
-      <div style="flex:1;min-width:0"><div class="row-gap"><h2 id="dr-title" class="num">${TIPOS[d.tipo].corto} ${docNum(d)}</h2>${docPill(d)}</div><div class="d-sub">${esc(d.cliente?.nombre || '—')} · <b class="num">${d.tipo === '09' ? `${nf2.format(Number(d.traslado?.pesoKg) || 0)} kg · ${esc(MOTIVOS_TRASLADO[d.traslado?.motivo] || '')}` : `${d.tipo === '07' ? '−' : ''}${money(c.total, d.moneda)}`}</b></div></div></div>
+      <div style="flex:1;min-width:0"><div class="row-gap"><h2 id="dr-title" class="num">${nombreDoc(d)} ${docNum(d)}</h2>${docPill(d)}</div><div class="d-sub">${esc(d.cliente?.nombre || '—')} · <b class="num">${d.tipo === '09' ? `${nf2.format(Number(d.traslado?.pesoKg) || 0)} kg · ${esc(MOTIVOS_TRASLADO[d.traslado?.motivo] || '')}` : `${d.tipo === '07' ? '−' : ''}${money(c.total, d.moneda)}`}</b></div></div></div>
     <div class="drawer-acts">${A.join('')}</div>
     <div class="drawer-b"><div class="paper-frame"><div class="paper-scale">${paperHTML(d)}</div></div><div class="side-stack">${side}</div></div>`;
   observePapers(); hydrateQR();
@@ -2682,6 +2857,8 @@ function updateTimeline() { const d = D && getDoc(D.id), tl = $('#tl'); if (d &&
 /* ---------- SUNAT: envío ---------- */
 async function sendSunat(id) {
   const doc = getDoc(id); if (!doc || (D && D.sending)) return;
+  if (!ES_SUNAT(doc.tipo)) { toast('Este documento no se envía a SUNAT.', 'warn'); return; }
+  if (fueraDePlazo(doc)) { toast(`${docNum(doc)} está fuera de plazo: pasaron más de 3 días desde su fecha de emisión. Emite uno nuevo con fecha de hoy.`, 'bad', { label: 'Emitir de nuevo', fn: () => startDuplicate(doc.id) }); logEvent('sunat.fuera_plazo', doc, 'No se envió: más de 3 días desde la emisión'); if (D?.id === id) renderDrawer(); return; }
   if (!$('#drawer').open || !D || D.id !== id) openDrawer(id);
   D.sending = true; D.steps = {}; renderDrawer();
   const step = (k, v) => { D.steps[k] = v; updateTimeline(); };
@@ -2800,7 +2977,7 @@ async function makePDF(d, cfg = DB.cfg, logo = DB.logo) {
   const B = {
     cliente: () => {
       const cli = d.cliente || {}; const addr = p.splitTextToSize(cli.direccion || '—', 82);
-      const right = isGRE ? [['Fecha de emisión', fmtDate(d.fecha)], ['Inicio de traslado', fmtDate(d.traslado?.fechaInicio)], ['Motivo', MOTIVOS_TRASLADO[d.traslado?.motivo] || '—'], ['Modalidad', MODALIDAD[d.traslado?.modalidad] || '—']] : [['Fecha de emisión', fmtDate(d.fecha)], isCot ? ['Válida hasta', fmtDate(d.vence)] : d.vence ? ['Vencimiento', fmtDate(d.vence)] : null, ['Moneda', cur === 'USD' ? 'Dólares (USD)' : 'Soles (PEN)'], d.tipo === '01' ? ['Forma de pago', d.formaPago === 'Credito' ? 'Crédito' : 'Contado'] : null, ['01', '03'].includes(d.tipo) && d.operacion ? ['Operación', d.operacion === 'bienes' ? 'Venta de bienes' : 'Servicios'] : null, (d.guias || []).length ? ['Guía remisión', d.guias.map(g => `${g.serie}-${pad(g.numero, 8)}`).join(', ')] : null].filter(Boolean);
+      const right = isGRE ? [['Fecha de emisión', fmtDate(d.fecha)], ['Inicio de traslado', fmtDate(d.traslado?.fechaInicio)], ['Motivo', MOTIVOS_TRASLADO[d.traslado?.motivo] || '—'], ['Modalidad', MODALIDAD[d.traslado?.modalidad] || '—']] : [['Fecha de emisión', fmtDate(d.fecha)], isCot ? ['Válida hasta', fmtDate(d.vence)] : d.vence ? ['Vencimiento', fmtDate(d.vence)] : null, ['Moneda', cur === 'USD' ? 'Dólares (USD)' : 'Soles (PEN)'], d.tipo === '01' ? ['Forma de pago', d.formaPago === 'Credito' ? 'Crédito' : 'Contado'] : null, ['01', '03'].includes(d.tipo) && d.operacion ? ['Operación', d.operacion === 'bienes' ? 'Venta de bienes' : 'Servicios'] : null, d.vendedor ? ['Vendedor', d.vendedor] : null, (d.guias || []).length ? ['Guía remisión', d.guias.map(g => `${g.serie}-${pad(g.numero, 8)}`).join(', ')] : null].filter(Boolean);
       const bh = Math.max(2 + addr.length, right.length) * 5 + 6; need(bh + 4);
       p.setFillColor(...SOFT); p.roundedRect(M, y, W - 2 * M, bh, 2, 2, 'F');
       let ly = y + 6;
@@ -2810,14 +2987,14 @@ async function makePDF(d, cfg = DB.cfg, logo = DB.logo) {
       if (ES_NOTA(d.tipo) && d.ref) para(`Documento que modifica: ${TIPOS[d.ref.tipo]?.corto || ''} ${d.ref.serie}-${pad(d.ref.numero, 8)} · Motivo ${d.ref.motivo} ${(d.tipo === '08' ? MOTIVOS_ND : MOTIVOS_NC)[d.ref.motivo] || ''}${d.ref.sustento ? ' · ' + d.ref.sustento : ''}`, K), y += 2;
     },
     items: () => {
-      const cols = isGRE ? [{ h: '#', w: 8 }, { h: 'Código', w: 22, k: 'cod' }, { h: 'Descripción', w: 0 }, { h: 'Und.', w: 18, k: 'und' }, { h: 'Cant.', w: 22, r: 1 }] : [{ h: '#', w: 8 }, P.mostrarCodigo ? { h: 'Código', w: 18, k: 'cod' } : null, { h: 'Descripción', w: 0 }, P.mostrarUnidad ? { h: 'Und.', w: 13, k: 'und' } : null, { h: 'Cant.', w: 15, r: 1 }, { h: d.incluyeIGV ? 'P. unit.' : 'V. unit.', w: 24, r: 1 }, { h: 'Importe', w: 27, r: 1 }].filter(Boolean);
+      const cols = isGRE ? [{ h: '#', w: 8 }, { h: 'Código', w: 22, k: 'cod' }, { h: 'Descripción', w: 0 }, { h: 'Und.', w: 18, k: 'und' }, { h: 'Cant.', w: 22, r: 1 }] : [{ h: '#', w: 8 }, P.mostrarCodigo ? { h: 'Código', w: 18, k: 'cod' } : null, { h: 'Descripción', w: 0 }, P.mostrarUnidad ? { h: 'Und.', w: 13, k: 'und' } : null, { h: 'Cant.', w: 13, r: 1 }, { h: 'V. unit.', w: 19, r: 1, k: 'vu' }, { h: 'Valor venta', w: 22, r: 1, k: 'valor' }, { h: 'IGV', w: 18, r: 1, k: 'igv' }, { h: 'Total', w: 23, r: 1, k: 'total' }].filter(Boolean);
       const tw = W - 2 * M, di = cols.findIndex(k => k.h === 'Descripción'); cols[di].w = tw - cols.reduce((a, k) => a + k.w, 0);
       const head = () => { need(16); p.setFillColor(...K); p.roundedRect(M, y, tw, 8, 1.5, 1.5, 'F'); font('bold', 7.6, [255, 255, 255]); let x = M; cols.forEach(k => { T(k.h.toUpperCase(), k.r ? x + k.w - 2.5 : x + 2.5, y + 5.3, { align: k.r ? 'right' : 'left' }); x += k.w; }); y += 8; };
       head();
       c.lines.forEach((l, i) => {
         font('normal', 8.6); const dl = p.splitTextToSize(l.desc || '', cols[di].w - 5); const rh = dl.length * 3.9 + 4.4;
         if (y + rh > H - FOOT) { p.addPage(); y = M; head(); font('normal', 8.6); }
-        const val = k => (k.h === '#' ? String(i + 1) : k.k === 'cod' ? (l.codigo || '—') : k.h === 'Descripción' ? dl : k.k === 'und' ? (l.unidad || '') : k.h === 'Cant.' ? nf2.format(l.q).replace(/\.00$/, '') : k.h === 'Importe' ? nf2.format(d.incluyeIGV ? l.total : l.valor) : nf2.format(d.incluyeIGV ? l.pu : l.vu));
+        const val = k => (k.h === '#' ? String(i + 1) : k.k === 'cod' ? (l.codigo || '—') : k.h === 'Descripción' ? dl : k.k === 'und' ? (l.unidad || '') : k.h === 'Cant.' ? nf2.format(l.q).replace(/\.00$/, '') : k.k === 'valor' ? nf2.format(l.valor) : k.k === 'igv' ? nf2.format(l.igv) : k.k === 'total' ? nf2.format(l.total) : nf2.format(l.vu));
         let x = M; cols.forEach(k => { T(val(k), k.r ? x + k.w - 2.5 : x + 2.5, y + 5, { align: k.r ? 'right' : 'left' }); x += k.w; });
         y += rh; p.setDrawColor(...LN); p.setLineWidth(0.2); p.line(M, y, W - M, y);
       });
@@ -2938,21 +3115,31 @@ function toast(msg, kind = 'ok', action) {
   function dismiss() { el.classList.add('out'); setTimeout(() => el.remove(), 200); }
 }
 
-/* ================= CONFIG (autoguardado) ================= */
+/* ================= CONFIG (guardado explícito: botón «Guardar cambios») ================= */
 function setPath(o, path, v) { const ks = path.split('.'); let t = o; ks.slice(0, -1).forEach(k => { t[k] = t[k] || {}; t = t[k]; }); t[ks[ks.length - 1]] = v; }
+const cfgSucio = () => UI.cfgState === 'saving' && !!UI.cfgDraft;
+window.addEventListener('beforeunload', ev => { if (cfgSucio()) { ev.preventDefault(); ev.returnValue = ''; } });
 function cfgChanged(rerender) {
-  UI.cfgState = 'saving'; const st = $('#cfg-state'); if (st) { st.className = 'save-state'; st.textContent = 'Guardando…'; }
-  clearTimeout(UI.cfgTimer); UI.cfgTimer = setTimeout(flushCfg, 650);
-  if (rerender) render();
+  UI.cfgState = 'saving';
+  if (rerender) render(); else pintarCfgBar();
+}
+function pintarCfgBar() {
+  const st = $('#cfg-state'); if (st) { st.className = 'save-state ' + (cfgSucio() ? 'warn' : UI.cfgState === 'ok' ? 'ok' : ''); st.innerHTML = cfgSucio() ? `${icon('alert', 'sm')}Cambios sin guardar` : UI.cfgState === 'ok' ? icon('check', 'sm') + 'Cambios guardados' : 'Sin cambios'; }
+  let bar = $('#cfg-bar');
+  if (!cfgSucio()) { bar?.remove(); return; }
+  if (!bar) { bar = document.createElement('div'); bar.id = 'cfg-bar'; bar.className = 'cfg-bar'; bar.setAttribute('role', 'region'); bar.setAttribute('aria-label', 'Cambios sin guardar'); $('#main')?.appendChild(bar); }
+  bar.innerHTML = `<div class="cfg-bar-in"><span>${icon('alert', 'sm')}<b>Tienes cambios sin guardar.</b> <span class="hide-sm">Revisa y confirma para que se apliquen en los nuevos documentos.</span></span><span class="row-gap"><button class="btn" data-act="cfg-discard">Descartar</button><button class="btn primary" data-act="cfg-save">${icon('check')}Guardar cambios</button></span></div>`;
 }
 async function flushCfg() {
   if (!UI.cfgDraft || UI.cfgState !== 'saving') return;
   clearTimeout(UI.cfgTimer);
   const draft = clone(UI.cfgDraft); draft.series = Object.fromEntries(Object.entries(draft.series).map(([k, v]) => [k, String(v).toUpperCase().slice(0, 4)]));
-  const SECC = { empresa: 'datos de la empresa', series: 'series', reglas: 'reglas de emisión', integracion: 'integración SUNAT', docs: 'diseño de documentos', igvRate: 'IGV', tipoCambio: 'tipo de cambio', incluyeIGV: 'precios con IGV', condiciones: 'condiciones', validezDias: 'validez' };
+  const SECC = { empresa: 'datos del contribuyente', vendedores: 'responsables de ventas', soporte: 'soporte por WhatsApp', marca: 'título de la app', series: 'series', reglas: 'reglas de emisión', integracion: 'integración SUNAT', docs: 'diseño de documentos', igvRate: 'IGV', tipoCambio: 'tipo de cambio', incluyeIGV: 'precios con IGV', condiciones: 'condiciones', validezDias: 'validez' };
   const cambios = Object.keys(SECC).filter(k => JSON.stringify(draft[k]) !== JSON.stringify(DB.cfg[k])).map(k => SECC[k]);
-  try { await putCfg(draft); UI.cfgState = 'ok'; if (cambios.length) logEvent('config.actualizada', null, `Cambió: ${cambios.join(', ')}`); } catch { UI.cfgState = ''; }
-  const st = $('#cfg-state'); if (st) { st.className = 'save-state ' + (UI.cfgState === 'ok' ? 'ok' : ''); st.innerHTML = UI.cfgState === 'ok' ? icon('check', 'sm') + 'Cambios guardados' : 'No se pudo guardar'; }
+  try { await putCfg(draft); UI.cfgState = 'ok'; if (cambios.length) logEvent('config.actualizada', null, `Cambió: ${cambios.join(', ')}`); } catch { UI.cfgState = 'saving'; toast('No se pudo guardar. Intenta de nuevo.', 'bad'); pintarCfgBar(); return false; }
+  UI.cfgDraft = clone(DB.cfg); pintarCfgBar();
+  toast(cambios.length ? `Cambios guardados: ${cambios.join(', ')}` : 'Cambios guardados', 'ok');
+  return true;
 }
 
 /* ================= EVENTOS ================= */
@@ -2970,11 +3157,13 @@ const ACT = {
   cotf: el => { UI.cotF = el.dataset.f; if (UI.route !== 'cotizaciones') go('cotizaciones'); else render(); },
   cpef: el => { UI.cpeF = el.dataset.f; render(); },
   cpet: el => { UI.cpeT = el.dataset.t; render(); },
+  'cot-clase': el => { UI.cotClase = el.dataset.v; render(); },
+  'new-ov': () => { const d = newDoc('COT', { clase: 'OV' }); d.serie = serieFor('COT', null, 'OV'); openEditor(d, true); },
   'cot-estado': async el => { const d = clone(getDoc(el.dataset.id)); const prev = d.estado; if (prev === el.dataset.v) return; d.estado = el.dataset.v; await put('documentos', d); logEvent('cotizacion.estado', d, `${PILL_COT[prev]?.[2] || prev} → ${PILL_COT[d.estado][2]}`); toast(`Cotización marcada como ${PILL_COT[d.estado][2].toLowerCase()}`, 'ok', { label: 'Deshacer', fn: async () => { const x = clone(getDoc(d.id)); x.estado = prev; await put('documentos', x); } }); },
   wa: async el => { const d = getDoc(el.dataset.id); if (d && d.tipo === 'COT' && d.estado === 'borrador') { const x = clone(d); x.estado = 'enviada'; await put('documentos', x); toast('Cotización marcada como enviada'); } return 'default'; },
   'copy-text': el => copy(shareText(getDoc(el.dataset.id)), 'Texto copiado. Pégalo en tu correo o chat.'),
   'copy-xml': async el => { const { xml } = await xmlDe(getDoc(el.dataset.id)); copy(xml, 'XML copiado'); },
-  pdf: async el => { el.classList.add('loading'); try { const d = getDoc(el.dataset.id); const b = await makePDF(d); await saveFile(`${d.tipo === 'COT' ? 'Cotizacion' : TIPOS[d.tipo].corto.replace(/\s/g, '')}-${docNum(d)}.pdf`, b); } catch (e) { toast('No se pudo generar el PDF. Revisa tu conexión.', 'bad'); console.warn(e); } el.classList.remove('loading'); },
+  pdf: async el => { el.classList.add('loading'); try { const d = getDoc(el.dataset.id); const b = await makePDF(d); await saveFile(`${esOV(d) ? 'Orden-de-venta' : d.tipo === 'COT' ? 'Cotizacion' : TIPOS[d.tipo].corto.replace(/\s/g, '')}-${docNum(d)}.pdf`, b); } catch (e) { toast('No se pudo generar el PDF. Revisa tu conexión.', 'bad'); console.warn(e); } el.classList.remove('loading'); },
   zip: async el => { el.classList.add('loading'); try { await downloadZip(getDoc(el.dataset.id)); } catch { toast('No se pudo generar el ZIP.', 'bad'); } el.classList.remove('loading'); },
   cdr: async el => { const d = getDoc(el.dataset.id); try { const bin = atob(d.sunat.cdr); const u8 = Uint8Array.from(bin, c => c.charCodeAt(0)); await saveFile(`R-${fileBase(d, DB.cfg.empresa.ruc)}.zip`, new Blob([u8])); } catch { toast('No se pudo descargar el CDR.', 'bad'); } },
   cobrado: async el => { const d = clone(getDoc(el.dataset.id)); d.cobrado = true; d.cobradoFecha = todayISO(); await put('documentos', d); logEvent('cobro.registrado', d, d.totales?.neto && d.totales?.detraccion ? `Neto ${money(d.totales.neto, d.moneda)} (detracción aparte)` : ''); toast(`${docNum(d)} registrado como cobrado`); },
@@ -3006,8 +3195,11 @@ const ACT = {
   back: () => go(E?.doc.tipo === 'COT' ? 'cotizaciones' : E?.doc.tipo === '09' ? 'guias' : 'comprobantes'),
   'ed-tab': el => { E.tab = el.dataset.v; $('#ed').dataset.tab = E.tab; $$('.ed-tabs button').forEach(b => b.setAttribute('aria-pressed', b.dataset.v === E.tab)); requestAnimationFrame(fitPapers); },
   'ed-tipo': el => {
-    const t = el.dataset.v, d = E.doc; if (t === d.tipo) return;
-    d.tipo = t; d.serie = serieFor(t); d.numero = null;
+    let t = el.dataset.v; const d = E.doc, clase = t === 'OV' ? 'OV' : t === 'COT' ? 'COT' : '';
+    if (clase) t = 'COT';
+    if (t === d.tipo && (t !== 'COT' || (d.clase || 'COT') === clase)) return;
+    if (t === 'COT') d.clase = clase; else delete d.clase;
+    d.tipo = t; d.serie = serieFor(t, null, d.clase); d.numero = null;
     if (t === 'COT') { d.vence = d.vence && d.vence > d.fecha ? d.vence : addDays(d.fecha, Number(DB.cfg.validezDias) || 15); d.condiciones = d.condiciones || DB.cfg.condiciones; d.fecha = d.fecha; }
     else { if (d.fecha > todayISO()) d.fecha = todayISO(); if (t !== '01') { d.formaPago = 'Contado'; d.cuotas = []; } delete d.condiciones; d.vence = ''; }
     if (['01', '03'].includes(t)) { d.operacion = d.operacion || sugerirOperacion(d.items); d.guias = d.guias || []; d.detraccion = d.detraccion || { codigo: '', noSujeta: false, motivo: '' }; d.tipoCambio = d.tipoCambio || Number(DB.cfg.tipoCambio) || 0; }
@@ -3016,10 +3208,11 @@ const ACT = {
     E.errors = []; markDirty(); render();
   },
   'ed-moneda': el => { E.doc.moneda = el.dataset.v; markDirty(); $$('[data-act="ed-moneda"]').forEach(b => b.setAttribute('aria-pressed', b.dataset.v === E.doc.moneda)); reItems(); rePago(); },
-  'ed-pago': el => { const d = E.doc; d.formaPago = el.dataset.v; if (d.formaPago === 'Credito' && !d.cuotas.length) splitCuotas(1); markDirty(); const body = el.closest('.body'); body.innerHTML = condHTML(); refreshCalc(true); },
+  'ed-pago': el => { const d = E.doc; d.formaPago = el.dataset.v; if (d.formaPago === 'Credito') { d.diasCredito = Number(d.diasCredito) || 30; if (!d.cuotas.length) splitCuotas(1); } aplicarDias(d); syncVence(); markDirty(); const body = el.closest('.body'); body.innerHTML = condHTML(); refreshCalc(true); },
   'cuota-add': () => { E.doc.cuotas.push({ monto: 0, fecha: addDays(E.doc.cuotas.at(-1)?.fecha || E.doc.fecha, 30) }); splitCuotas(E.doc.cuotas.length); markDirty(); rePago(); },
   'cuota-del': el => { E.doc.cuotas.splice(+el.dataset.i, 1); splitCuotas(E.doc.cuotas.length); markDirty(); rePago(); },
   'cuota-split': () => { splitCuotas(E.doc.cuotas.length); markDirty(); rePago(); },
+  'ed-dias': el => { E.doc.diasCredito = Number(el.dataset.v); aplicarDias(E.doc); markDirty(); rePago(); syncVence(); },
   qty: el => { const it = E.doc.items[+el.dataset.i]; it.cant = Math.max(0, r2((Number(it.cant) || 0) + Number(el.dataset.d))); if (it.cant === 0) it.cant = 1; const inp = el.parentElement.querySelector('input'); inp.value = it.cant; markDirty(); refreshCalc(); },
   'del-it': el => { E.doc.items.splice(+el.dataset.i, 1); markDirty(); reItems(); },
   'add-line': () => { const d = E.doc; d.items.push(d.tipo === '09' ? { id: uid(), codigo: '', desc: '', unidad: 'NIU', cant: 1 } : { id: uid(), codigo: '', desc: '', unidad: d.operacion === 'bienes' ? 'NIU' : 'ZZ', cant: 1, precio: 0, afect: '10' }); markDirty(); reItems(); const ins = $$('[data-it="desc"]'); ins.at(-1)?.focus(); },
@@ -3058,6 +3251,8 @@ const ACT = {
   'ps-pdf': async el => { try { const d = sampleDoc(UI.psTipo || 'cot'); const b = await makePDF(d, UI.cfgDraft, DB.logo); await saveFile(`Prueba-${UI.psTipo === 'fac' ? 'factura' : 'cotizacion'}.pdf`, b); } catch { toast('No se pudo generar el PDF.', 'bad'); } },
   // config
   'cfg-amb': el => { UI.cfgDraft.integracion.ambiente = el.dataset.v; cfgChanged(true); },
+  'cfg-save': async () => { if (!cfgSucio()) { toast('No hay cambios por guardar.'); return; } const ok = await flushCfg(); if (ok !== false) render(); },
+  'cfg-discard': async () => { if (!(await confirmDlg({ title: '¿Descartar los cambios?', body: 'Se volverán a mostrar los datos guardados.', ok: 'Descartar', danger: true }))) return; UI.cfgDraft = clone(DB.cfg); UI.cfgState = ''; render(); toast('Cambios descartados'); },
   'test-api': async el => {
     const base = String(UI.cfgDraft.integracion.url || '').trim().replace(/\/+$/, '');
     const show = h => { UI.apiState = h; const st = $('#api-state'); if (st) st.innerHTML = h; };
@@ -3124,7 +3319,8 @@ document.addEventListener('input', ev => {
   if (t.matches('[data-cli]')) { E.doc.cliente[t.dataset.cli] = t.value; if (t.dataset.cli === 'numDoc') { const h = $('#cli-num-hint'); if (h) h.innerHTML = docHint(E.doc.cliente); autoPadron('ed'); } markDirty(); refreshCalc(); return; }
   if (t.matches('[data-cuota]')) { const q = E.doc.cuotas[+t.dataset.i]; q[t.dataset.cuota] = t.dataset.cuota === 'monto' ? num(t.value) : t.value; markDirty(); refreshCalc(); return; }
   if (t.matches('[data-ref]')) { E.doc.ref[t.dataset.ref] = t.value; markDirty(); refreshCalc(); return; }
-  if (t.matches('[data-ed]')) { E.doc[t.dataset.ed] = t.value; markDirty(); refreshCalc(); }
+  if (t.matches('[data-ed="diasCredito"]')) { const n = Math.round(Number(t.value)); if (n >= 1 && n <= 365) { E.doc.diasCredito = n; aplicarDias(E.doc); markDirty(); syncVence(); $$('[data-act="ed-dias"]').forEach(b => b.setAttribute('aria-pressed', String(Number(b.dataset.v) === n))); $$('[data-cuota="fecha"]').forEach((el, i) => { if (E.doc.cuotas[i]) el.value = E.doc.cuotas[i].fecha; }); refreshCalc(); } return; }
+  if (t.matches('[data-ed]')) { E.doc[t.dataset.ed] = t.value; markDirty(); refreshCalc(); if (t.dataset.ed === 'vendedor' && t.value) lsSet('granate.vendedor', t.value); }
 });
 document.addEventListener('change', ev => {
   const t = ev.target;
@@ -3145,7 +3341,8 @@ document.addEventListener('change', ev => {
   }
   if (t.matches('[data-it]') && t.tagName === 'SELECT') { E.doc.items[+t.dataset.i][t.dataset.it] = t.value; markDirty(); refreshCalc(); if (t.dataset.it === 'unidad') { const op = $('#ed-op'); if (op) op.innerHTML = opHTML(); } return; }
   if (t.matches('[data-ref]') && t.tagName === 'SELECT') { E.doc.ref[t.dataset.ref] = t.value; markDirty(); refreshCalc(); return; }
-  if (t.matches('[data-ed="fecha"]') && E.doc.formaPago === 'Credito') { rePago(); }
+  if (t.matches('[data-ed="fecha"]') && E.doc.tipo === '01') { aplicarDias(E.doc); syncVence(); if (E.doc.formaPago === 'Credito') rePago(); }
+  else if (t.matches('[data-ed="fecha"]') && E.doc.formaPago === 'Credito') { rePago(); }
 });
 document.addEventListener('mousedown', ev => { if (ev.target.closest('.combo-list')) ev.preventDefault(); });
 document.addEventListener('focusin', ev => { if (ev.target.id === 'cli-q') renderCombo(); });
@@ -3201,7 +3398,7 @@ const apiBase = () => (enClaude() ? '' : padronURL());
 const EVENTOS = {
   'cotizacion.creada': ['Cotización creada', 'emision', 'quote'], 'cotizacion.editada': ['Cotización editada', 'cambios', 'edit'], 'cotizacion.estado': ['Estado de cotización', 'cambios', 'refresh'], 'cotizacion.facturada': ['Cotización facturada', 'emision', 'receipt'],
   'documento.borrador': ['Borrador guardado', 'cambios', 'edit'], 'documento.emitido': ['Comprobante emitido', 'emision', 'receipt'], 'documento.eliminado': ['Documento eliminado', 'cambios', 'trash'],
-  'sunat.aceptado': ['Aceptado por SUNAT', 'sunat', 'check'], 'sunat.observado': ['Aceptado con observaciones', 'sunat', 'alert'], 'sunat.rechazado': ['Rechazado por SUNAT', 'sunat', 'x'], 'sunat.error': ['Error de envío', 'sunat', 'alert'],
+  'sunat.aceptado': ['Aceptado por SUNAT', 'sunat', 'check'], 'sunat.baja': ['Comunicación de baja', 'sunat', 'ban'], 'sunat.fuera_plazo': ['Fuera de plazo SUNAT', 'sunat', 'clock'], 'documento.copiado': ['Datos copiados de otro documento', 'emision', 'copy'], 'archivo.ticket': ['Ticket impreso', 'archivo', 'pdf'], 'sunat.observado': ['Aceptado con observaciones', 'sunat', 'alert'], 'sunat.rechazado': ['Rechazado por SUNAT', 'sunat', 'x'], 'sunat.error': ['Error de envío', 'sunat', 'alert'],
   'guia.vinculada': ['Guía vinculada', 'emision', 'link'], 'guia.desde_factura': ['Guía preparada desde la factura', 'emision', 'truck'], 'nota_venta.emitida': ['Nota de venta emitida', 'emision', 'tag'], 'nota_venta.editada': ['Nota de venta editada', 'cambios', 'edit'], 'nota_venta.convertida': ['Nota de venta convertida', 'emision', 'receipt'], 'nota_venta.anulada': ['Nota de venta anulada', 'cambios', 'ban'],
   'cobro.registrado': ['Cobro registrado', 'cobranza', 'coins'], 'archivo.pdf': ['Copia PDF archivada', 'archivo', 'archive'], 'archivo.descarga': ['Archivos SUNAT descargados', 'archivo', 'download'],
   'cliente.creado': ['Cliente registrado', 'maestros', 'users'], 'cliente.editado': ['Cliente actualizado', 'maestros', 'users'], 'producto.creado': ['Producto registrado', 'maestros', 'box'], 'producto.editado': ['Producto actualizado', 'maestros', 'box'], 'config.actualizada': ['Configuración', 'maestros', 'shield'],
@@ -3419,7 +3616,7 @@ function transpHTML() {
   const t = E.doc.traslado, ch = t.conductor, tr = t.transportista;
   const f = (path, label, val, attrs = '', cls = '') => `<div class="field ${cls}"><label for="tr-${path.replace('.', '-')}">${label}</label><input class="input" id="tr-${path.replace('.', '-')}" data-trp="${path}" value="${esc(val || '')}" ${attrs}></div>`;
   return `<div class="field"><span class="lbl">Modalidad (catálogo 18)</span><div class="seg brand" role="group">${Object.entries(MODALIDAD).map(([k, v]) => `<button data-act="gre-mod" data-v="${k}" aria-pressed="${t.modalidad === k}">${v}</button>`).join('')}</div></div>
-    ${t.modalidad === '01' ? `<div class="grid g3" style="margin-top:14px">${f('transportista.ruc', 'RUC del transportista', tr.ruc, 'inputmode="numeric" maxlength="11" class="num"')}${f('transportista.razon', 'Razón social', tr.razon, '', 'span2')}${f('transportista.mtc', 'Registro MTC <span class="faint">(opcional)</span>', tr.mtc)}</div><p class="hint" style="margin-top:8px">La empresa de transportes emite además su propia guía transportista.</p>`
+    ${t.modalidad === '01' ? `<div class="grid g3" style="margin-top:14px">${f('transportista.ruc', 'RUC del transportista', tr.ruc, 'inputmode="numeric" maxlength="11" class="num"')}${f('transportista.razon', 'Razón social', tr.razon, '', 'span2')}${f('transportista.mtc', 'Registro MTC <span class="faint">(opcional)</span>', tr.mtc)}${f('transportista.guia', 'N.° de su guía transportista <span class="faint">(GRE-T)</span>', tr.guia, 'maxlength="13" placeholder="V001-00000123" style="text-transform:uppercase"', 'span2')}</div><p class="hint" style="margin-top:8px">La empresa de transportes emite su propia guía (GRE transportista). Registra su número para verla en Comprobantes → Guías transportista.</p>`
     : `<label class="switch" style="margin-top:14px"><input type="checkbox" data-tr-bool="m1l" ${t.m1l ? 'checked' : ''}><span class="track"></span><span>Vehículo M1 o L (auto, moto): no exige conductor ni placa</span></label>
       ${t.m1l ? '' : `<div class="grid g3" style="margin-top:14px">${f('conductor.numDoc', 'DNI del conductor', ch.numDoc, 'inputmode="numeric" maxlength="8"')}${f('conductor.nombres', 'Nombres', ch.nombres)}${f('conductor.apellidos', 'Apellidos', ch.apellidos)}${f('conductor.licencia', 'Licencia de conducir', ch.licencia, 'maxlength="9" placeholder="Q12345678" style="text-transform:uppercase"')}${f('placa', 'Placa del vehículo', t.placa, 'maxlength="8" placeholder="ABC123" style="text-transform:uppercase"')}</div>`}`}`;
 }
@@ -3827,6 +4024,339 @@ Object.assign(ACT, {
   },
   'guia-despues': el => { const d = E.doc; d.guiaPosterior = el.dataset.v === '1'; markDirty(); E.errors = (E.errors || []).filter(x => !/guía de remisión/i.test(x)); const er = $('#ed-errors'); if (er) er.innerHTML = errorsHTML(); reGuia(); },
   'gre-de-fac': el => startGuiaDeFactura(el.dataset.id),
+});
+
+/* ================= RESPONSABLES DE VENTA ================= */
+function vendAddModal() {
+  openModal(`<div class="modal-h"><h2>Nuevo responsable de ventas</h2><button class="btn ghost icon-only" data-act="modal-close" aria-label="Cerrar">${icon('x')}</button></div>
+    <div class="modal-b"><div class="field"><label for="vend-nombre">Nombre y apellido</label><input class="input" id="vend-nombre" maxlength="60" autocomplete="off" placeholder="Ej.: Carlos Ramírez" data-enter="vend-save"></div><p class="hint" style="margin-top:8px">Queda en la lista para todos los comprobantes. Puedes quitarlo en «Integración SUNAT → Responsables de ventas».</p></div>
+    <div class="modal-f"><button class="btn" data-act="modal-close">Cancelar</button><button class="btn primary" data-act="vend-save">${icon('check')}Agregar</button></div>`);
+  setTimeout(() => $('#vend-nombre')?.focus(), 50);
+}
+async function guardarVendedores(lista) { const c = clone(DB.cfg); c.vendedores = lista; await putCfg(c); if (UI.cfgDraft) UI.cfgDraft.vendedores = [...lista]; }
+Object.assign(ACT, {
+  'vend-add': () => vendAddModal(),
+  'vend-save': async () => {
+    const n = String($('#vend-nombre')?.value || '').replace(/\s+/g, ' ').trim();
+    if (n.length < 3) { toast('Escribe el nombre del responsable.', 'warn'); return; }
+    const vs = [...(DB.cfg.vendedores || [])]; if (!vs.some(v => v.toLowerCase() === n.toLowerCase())) vs.push(n);
+    await guardarVendedores(vs); closeModal(); logEvent('config.vendedor', null, `Responsable agregado: ${n}`);
+    if (E && E.doc) { E.doc.vendedor = vs.find(v => v.toLowerCase() === n.toLowerCase()); lsSet('granate.vendedor', E.doc.vendedor); markDirty(); const b = $('#ed-vend-box'); if (b) b.innerHTML = vendedorHTML(); refreshCalc(true); }
+    toast(`${n} agregado como responsable de ventas`, 'ok');
+  },
+  'vend-del': el => { if (!UI.cfgDraft) return; UI.cfgDraft.vendedores = (UI.cfgDraft.vendedores || []).filter(v => v !== el.dataset.v); cfgChanged(true); },
+  'vend-add-cfg': () => { const i = $('#cfg-vend-new'); const n = String(i?.value || '').replace(/\s+/g, ' ').trim(); if (n.length < 3) { toast('Escribe el nombre del responsable.', 'warn'); i?.focus(); return; } const vs = UI.cfgDraft.vendedores = [...(UI.cfgDraft.vendedores || [])]; if (!vs.some(v => v.toLowerCase() === n.toLowerCase())) vs.push(n); cfgChanged(true); setTimeout(() => $('#cfg-vend-new')?.focus(), 30); },
+});
+
+document.addEventListener('keydown', ev => { const t = ev.target; if (ev.key === 'Enter' && t?.matches?.('[data-enter]') && ACT[t.dataset.enter]) { ev.preventDefault(); ACT[t.dataset.enter](t); } });
+
+/* ================= BOTÓN FLOTANTE DE WHATSAPP (soporte, apoyo y consultas) ================= */
+function waSoporteURL() {
+  const s = DB.cfg.soporte || {}, n = String(s.whatsapp || '').replace(/\D/g, '');
+  return n ? `https://wa.me/${n}?text=${encodeURIComponent(s.mensaje || 'Hola, necesito ayuda con el facturador electrónico.')}` : '';
+}
+function pintarWaFab() {
+  const url = waSoporteURL(); let a = document.getElementById('wa-fab');
+  if (!url) { a?.remove(); return; }
+  if (!a) {
+    a = document.createElement('a'); a.id = 'wa-fab'; a.className = 'wa-fab'; a.target = '_blank'; a.rel = 'noopener';
+    a.setAttribute('aria-label', 'Soporte por WhatsApp'); a.title = 'Soporte, apoyo y consultas por WhatsApp';
+    a.innerHTML = `<svg viewBox="0 0 32 32" width="28" height="28" aria-hidden="true"><path fill="currentColor" d="M16.04 3C8.86 3 3.04 8.82 3.04 16c0 2.3.6 4.53 1.74 6.5L3 29l6.68-1.75A12.94 12.94 0 0 0 16.04 29C23.22 29 29.04 23.18 29.04 16S23.22 3 16.04 3Zm0 23.62c-2 0-3.95-.54-5.66-1.56l-.4-.24-3.97 1.04 1.06-3.87-.26-.4A10.6 10.6 0 0 1 5.42 16c0-5.86 4.76-10.62 10.62-10.62S26.66 10.14 26.66 16 21.9 26.62 16.04 26.62Zm5.83-7.95c-.32-.16-1.88-.93-2.17-1.03-.29-.11-.5-.16-.71.16-.21.32-.82 1.03-1 1.24-.18.21-.37.24-.69.08-.32-.16-1.34-.49-2.55-1.57-.94-.84-1.58-1.88-1.76-2.2-.18-.32-.02-.49.14-.65.14-.14.32-.37.48-.56.16-.18.21-.32.32-.53.11-.21.05-.4-.03-.56-.08-.16-.71-1.71-.97-2.34-.26-.62-.52-.53-.71-.54h-.61c-.21 0-.56.08-.85.4-.29.32-1.11 1.09-1.11 2.65s1.14 3.08 1.3 3.29c.16.21 2.24 3.42 5.43 4.8.76.33 1.35.52 1.81.67.76.24 1.45.21 2 .13.61-.09 1.88-.77 2.14-1.51.27-.74.27-1.38.19-1.51-.08-.13-.29-.21-.61-.37Z"/></svg><span class="wa-fab-txt">Soporte</span>`;
+    document.body.appendChild(a);
+  }
+  a.href = url;
+  document.body.classList.toggle('con-abar', UI.route === 'editor');
+}
+
+/* ================= ANULACIÓN EN SUNAT: COMUNICACIÓN DE BAJA ================= */
+const MOTIVOS_BAJA = ['Error en los datos del cliente', 'Error en precios o montos', 'Error en productos o cantidades', 'Venta no realizada', 'Comprobante emitido por duplicado'];
+const cortaFecha = iso => iso ? iso.split('-').reverse().join('/') : '';
+function bajaModal(d) {
+  const b = bajaInfo(d), nombre = TIPOS[d.tipo].impreso.toLowerCase(), nc = `<button class="btn primary" data-act="baja-nc" data-id="${d.id}">${icon('undo')}Emitir nota de crédito (anulación)</button>`;
+  let body, foot;
+  if (b.boleta) {
+    body = `<div class="alert info">${icon('info')}<div><b>Las boletas y sus notas se dan de baja con el resumen diario.</b> Mientras lo habilitamos, anula la operación con una nota de crédito (motivo 01 · Anulación de la operación): deja el mismo rastro ante SUNAT.</div></div>`;
+    foot = `<button class="btn" data-act="modal-close">Cerrar</button>${nc}`;
+  } else if (!b.enPlazo) {
+    body = `<div class="alert warn">${icon('clock')}<div><b>Ya no se puede dar de baja.</b> La constancia (CDR) es del ${cortaFecha(b.cdr)} y la comunicación de baja solo procede hasta 7 días después (${cortaFecha(b.limite)}). Ahora corresponde anular con una nota de crédito.</div></div>`;
+    foot = `<button class="btn" data-act="modal-close">Cerrar</button>${nc}`;
+  } else {
+    body = `<p style="margin:0 0 12px">Se enviará a SUNAT la <b>comunicación de baja</b> de la ${nombre} <b class="num">${docNum(d)}</b> por ${money(totalOf(d), d.moneda)}. Queda anulada sin emitir otro documento.</p>
+      <div class="alert brand" style="margin-bottom:14px">${icon('clock')}<div>Plazo: hasta el <b>${cortaFecha(b.limite)}</b> (7 días desde la constancia del ${cortaFecha(b.cdr)}) · ${b.diasRestantes === 0 ? 'vence hoy' : `quedan ${b.diasRestantes} día${b.diasRestantes > 1 ? 's' : ''}`}.</div></div>
+      <div class="field"><label for="baja-mot">Motivo de la baja</label><select class="select" id="baja-mot">${MOTIVOS_BAJA.map(m => `<option>${esc(m)}</option>`).join('')}<option value="otro">Otro motivo…</option></select></div>
+      <div class="field" id="baja-otro-f" hidden style="margin-top:10px"><label for="baja-otro">Describe el motivo</label><input class="input" id="baja-otro" maxlength="100" placeholder="Máximo 100 caracteres"></div>
+      <label class="check" style="margin-top:14px;display:flex;gap:10px;align-items:flex-start"><input type="checkbox" id="baja-ok"><span><b>Confirmo que este comprobante no fue entregado al cliente.</b> <span class="faint">Si ya lo entregaste, SUNAT exige anularlo con nota de crédito.</span></span></label>`;
+    foot = `<button class="btn ghost" data-act="baja-nc" data-id="${d.id}" style="margin-right:auto">Ya lo entregué: nota de crédito</button><button class="btn" data-act="modal-close">Cancelar</button><button class="btn danger" data-act="baja-enviar" data-id="${d.id}">${icon('ban')}Dar de baja en SUNAT</button>`;
+  }
+  openModal(`<div class="modal-h"><h2>Anular ${nombre} ${docNum(d)}</h2><button class="btn ghost icon-only" data-act="modal-close" aria-label="Cerrar">${icon('x')}</button></div><div class="modal-b">${body}</div><div class="modal-f">${foot}</div>`);
+  $('#baja-mot')?.addEventListener('change', ev => { const o = $('#baja-otro-f'); if (o) { o.hidden = ev.target.value !== 'otro'; if (!o.hidden) $('#baja-otro')?.focus(); } });
+}
+async function enviarBaja(id, motivo) {
+  const d = getDoc(id); if (!d) return;
+  const hoy = todayISO(), ymd = hoy.replace(/-/g, '');
+  const n = 1 + allDocs().filter(x => String(x.baja?.id || '').startsWith(`RA-${ymd}-`)).length;
+  const baja = { id: `RA-${ymd}-${n}`, fecha: hoy, fechaReferencia: d.fecha, lineas: [{ id: d.id, tipo: d.tipo, serie: d.serie, numero: d.numero, motivo }] };
+  const real = d.sunat?.modo === 'api';
+  let r;
+  if (real) {
+    const base = padronURL(); if (!base) throw new Error('Configura la URL de tu API en «Integración SUNAT».');
+    if (!apiViva(base)) await despertarAPI(base);
+    const ctl = new AbortController(), to = setTimeout(() => ctl.abort(), 110000);
+    try {
+      const res = await fetch(`${base}/baja/emitir`, { method: 'POST', headers: apiHeaders({ 'Content-Type': 'application/json' }), body: JSON.stringify({ ambiente: d.sunat?.ambiente || DB.cfg.integracion.ambiente, emisor: { ruc: DB.cfg.empresa.ruc, razon: DB.cfg.empresa.razon }, baja, xml: buildBaja(baja, DB.cfg) }), signal: ctl.signal });
+      r = await res.json().catch(() => ({})); if (!res.ok) throw new Error(r.mensaje || `Tu API respondió ${res.status}`);
+    } finally { clearTimeout(to); }
+  } else { await sleep(900); r = { estado: 'ACEPTADO', codigo: '0', descripcion: `La Comunicacion de baja ${baja.id}, ha sido aceptada`, ticket: `SIM${Date.now()}` }; }
+  const f = clone(getDoc(id));
+  f.baja = { id: baja.id, fecha: hoy, motivo, ticket: r.ticket || '', codigo: r.codigo || '', descripcion: r.descripcion || '', modo: real ? 'api' : 'simulador', ambiente: d.sunat?.ambiente || '', estado: r.estado, ts: new Date().toISOString(), estadoAnterior: d.estado, cdr: r.cdrZipBase64 && r.cdrZipBase64.length < 150000 ? r.cdrZipBase64 : '' };
+  if (['ACEPTADO', 'OBSERVADO'].includes(r.estado)) f.estado = 'anulado';
+  else if (r.estado === 'EN_PROCESO') f.estado = 'baja_proceso';
+  await put('documentos', f);
+  logEvent('sunat.baja', f, `${baja.id} · ${r.estado} · [${r.codigo}] ${r.descripcion}${real ? '' : ' (simulador)'} · Motivo: ${motivo}`);
+  return { f, r };
+}
+async function consultarBaja(id) {
+  const d = getDoc(id), base = padronURL(); if (!d?.baja?.ticket || !base) return;
+  const res = await fetch(`${base}/baja/ticket/${encodeURIComponent(d.baja.ticket)}?ruc=${DB.cfg.empresa.ruc}`, { headers: apiHeaders() });
+  const r = await res.json().catch(() => ({})); if (!res.ok) throw new Error(r.mensaje || `Tu API respondió ${res.status}`);
+  const f = clone(d); Object.assign(f.baja, { estado: r.estado, codigo: r.codigo || f.baja.codigo, descripcion: r.descripcion || f.baja.descripcion, cdr: r.cdrZipBase64 && r.cdrZipBase64.length < 150000 ? r.cdrZipBase64 : f.baja.cdr });
+  f.estado = ['ACEPTADO', 'OBSERVADO'].includes(r.estado) ? 'anulado' : r.estado === 'EN_PROCESO' ? 'baja_proceso' : f.baja.estadoAnterior || 'aceptado';
+  await put('documentos', f); logEvent('sunat.baja', f, `${f.baja.id} · consulta de ticket · ${r.estado} · [${r.codigo}] ${r.descripcion}`);
+  return { f, r };
+}
+function bajaPanelHTML(d) {
+  if (fueraDePlazo(d)) return `<section class="panel"><div class="panel-h"><h2>Fuera de plazo</h2><span class="pill bad">${icon('clock', 'sm')}No se puede enviar</span></div><div class="panel-b"><p class="hint" style="margin:0 0 10px">Su fecha de emisión es ${fmtDate(d.fecha)}: SUNAT solo recibe comprobantes de hasta 3 días atrás. Sin envío no tiene validez; emite uno nuevo con fecha de hoy.</p><button class="btn primary" data-act="dup" data-id="${d.id}">${icon('refresh')}Emitir de nuevo con fecha de hoy</button></div></section>`;
+  if (!d.baja) return '';
+  const b = d.baja, ok = d.estado === 'anulado';
+  return `<section class="panel"><div class="panel-h"><h2>Comunicación de baja</h2>${ok ? `<span class="pill neutral">${icon('ban', 'sm')}Anulado</span>` : d.estado === 'baja_proceso' ? `<span class="pill warn">${icon('clock', 'sm')}En proceso</span>` : `<span class="pill bad">${icon('x', 'sm')}No aceptada</span>`}</div><div class="panel-b"><dl class="kv">
+    <dt>Identificador</dt><dd class="num">${esc(b.id)}</dd><dt>Fecha</dt><dd>${fmtDate(b.fecha)}</dd><dt>Motivo</dt><dd>${esc(b.motivo)}</dd>${b.ticket ? `<dt>Ticket</dt><dd class="num">${esc(b.ticket)}</dd>` : ''}<dt>Respuesta</dt><dd>[${esc(b.codigo || '—')}] ${esc(b.descripcion || '')}</dd><dt>Canal</dt><dd>${b.modo === 'api' ? `API · ${esc(b.ambiente || '')}` : 'Simulador'}</dd></dl>
+    ${d.estado === 'baja_proceso' && b.ambiente === 'beta' ? '<p class="hint" style="margin:10px 0 0">El beta de SUNAT recibe la baja y entrega el ticket, pero su consulta de tickets suele no responder. En producción la constancia llega en segundos.</p>' : ''}
+    ${b.cdr ? `<button class="btn sm" data-act="baja-cdr" data-id="${d.id}" style="margin-top:10px">${icon('download', 'sm')}Constancia de la baja</button>` : ''}</div></section>`;
+}
+Object.assign(ACT, {
+  baja: el => { const d = getDoc(el.dataset.id); if (d) bajaModal(d); },
+  'baja-nc': el => { closeModal(); startNota(el.dataset.id, '07'); setTimeout(() => { if (E?.doc?.tipo === '07' && E.doc.ref) { E.doc.ref.motivo = '01'; E.doc.ref.sustento = E.doc.ref.sustento || 'Anulación de la operación'; markDirty(); render(); } }, 60); },
+  'baja-enviar': async el => {
+    const sel = $('#baja-mot')?.value, motivo = (sel === 'otro' ? String($('#baja-otro')?.value || '') : sel || '').replace(/\s+/g, ' ').trim();
+    if (motivo.length < 5) { toast('Indica el motivo de la baja.', 'warn'); $('#baja-otro')?.focus(); return; }
+    if (!$('#baja-ok')?.checked) { toast('Confirma que el comprobante no fue entregado al cliente.', 'warn'); $('#baja-ok')?.focus(); return; }
+    el.classList.add('loading'); el.disabled = true;
+    try {
+      const { f, r } = await enviarBaja(el.dataset.id, motivo.toUpperCase());
+      closeModal(); openDrawer(f.id);
+      if (f.estado === 'anulado') toast(`${docNum(f)} anulado en SUNAT (${f.baja.id})${f.baja.modo === 'simulador' ? ' · simulador' : ''}`, 'ok');
+      else if (f.estado === 'baja_proceso') toast(`SUNAT recibió la baja (ticket ${r.ticket}). Consulta el resultado en unos minutos.`, 'warn');
+      else toast(`SUNAT no aceptó la baja: [${r.codigo}] ${r.descripcion}`, 'bad');
+    } catch (e) { toast(e.name === 'AbortError' ? 'Tu API no respondió a tiempo. Intenta de nuevo.' : e.message, 'bad'); el.classList.remove('loading'); el.disabled = false; }
+  },
+  'baja-consultar': async el => { el.classList.add('loading'); try { const { f, r } = await consultarBaja(el.dataset.id); openDrawer(f.id); toast(f.estado === 'anulado' ? `${docNum(f)} anulado en SUNAT` : r.estado === 'EN_PROCESO' ? 'SUNAT aún procesa la baja.' : `Baja no aceptada: ${r.descripcion}`, f.estado === 'anulado' ? 'ok' : 'warn'); } catch (e) { toast(e.message, 'bad'); } el.classList.remove('loading'); },
+  'baja-cdr': async el => { const d = getDoc(el.dataset.id); if (d?.baja?.cdr) await saveFile(`R-${DB.cfg.empresa.ruc}-${d.baja.id}.zip`, new Blob([b64u8(d.baja.cdr)], { type: 'application/zip' })); },
+});
+
+/* ================= COPIAR DATOS DE UN DOCUMENTO ANTERIOR ================= */
+const COPIABLE = ['COT', '01', '03', 'NV', '09'];
+const copiables = d => allDocs().filter(x => x.tipo === d.tipo && x.id !== d.id && x.numero && (d.tipo !== 'COT' || true)).sort(byRecent);
+function copiarBtnHTML(d) { return E?.isNew && COPIABLE.includes(d.tipo) && !d.origenId && !d.greId && !d.deFacturaId ? `<button class="btn" data-act="copy-pick" style="margin-left:8px">${icon('copy', 'sm')}Copiar de ${d.tipo === '09' ? 'otra guía' : d.tipo === 'COT' ? 'otra cotización u orden' : `otra ${d.tipo === '01' ? 'factura' : d.tipo === '03' ? 'boleta' : 'nota de venta'}`}</button>` : ''; }
+function copyPickModal() {
+  UI.copyQ = '';
+  const d = E.doc, n = d.tipo === '09' ? 'guía de remisión' : d.tipo === 'COT' ? 'cotización u orden de venta' : TIPOS[d.tipo].impreso.toLowerCase();
+  openModal(`<div class="modal-h"><h2>Copiar datos de una ${n} anterior</h2><button class="btn ghost icon-only" data-act="modal-close" aria-label="Cerrar">${icon('x')}</button></div>
+    <div class="modal-b"><div class="search" style="max-width:none">${icon('search')}<input class="input" id="copy-q" data-copyq placeholder="Número o cliente (p. ej. ${esc(d.serie)}-15)" autocomplete="off"></div><div class="pick-list" id="copy-list">${copyList()}</div></div>
+    <div class="modal-f"><span class="hint" style="margin-right:auto;align-self:center">Se copian cliente, ítems, moneda, condiciones y responsable. El número y la fecha son nuevos.</span><button class="btn" data-act="modal-close">Cancelar</button></div>`, true);
+  setTimeout(() => { if (matchMedia('(pointer:fine)').matches) $('#copy-q')?.focus(); }, 50);
+}
+function copyList() {
+  const q = (UI.copyQ || '').toLowerCase().replace(/^0+/, '');
+  const list = copiables(E.doc).filter(x => !q || docNum(x).toLowerCase().includes(q) || `${x.serie}-${x.numero}`.toLowerCase().includes(q) || (x.cliente?.nombre || '').toLowerCase().includes(q)).slice(0, 40);
+  if (!list.length) return emptyHTML('copy', 'No hay documentos para copiar', 'Cuando emitas uno, podrás reutilizar sus datos aquí.');
+  return list.map(x => `<button class="pick" data-act="copy-usar" data-id="${x.id}"><span><b class="num">${docNum(x)}</b><small>${esOV(x) ? 'Orden de venta · ' : ''}${esc(x.cliente?.nombre || '')} · ${fmtDate(x.fecha)} · ${(x.items || []).length} ítem${(x.items || []).length === 1 ? '' : 's'}</small></span>${docPill(x)}<span class="num">${x.tipo === '09' ? `${num(x.traslado?.pesoKg).toFixed(1)} kg` : money(totalOf(x), x.moneda)}</span></button>`).join('');
+}
+function copiarDe(srcId) {
+  const s = getDoc(srcId), d = E.doc; if (!s) return;
+  const hoy = todayISO();
+  d.cliente = clone(s.cliente); d.items = copyItems(s.items); d.obs = s.obs || '';
+  if (d.tipo === '09') {
+    const t = clone(s.traslado || {}); t.fechaInicio = hoy; d.traslado = { ...d.traslado, ...t }; d.docRel = null;
+  } else {
+    Object.assign(d, { moneda: s.moneda, incluyeIGV: s.incluyeIGV, vendedor: s.vendedor || d.vendedor });
+    if (d.tipo === 'COT') { d.condiciones = s.condiciones || d.condiciones; if (s.clase === 'OV' || d.clase === 'OV') { /* mantiene la clase elegida */ } d.vence = addDays(d.fecha, Math.max(1, Math.round((Date.parse(s.vence || s.fecha) - Date.parse(s.fecha)) / 864e5)) || Number(DB.cfg.validezDias) || 15); }
+    if (['01', '03'].includes(d.tipo)) { d.operacion = s.operacion || sugerirOperacion(d.items); d.detraccion = clone(s.detraccion || { codigo: '', noSujeta: false, motivo: '' }); d.guias = []; d.guiaPosterior = d.operacion === 'bienes' ? true : undefined; d.tipoCambio = s.tipoCambio || d.tipoCambio; }
+    if (d.tipo === '01') { d.formaPago = s.formaPago || 'Contado'; d.diasCredito = s.diasCredito || 30; d.cuotas = d.formaPago === 'Credito' ? clone(s.cuotas || []) : []; if (d.formaPago === 'Credito') splitCuotas(Math.max(1, d.cuotas.length)); aplicarDias(d); }
+  }
+  E.cli = 'card'; E.errors = []; markDirty(); render();
+  toast(`Datos de ${docNum(s)} copiados: revisa y emite.`, 'ok');
+  logEvent('documento.copiado', s, `Copiado a un nuevo ${nombreDoc(d).toLowerCase()}`);
+}
+Object.assign(ACT, {
+  'copy-pick': () => { if (!copiables(E.doc).length) { toast('Aún no hay documentos de este tipo para copiar.', 'warn'); return; } copyPickModal(); },
+  'copy-usar': async el => {
+    if (E.dirty && ((E.doc.items || []).length || E.doc.cliente?.nombre) && !(await confirmDlg({ title: '¿Reemplazar lo que llevas?', body: 'Se cargarán el cliente y los ítems del documento elegido.', ok: 'Copiar datos' }))) return;
+    closeModal(); copiarDe(el.dataset.id);
+  },
+});
+document.addEventListener('input', ev => { const t = ev.target; if (t?.matches?.('[data-copyq]')) { UI.copyQ = t.value; const l = $('#copy-list'); if (l) l.innerHTML = copyList(); } });
+
+/* ================= COMPROBANTES: GUÍAS Y REPORTE RÁPIDO ================= */
+const esGRT = g => g.tipo === '09' && g.traslado?.modalidad === '01';
+function reporteRapidoHTML() {
+  const mes = todayISO().slice(0, 7), delMes = d => String(d.fecha || '').startsWith(mes) && d.estado !== 'borrador';
+  const pen = d => (d.moneda === 'USD' ? totalOf(d) * (Number(d.tipoCambio) || Number(DB.cfg.tipoCambio) || 1) : totalOf(d));
+  const est = l => ({ ok: l.filter(d => ['aceptado', 'observado'].includes(d.estado)).length, pend: l.filter(d => ['pendiente', 'baja_proceso'].includes(d.estado)).length, mal: l.filter(d => d.estado === 'rechazado').length, anul: l.filter(d => d.estado === 'anulado').length });
+  const all = allDocs().filter(delMes), F = all.filter(d => d.tipo === '01'), B = all.filter(d => d.tipo === '03'), N = all.filter(d => ['07', '08'].includes(d.tipo)), G = all.filter(d => d.tipo === '09'), T = G.filter(esGRT);
+  const vale = l => l.filter(d => ['aceptado', 'observado', 'pendiente'].includes(d.estado));
+  const card = (t, k, n, l, sub, extra = '') => { const e = est(l); return `<button class="rq" data-act="cpet" data-t="${k}" aria-pressed="${UI.cpeT === k}"><span class="rq-t">${t}</span><b class="num">${n}</b><span class="rq-s num">${sub}</span><span class="rq-e">${e.ok ? `<i class="ok">${e.ok} ok</i>` : ''}${e.pend ? `<i class="warn">${e.pend} por enviar</i>` : ''}${e.mal ? `<i class="bad">${e.mal} rech.</i>` : ''}${e.anul ? `<i class="neutral">${e.anul} anul.</i>` : ''}${extra}</span></button>`; };
+  const sinFac = G.filter(g => ['aceptado', 'observado'].includes(g.estado) && !g.facturaId && !allDocs().some(x => (x.guias || []).some(r => r.id === g.id)) && g.traslado?.motivo === '01').length;
+  return `<div class="rq-grid" role="group" aria-label="Reporte rápido de ${fmtMes(mes)}">
+    ${card('Facturas', '01', F.length, F, money(vale(F).reduce((a, d) => a + pen(d), 0)))}
+    ${card('Boletas', '03', B.length, B, money(vale(B).reduce((a, d) => a + pen(d), 0)))}
+    ${card('Notas C/D', '07', N.length, N, `${N.filter(d => d.tipo === '07').length} NC · ${N.filter(d => d.tipo === '08').length} ND`)}
+    ${card('Guías remitente', '09', G.length, G, `${num(G.reduce((a, g) => a + num(g.traslado?.pesoKg), 0)).toLocaleString('es-PE', { maximumFractionDigits: 0 })} kg trasladados`, sinFac ? `<i class="warn">${sinFac} sin facturar</i>` : '')}
+    ${card('Guías transportista', '31', T.length, T, `${new Set(T.map(g => g.traslado?.transportista?.ruc).filter(Boolean)).size} transportista(s)`, T.filter(g => !g.traslado?.transportista?.guia).length ? `<i class="warn">${T.filter(g => !g.traslado?.transportista?.guia).length} sin N.° de GRE-T</i>` : '')}
+  </div><p class="hint" style="margin:-4px 0 14px">Reporte rápido de ${fmtMes(mes)} · montos en soles, sin borradores ni anulados en el total.</p>`;
+}
+const fmtMes = ym => { const [y, m] = ym.split('-'); return `${['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'setiembre', 'octubre', 'noviembre', 'diciembre'][Number(m) - 1]} ${y}`; };
+function guiasTablaHTML(transp) {
+  const q = UI.cpeQ.trim().toLowerCase();
+  const rows = gres().filter(g => !transp || esGRT(g)).filter(g => UI.cpeF === 'todos' || g.estado === UI.cpeF).filter(g => !q || docNum(g).toLowerCase().includes(q) || (g.cliente?.nombre || '').toLowerCase().includes(q) || (g.traslado?.transportista?.razon || '').toLowerCase().includes(q) || (g.traslado?.transportista?.guia || '').toLowerCase().includes(q)).sort(byRecent);
+  if (!rows.length) return emptyHTML('truck', transp ? 'Sin guías con transportista' : 'Sin guías de remisión', transp ? 'Aparecen aquí las guías con transporte público: registra el RUC del transportista y el número de su guía (GRE transportista).' : 'Crea la guía desde la factura o desde «Guías de remisión».');
+  return `<div class="table-wrap"><table class="t"><thead><tr><th>Guía remitente</th><th>Destinatario</th><th class="hide-sm">Traslado</th>${transp ? '<th>Transportista</th><th class="hide-sm">GRE transportista</th>' : '<th class="hide-md">Modalidad</th><th class="hide-md num">Peso</th>'}<th>SUNAT</th></tr></thead><tbody>
+    ${rows.map(g => { const t = g.traslado || {}, tr = t.transportista || {}; return `<tr data-act="open" data-id="${g.id}"><td class="docid">${docNum(g)}<small style="display:block;font-weight:400;color:var(--text-3);font-size:var(--fs-xs)">${esc(MOTIVOS_TRASLADO[t.motivo] || '')}</small></td><td class="who">${esc(g.cliente?.nombre || '—')}<small>${esc(g.cliente?.numDoc || '')}</small></td><td class="hide-sm tnum">${fmtDay(t.fechaInicio || g.fecha)}</td>${transp ? `<td class="who">${esc(tr.razon || '—')}<small class="num">${esc(tr.ruc || '')}</small></td><td class="hide-sm num">${tr.guia ? esc(tr.guia) : '<span class="pill warn">Falta N.°</span>'}</td>` : `<td class="hide-md">${t.modalidad === '01' ? 'Público' : 'Privado'}${t.placa ? ` <span class="faint num">· ${esc(t.placa)}</span>` : ''}</td><td class="hide-md num">${num(t.pesoKg).toFixed(1)} kg</td>`}<td>${docPill(g)}</td></tr>`; }).join('')}
+  </tbody></table></div>`;
+}
+
+/* ================= TICKET TÉRMICO 80 / 58 mm =================
+   Mismos datos que el A4: emisor y RUC, serie y número, cliente, detalle, IGV, total, QR, hash y leyenda.
+   Imprime directo desde el navegador (impresoras térmicas con su driver: Epson TM, Xprinter, Bixolon…)
+   o genera el PDF del ticket para imprimir desde el celular (apps como RawBT o la de la impresora). */
+const TK_ANCHO = () => (lsGet('granate.ticket') === '58' ? 58 : 80);
+const tkNum = v => nf2.format(Number(v) || 0);
+function ticketDatos(d, cfg = DB.cfg) {
+  const c = calc(d), e = cfg.empresa, cli = d.cliente || {}, isNV = d.tipo === 'NV', sp = d.tipo === '01' ? spot(d, cfg.tipoCambio) : { aplica: false };
+  return { c, e, cli, isNV, sp, titulo: isNV ? 'NOTA DE VENTA' : TIPOS[d.tipo].impreso.toUpperCase(), cur: d.moneda === 'USD' ? 'US$' : 'S/', qr: isNV ? '' : qrText(d, cfg, c) };
+}
+function ticketHTML(d, ancho = 80, cfg = DB.cfg, logo = DB.logo) {
+  const { c, e, cli, isNV, sp, titulo, cur, qr } = ticketDatos(d, cfg), w = ancho === 58 ? 48 : 72, fs = ancho === 58 ? 9.6 : 11;
+  const fila = (k, v) => `<div class="kv"><span>${k}</span><span>${v}</span></div>`;
+  const tot = [c.gravada ? fila('Op. gravada', `${cur} ${tkNum(c.gravada)}`) : '', c.exonerada ? fila('Op. exonerada', `${cur} ${tkNum(c.exonerada)}`) : '', c.inafecta ? fila('Op. inafecta', `${cur} ${tkNum(c.inafecta)}`) : '', fila(`IGV ${r2(c.rate * 100)}%`, `${cur} ${tkNum(c.igv)}`)].join('');
+  const refs = d.ref ? `<div>Ref.: ${esc(TIPOS[d.ref.tipo]?.corto || '')} ${esc(d.ref.serie)}-${esc(d.ref.numero)}</div>` : '';
+  return `<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${esc(titulo)} ${esc(docNum(d))}</title><style>
+@page{size:${ancho}mm auto;margin:0}
+*{box-sizing:border-box}html,body{margin:0;padding:0;background:#fff;color:#000}
+body{font:${fs}px/1.3 Arial,Helvetica,sans-serif;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.tk{width:${w}mm;margin:0 auto;padding:3mm 0 6mm}
+.c{text-align:center}.b{font-weight:700}.big{font-size:${fs + 3}px}.sm{font-size:${fs - 1.5}px}
+.hr{border-top:1px dashed #000;margin:2.2mm 0}
+.kv{display:flex;justify-content:space-between;gap:2mm}.kv span:last-child{text-align:right;white-space:nowrap}
+.it{margin:1mm 0}.it .d{word-break:break-word}.it .q{display:flex;justify-content:space-between;gap:2mm}
+.tot{font-size:${fs + 2}px;font-weight:700}
+.qr{width:${ancho === 58 ? 26 : 32}mm;margin:2mm auto 1mm}.qr svg{width:100%;height:auto;display:block}
+img.logo{display:block;max-width:${ancho === 58 ? 30 : 40}mm;max-height:16mm;margin:0 auto 1.5mm;filter:grayscale(1) contrast(1.4)}
+.no-print{font:14px Arial;margin:12px auto;width:${w}mm;display:flex;gap:8px}.no-print button{flex:1;height:44px;border-radius:10px;border:0;background:#7A1F2E;color:#fff;font-weight:700}
+@media print{.no-print{display:none}}
+</style></head><body><div class="tk">
+  ${logo ? `<img class="logo" src="${logo}" alt="">` : ''}
+  <div class="c b">${esc(e.razon || '')}</div>${e.comercial && e.comercial !== e.razon ? `<div class="c sm">${esc(e.comercial)}</div>` : ''}
+  <div class="c">RUC ${esc(e.ruc || '')}</div><div class="c sm">${esc([e.direccion, e.distrito, e.provincia].filter(Boolean).join(' - '))}</div>${e.telefono ? `<div class="c sm">Tel. ${esc(e.telefono)}</div>` : ''}
+  <div class="hr"></div>
+  <div class="c b">${esc(titulo)}</div><div class="c b big">${esc(docNum(d))}</div>
+  <div class="hr"></div>
+  ${fila('Fecha', `${fmtDate(d.fecha)} ${esc(String(d.hora || '').slice(0, 5))}`)}
+  ${d.tipo === '01' ? fila('Pago', d.formaPago === 'Credito' ? `Crédito · vence ${fmtDate(d.vence)}` : 'Contado') : ''}
+  ${d.vendedor ? fila('Vendedor', esc(d.vendedor)) : ''}
+  ${cli.nombre ? `<div class="hr"></div><div>${esc(DOCID[cli.tipoDoc] || 'Doc.')} ${cli.tipoDoc === '0' ? '' : esc(cli.numDoc || '')}</div><div class="b">${esc(cli.nombre)}</div>${cli.direccion && d.tipo !== '03' ? `<div class="sm">${esc(cli.direccion)}</div>` : ''}` : ''}
+  ${refs}
+  <div class="hr"></div>
+  <div class="kv sm b"><span>Cant. × P. unit.</span><span>Importe</span></div>
+  ${c.lines.map(l => `<div class="it"><div class="d">${esc(l.desc || '')}</div><div class="q"><span>${tkNum(l.q).replace(/[.,]00$/, '')} ${esc(l.unidad || '')} × ${tkNum(l.pu)}</span><span>${tkNum(l.total)}</span></div></div>`).join('')}
+  <div class="hr"></div>
+  ${tot}
+  <div class="kv tot"><span>TOTAL</span><span>${cur} ${tkNum(c.total)}</span></div>
+  <div class="sm" style="margin-top:1mm">SON: ${esc(numeroALetras(c.total, d.moneda))}</div>
+  ${sp.aplica ? `<div class="hr"></div><div class="sm">Operación sujeta al SPOT (${esc(sp.codigo)} · ${sp.porcentaje}%). Detracción S/ ${tkNum(sp.monto)}${cfg.docs?.detraccion ? ` · Cta. BN ${esc(cfg.docs.detraccion)}` : ''}. Neto ${cur} ${tkNum(sp.neto)}.</div>` : ''}
+  <div class="hr"></div>
+  ${isNV ? '<div class="c sm b">Documento interno: no es comprobante de pago.</div>' : `
+  <div class="qr">${window.qrcode ? qrSVG(qr) : ''}</div>
+  ${d.sunat?.hash ? `<div class="c sm">Hash: ${esc(d.sunat.hash)}</div>` : ''}
+  <div class="c sm">Representación impresa de la ${esc(TIPOS[d.tipo].impreso.toUpperCase())}.</div>
+  <div class="c sm">Consulte su validez en www.sunat.gob.pe</div>`}
+  ${['anulado', 'anulada'].includes(d.estado) ? '<div class="c b big" style="margin-top:2mm">*** ANULADO ***</div>' : d.estado === 'borrador' ? '<div class="c b big" style="margin-top:2mm">*** BORRADOR ***</div>' : ''}
+  <div class="c sm" style="margin-top:2mm">¡Gracias por su compra!</div>
+</div></body></html>`;
+}
+async function imprimirTicket(d, ancho = TK_ANCHO()) {
+  await loadLib('qr').catch(() => {});
+  const html = ticketHTML(d, ancho);
+  if (matchMedia('(pointer:coarse)').matches) { // celular o tablet: se abre el ticket y se imprime con el servicio de impresión del equipo
+    const page = html.replace('<div class="tk">', `<div class="no-print"><button onclick="window.print()">Imprimir ticket ${ancho} mm</button></div><div class="tk">`).replace('</body>', '<script>setTimeout(()=>window.print(),400)<\/script></body>');
+    const u = URL.createObjectURL(new Blob([page], { type: 'text/html' })); const w = window.open(u, '_blank'); setTimeout(() => URL.revokeObjectURL(u), 120000);
+    if (!w) await descargarTicketPDF(d, ancho);
+  } else {
+    const f = document.createElement('iframe'); f.setAttribute('aria-hidden', 'true'); f.style.cssText = 'position:fixed;right:0;bottom:0;width:0;height:0;border:0;visibility:hidden';
+    document.body.appendChild(f);
+    await new Promise(ok => { f.onload = ok; f.srcdoc = html; });
+    await new Promise(r => setTimeout(r, 120));
+    try { f.contentWindow.focus(); f.contentWindow.print(); } finally { setTimeout(() => f.remove(), 60000); }
+  }
+  logEvent('archivo.ticket', d, `Ticket ${ancho} mm`);
+}
+async function ticketPDF(d, ancho = TK_ANCHO(), cfg = DB.cfg) {
+  await loadLib('jspdf'); await loadLib('qr').catch(() => {});
+  const { jsPDF } = window.jspdf, { c, e, cli, isNV, sp, titulo, cur, qr } = ticketDatos(d, cfg);
+  const W = ancho, M = ancho === 58 ? 4 : 4.5, CW = W - 2 * M, fs = ancho === 58 ? 7.4 : 8.6, LH = fs * 0.42;
+  const pinta = (p, dibuja) => {
+    let y = M + 1;
+    const txt = (t, opts = {}) => { p.setFont('helvetica', opts.b ? 'bold' : 'normal'); p.setFontSize(opts.fs || fs); const ls = p.splitTextToSize(String(t), CW); ls.forEach(l => { if (dibuja) p.text(l, opts.c ? W / 2 : M, y, { align: opts.c ? 'center' : 'left' }); y += (opts.fs || fs) * 0.42; }); };
+    const kv = (k, v, opts = {}) => { p.setFont('helvetica', opts.b ? 'bold' : 'normal'); p.setFontSize(opts.fs || fs); if (dibuja) { p.text(String(k), M, y); p.text(String(v), W - M, y, { align: 'right' }); } y += (opts.fs || fs) * 0.42 + 0.3; };
+    const hr = () => { y += 0.8; if (dibuja) { p.setLineDashPattern([0.8, 0.8], 0); p.setLineWidth(0.2); p.line(M, y, W - M, y); } y += 2.6; };
+    txt(e.razon || '', { b: 1, c: 1 }); txt(`RUC ${e.ruc || ''}`, { c: 1 }); txt([e.direccion, e.distrito, e.provincia].filter(Boolean).join(' - '), { c: 1, fs: fs - 1 }); if (e.telefono) txt(`Tel. ${e.telefono}`, { c: 1, fs: fs - 1 });
+    hr(); txt(titulo, { b: 1, c: 1 }); txt(docNum(d), { b: 1, c: 1, fs: fs + 2.4 }); hr();
+    kv('Fecha', `${fmtDate(d.fecha)} ${String(d.hora || '').slice(0, 5)}`); if (d.tipo === '01') kv('Pago', d.formaPago === 'Credito' ? `Crédito · vence ${fmtDate(d.vence)}` : 'Contado'); if (d.vendedor) kv('Vendedor', d.vendedor);
+    if (cli.nombre) { hr(); txt(`${DOCID[cli.tipoDoc] || 'Doc.'} ${cli.tipoDoc === '0' ? '' : cli.numDoc || ''}`); txt(cli.nombre, { b: 1 }); if (cli.direccion && d.tipo !== '03') txt(cli.direccion, { fs: fs - 1 }); }
+    if (d.ref) txt(`Ref.: ${TIPOS[d.ref.tipo]?.corto || ''} ${d.ref.serie}-${d.ref.numero}`);
+    hr(); kv('Cant. × P. unit.', 'Importe', { b: 1, fs: fs - 0.6 });
+    c.lines.forEach(l => { txt(l.desc || ''); kv(`${tkNum(l.q).replace(/[.,]00$/, '')} ${l.unidad || ''} × ${tkNum(l.pu)}`, tkNum(l.total)); y += 0.6; });
+    hr();
+    if (c.gravada) kv('Op. gravada', `${cur} ${tkNum(c.gravada)}`); if (c.exonerada) kv('Op. exonerada', `${cur} ${tkNum(c.exonerada)}`); if (c.inafecta) kv('Op. inafecta', `${cur} ${tkNum(c.inafecta)}`);
+    kv(`IGV ${r2(c.rate * 100)}%`, `${cur} ${tkNum(c.igv)}`); kv('TOTAL', `${cur} ${tkNum(c.total)}`, { b: 1, fs: fs + 1.6 }); txt(`SON: ${numeroALetras(c.total, d.moneda)}`, { fs: fs - 1 });
+    if (sp.aplica) { hr(); txt(`Operación sujeta al SPOT (${sp.codigo} · ${sp.porcentaje}%). Detracción S/ ${tkNum(sp.monto)}${cfg.docs?.detraccion ? ` · Cta. BN ${cfg.docs.detraccion}` : ''}. Neto ${cur} ${tkNum(sp.neto)}.`, { fs: fs - 1 }); }
+    hr();
+    if (isNV) txt('Documento interno: no es comprobante de pago.', { b: 1, c: 1, fs: fs - 1 });
+    else {
+      if (qr && window.qrcode) { const q = window.qrcode(0, 'M'); q.addData(qr); q.make(); const n = q.getModuleCount(), size = ancho === 58 ? 26 : 30, s1 = size / n, x0 = (W - size) / 2; if (dibuja) { p.setFillColor(0, 0, 0); for (let r = 0; r < n; r++) for (let k = 0; k < n; k++) if (q.isDark(r, k)) p.rect(x0 + k * s1, y + r * s1, s1 + 0.01, s1 + 0.01, 'F'); } y += size + 2; }
+      if (d.sunat?.hash) txt(`Hash: ${d.sunat.hash}`, { c: 1, fs: fs - 1 });
+      txt(`Representación impresa de la ${TIPOS[d.tipo].impreso.toUpperCase()}.`, { c: 1, fs: fs - 1 }); txt('Consulte su validez en www.sunat.gob.pe', { c: 1, fs: fs - 1 });
+    }
+    if (['anulado', 'anulada'].includes(d.estado)) txt('*** ANULADO ***', { b: 1, c: 1, fs: fs + 2 });
+    txt('¡Gracias por su compra!', { c: 1, fs: fs - 1 });
+    return y + M;
+  };
+  const alto = pinta(new jsPDF({ unit: 'mm', format: [W, 2000] }), false);
+  const p = new jsPDF({ unit: 'mm', format: [W, Math.max(60, alto)] }); pinta(p, true);
+  return p.output('blob');
+}
+async function descargarTicketPDF(d, ancho = TK_ANCHO()) { const b = await ticketPDF(d, ancho); await saveFile(`Ticket-${ancho}mm-${d.serie}-${d.numero || 'borrador'}.pdf`, b); }
+/* PDF por WhatsApp: en el celular comparte el archivo directo; en la computadora lo descarga y abre el chat del cliente */
+async function compartirPDF(d) {
+  const b = await makePDF(d), nombre = `${TIPOS[d.tipo]?.corto?.replace(/\s+/g, '-') || 'Documento'}-${d.serie}-${d.numero}.pdf`;
+  const file = new File([b], nombre, { type: 'application/pdf' });
+  if (navigator.canShare && navigator.canShare({ files: [file] })) { try { await navigator.share({ files: [file], title: nombre, text: shareText(d) }); logEvent('archivo.descarga', d, 'PDF compartido por WhatsApp / otra app'); return; } catch (e) { if (e.name === 'AbortError') return; } }
+  await saveFile(nombre, b); window.open(waLink(d, `${shareText(d)}\n(Te adjunto el PDF)`), '_blank', 'noopener');
+  toast('PDF descargado: adjúntalo en el chat de WhatsApp que se abrió.', 'ok');
+}
+function entregaHTML(d) {
+  if (!(ES_CPE(d.tipo) || d.tipo === 'NV') || d.estado === 'borrador') return '';
+  const w = TK_ANCHO(), sug = d.tipo === '01' ? 'a4' : 'tk';
+  return `<section class="panel"><div class="panel-h"><h2>Entregar al cliente</h2></div><div class="panel-b"><div class="entrega">
+    <button class="ent ${sug === 'tk' ? 'sug' : ''}" data-act="tk-print" data-id="${d.id}">${icon('printer')}<b>Ticket ${w} mm</b><small>Mostrador · impresora térmica</small></button>
+    <button class="ent ${sug === 'a4' ? 'sug' : ''}" data-act="pdf" data-id="${d.id}">${icon('pdf')}<b>A4</b><small>Mayoristas con RUC</small></button>
+    <button class="ent" data-act="share-pdf" data-id="${d.id}">${icon('share')}<b>PDF por WhatsApp</b><small>Sin papel</small></button>
+  </div><div class="tk-opts"><span class="hint">Ancho del ticket</span><div class="seg sm" role="group" aria-label="Ancho del ticket">${[80, 58].map(n => `<button data-act="tk-ancho" data-v="${n}" aria-pressed="${w === n}">${n} mm</button>`).join('')}</div></div><button class="linkbtn" data-act="tk-pdf" data-id="${d.id}" style="margin-top:6px">${icon('download', 'sm')} Ticket ${w} mm en PDF (para imprimir desde el celular)</button></div></section>`;
+}
+Object.assign(ACT, {
+  'tk-print': async el => { el.classList.add('loading'); try { await imprimirTicket(getDoc(el.dataset.id)); } catch (e) { console.warn(e); toast('No se pudo preparar el ticket.', 'bad'); } el.classList.remove('loading'); },
+  'tk-pdf': async el => { el.classList.add('loading'); try { await descargarTicketPDF(getDoc(el.dataset.id)); } catch (e) { console.warn(e); toast('No se pudo generar el ticket.', 'bad'); } el.classList.remove('loading'); },
+  'tk-ancho': el => { lsSet('granate.ticket', el.dataset.v); if (D?.id) renderDrawer(); },
+  'share-pdf': async el => { el.classList.add('loading'); try { await compartirPDF(getDoc(el.dataset.id)); } catch (e) { console.warn(e); toast('No se pudo compartir el PDF.', 'bad'); } el.classList.remove('loading'); },
 });
 
 </script>
