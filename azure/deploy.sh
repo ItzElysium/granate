@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # =====================================================================
 # Granate nube · despliegue en Azure (ejecutar en Azure Cloud Shell, Bash)
-#   git clone https://github.com/renzotomascoronado-sudo/facturacionelectronica.git ~/facturacionelectronica || git -C ~/facturacionelectronica pull
+#   git clone https://github.com/facturacionelectronicalanai/facturacionelectronica.git ~/facturacionelectronica || git -C ~/facturacionelectronica pull
 #   bash ~/facturacionelectronica/azure/deploy.sh
 # Crea (o actualiza) en la suscripción activa:
 #   - Grupo de recursos rg-granate
@@ -14,7 +14,7 @@
 set -euo pipefail
 DIR="$(cd "$(dirname "$0")" && pwd)"
 RG="${RG:-rg-granate}"
-ORIGEN="${ORIGEN:-https://renzotomascoronado-sudo.github.io}"
+ORIGEN="${ORIGEN:-https://facturacionelectronicalanai.github.io}"
 SUB="$(az account show --query id -o tsv)"
 SUF="$(printf '%s' "$SUB$RG" | sha1sum | cut -c1-6)"
 COS="granate-db-$SUF"; ST="granatest$SUF"; FN="granate-nube-$SUF"
