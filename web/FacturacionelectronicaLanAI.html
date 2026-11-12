@@ -1113,6 +1113,8 @@ function mergeCfg(c) {
   const m = { ...d, ...o, empresa: { ...d.empresa, ...(o.empresa || {}) }, series: { ...d.series, ...(o.series || {}) }, integracion: { ...d.integracion, ...(o.integracion || {}) }, reglas: { ...d.reglas, ...(o.reglas || {}) }, docs: mergeDocs(o.docs) };
   const def = apiDefault();
   if (def && !String(m.integracion.url || '').trim() && !m.integracion.manual) m.integracion.url = def;
+  // la API de pruebas anterior ya no es la de esta web: quien la tenía guardada pasa a la actual
+  if (def && /^https:\/\/granate-api\.onrender\.com\/?$/.test(String(m.integracion.url || '').trim())) m.integracion.url = def;
   // datos de la demo anterior o sin emisor: pasa a Master Steel Callao
   if (!String(o.empresa?.ruc || '').trim() || o.empresa?.ruc === RUC_DEMO_VIEJO) { m.empresa = { ...MASTER_STEEL }; if (m.docs?.cot?.firmaCargo === 'Granate Demo') m.docs.cot.firmaCargo = MASTER_STEEL.comercial; }
   m.marca = { ...d.marca, ...(o.marca || {}) };
@@ -5192,10 +5194,18 @@ document.addEventListener('change', async ev => {
     esperando = true; send.disabled = true; pintarChat();
     var h = { 'Content-Type': 'application/json' }; try { if (typeof apiHeaders === 'function') h = apiHeaders(h); } catch (e) {}
     var ctx; try { ctx = contextoIA(t); } catch (e) { ctx = {}; }
-    fetch(url + '/lanai', { method: 'POST', headers: h, body: JSON.stringify({ mensajes: CHAT.slice(-10).map(function (m) { return { rol: m.rol, texto: m.texto }; }), contexto: ctx }) })
-      .then(function (r) { return r.json().catch(function () { return {}; }).then(function (j) { return { st: r.status, j: j }; }); })
+    var cuerpo = JSON.stringify({ mensajes: CHAT.slice(-10).map(function (m) { return { rol: m.rol, texto: m.texto }; }), contexto: ctx });
+    var pedir = function (u) { return fetch(u + '/lanai', { method: 'POST', headers: h, body: cuerpo }).then(function (r) { return r.json().catch(function () { return {}; }).then(function (j) { return { st: r.status, j: j }; }); }); };
+    /* Si la API guardada en este navegador no tiene a LanAI (otra API o una versión anterior), usa la de la web. */
+    var def = ''; try { def = typeof apiDefault === 'function' ? apiDefault() : ''; } catch (e) {}
+    /* Un 503 sin mensaje propio es la API despertando o reiniciando (plan gratis): espera y reintenta una vez. */
+    var dormida = function (x) { return (x.st === 502 || x.st === 503) && !x.j.mensaje; };
+    var espera = function (ms) { return new Promise(function (ok) { setTimeout(ok, ms); }); };
+    pedir(url).then(function (x) { return (x.st === 404 || x.st === 503) && def && def !== url ? pedir(def) : x; }, function (e) { if (def && def !== url) return pedir(def); throw e; })
+      .then(function (x) { return dormida(x) ? espera(8000).then(function () { return pedir(def || url); }) : x; })
       .then(function (x) {
         if (x.st === 200 && x.j.respuesta) decir(x.j.respuesta);
+        else if (dormida(x)) decir('Me estoy despertando. Dame un minuto y vuelve a preguntarme.');
         else if (x.st === 503 || x.st === 404) sinIA(t);
         else decir(x.j.mensaje || 'No pude responder ahora. Intenta de nuevo en un momento.');
       })
