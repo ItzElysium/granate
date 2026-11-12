@@ -4980,6 +4980,9 @@ document.addEventListener('change', async ev => {
     '.la-ask{display:flex;gap:8px;padding:12px 16px;border-top:1px solid var(--line);background:var(--surface-2)}.la-ask input{flex:1}',
     '.la-chat{display:flex;flex-direction:column;gap:8px}.la-msg{max-width:92%;padding:9px 12px;border-radius:14px;font-size:var(--fs-sm);line-height:1.5;white-space:pre-wrap;overflow-wrap:anywhere}',
     '.la-msg.yo{align-self:flex-end;background:var(--granate);color:#fff;border-bottom-right-radius:4px}.la-msg.bot{align-self:flex-start;background:var(--granate-50);color:var(--granate-d);border-bottom-left-radius:4px}',
+    '.la-panel.chat{width:min(560px,calc(100vw - 32px));height:min(720px,calc(100vh - 190px))}.la-panel.chat .la-body{flex:1}',
+    '.la-mini{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px 10px;border-radius:var(--r);background:var(--surface-2);font-size:var(--fs-xs);color:var(--text-2)}.la-mini button{background:none;border:0;padding:0;color:var(--granate);font-size:var(--fs-xs);cursor:pointer;text-decoration:underline;white-space:nowrap}',
+    '.la-msg.calc{font-variant-numeric:tabular-nums}.la-dots span{display:inline-block;width:6px;height:6px;margin:0 2px;border-radius:50%;background:currentColor;opacity:.35;animation:la-dot 1.2s infinite}.la-dots span:nth-child(2){animation-delay:.2s}.la-dots span:nth-child(3){animation-delay:.4s}@keyframes la-dot{0%,80%,100%{opacity:.35}40%{opacity:1}}',
     '.la-msg.espera{opacity:.7;font-style:italic}.la-nuevo{align-self:flex-start;background:none;border:0;padding:0;color:var(--granate);font-size:var(--fs-xs);cursor:pointer;text-decoration:underline}',
     '.la-resp{padding:12px;border-radius:var(--r);background:var(--granate-50);color:var(--granate-d);font-size:var(--fs-sm);line-height:1.5}.la-resp b{display:block;margin-bottom:4px}',
     'body.con-abar .la-btn{bottom:calc(160px + env(safe-area-inset-bottom))}body.con-abar .la-panel{bottom:calc(236px + env(safe-area-inset-bottom))}',
@@ -5007,7 +5010,7 @@ document.addEventListener('change', async ev => {
   var body = el('div', 'la-body');
   var ask = el('form', 'la-ask');
   var lbl = el('label', 'sr-only', 'Pregúntale a LanAI'); lbl.setAttribute('for', 'la-q'); lbl.style.cssText = 'position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)';
-  var inp = el('input', 'input'); inp.id = 'la-q'; inp.placeholder = 'Pregunta por un cliente, tus ventas o SUNAT…'; inp.maxLength = 600; inp.autocomplete = 'off';
+  var inp = el('input', 'input'); inp.id = 'la-q'; inp.placeholder = 'Escríbeme: un cliente, un reporte, SUNAT o una cuenta (1500/1.18)…'; inp.maxLength = 600; inp.autocomplete = 'off';
   var send = el('button', 'btn primary', 'Preguntar'); send.type = 'submit';
   ask.appendChild(lbl); ask.appendChild(inp); ask.appendChild(send);
   panel.appendChild(head); panel.appendChild(body); panel.appendChild(ask);
@@ -5066,6 +5069,13 @@ document.addEventListener('change', async ev => {
   }
   function pintar() {
     body.textContent = '';
+    panel.classList.toggle('chat', CHAT.length > 0);
+    if (CHAT.length && !verResumen) {
+      var nA = avisos().filter(function (a) { return a.n !== 'info'; }).length, mini = el('div', 'la-mini');
+      mini.appendChild(el('span', null, nA ? (nA === 1 ? '1 aviso urgente' : nA + ' avisos urgentes') : 'Todo en orden con SUNAT'));
+      var vr = el('button', null, 'Ver resumen'); vr.type = 'button'; vr.onclick = function () { verResumen = true; pintar(); }; mini.appendChild(vr);
+      body.appendChild(mini); pintarChat(); return;
+    }
     var A = avisos(), s1 = el('div', 'la-sec'); s1.appendChild(el('h3', null, 'Lo urgente'));
     if (!A.length) s1.appendChild(el('div', 'la-av ok', 'Todo en orden: no tienes comprobantes pendientes ni con problemas.'));
     A.slice(0, 5).forEach(function (a) {
@@ -5088,7 +5098,28 @@ document.addEventListener('change', async ev => {
   }
 
   /* ---------- Chat con IA ---------- */
-  var CHAT = [], esperando = false;
+  var CHAT = [], esperando = false, verResumen = false;
+  /* Calculadora al instante: si escribes solo una operación (1500/1.18, 12%*800, (350+120)*3) responde sin IA. */
+  function calcular(txt) {
+    var s = String(txt || '').replace(/^\s*(cu[aá]nto es|calcula|calcular)\s*/i, '').replace(/[=?¿\s]+$/g, '').replace(/[×x]/g, '*').replace(/÷/g, '/').replace(/,(?=\d{3}(\D|$))/g, '').replace(/,/g, '.').replace(/\s+/g, '');
+    if (!s || s.length > 200 || !/^[\d.+\-*\/^%()]+$/.test(s) || !/\d[^\d.]+[\d(.]|\d%/.test(s)) return null;
+    var i = 0;
+    function num() { var m = s.slice(i).match(/^\d+(\.\d+)?|^\.\d+/); if (!m) throw 0; i += m[0].length; return Number(m[0]); }
+    function factor() {
+      if (s[i] === '-') { i++; return -factor(); } if (s[i] === '+') { i++; return factor(); }
+      var v; if (s[i] === '(') { i++; v = suma(); if (s[i] !== ')') throw 0; i++; } else v = num();
+      while (s[i] === '%') { i++; v = v / 100; }
+      if (s[i] === '^') { i++; v = Math.pow(v, factor()); }
+      return v;
+    }
+    function prod() { var v = factor(); while (s[i] === '*' || s[i] === '/') { var o = s[i++], w = factor(); if (o === '/' && w === 0) throw 0; v = o === '*' ? v * w : v / w; } return v; }
+    function suma() { var v = prod(); while (s[i] === '+' || s[i] === '-') { var o = s[i++], w = prod(); v = o === '+' ? v + w : v - w; } return v; }
+    try { var v = suma(); if (i < s.length || !isFinite(v)) return null; v = Math.round(v * 1e8) / 1e8;
+      var f = new Intl.NumberFormat('en-US', { minimumFractionDigits: Math.abs(v % 1) > 0 ? 2 : 0, maximumFractionDigits: Math.abs(v) >= 1 ? 2 : 6 });
+      return s.replace(/\*/g, ' × ').replace(/\//g, ' ÷ ').replace(/\+/g, ' + ').replace(/(\d|\))-/g, '$1 − ') + ' = ' + f.format(v);
+    } catch (e) { return null; }
+  }
+  var limpio = function (t) { return String(t || '').replace(/\*\*(.+?)\*\*/g, '$1').replace(/^#{1,6}\s+/gm, ''); };
   var r2 = function (n) { return Math.round((Number(n) || 0) * 100) / 100; };
   var totalDe = function (d) { try { return r2(typeof totalOf === 'function' ? totalOf(d) : (d.totales && d.totales.total)); } catch (e) { return 0; } };
   var esVenta = function (d) { return (d.tipo === '01' || d.tipo === '03') && ['aceptado', 'observado'].indexOf(d.estado) >= 0; };
@@ -5137,23 +5168,25 @@ document.addEventListener('change', async ev => {
     };
   }
   function pintarChat() {
+    if (CHAT.length && !verResumen && body.querySelector('.la-sec:not(.la-chat-sec)')) { pintar(); return; }
     var s = body.querySelector('.la-chat-sec'); if (s) s.remove();
     if (!CHAT.length && !esperando) return;
     s = el('div', 'la-sec la-chat-sec'); s.appendChild(el('h3', null, 'Conversación'));
     var c = el('div', 'la-chat'); c.setAttribute('aria-live', 'polite');
-    CHAT.forEach(function (m) { c.appendChild(el('div', 'la-msg ' + (m.rol === 'yo' ? 'yo' : 'bot'), m.texto)); });
-    if (esperando) c.appendChild(el('div', 'la-msg bot espera', 'LanAI está pensando…'));
-    else { var n = el('button', 'la-nuevo', 'Empezar otra conversación'); n.type = 'button'; n.onclick = function () { CHAT = []; pintarChat(); inp.focus(); }; c.appendChild(n); }
+    CHAT.forEach(function (m) { c.appendChild(el('div', 'la-msg ' + (m.rol === 'yo' ? 'yo' : 'bot') + (m.calc ? ' calc' : ''), m.texto)); });
+    if (esperando) { var w = el('div', 'la-msg bot la-dots'); w.setAttribute('aria-label', 'LanAI está escribiendo'); w.innerHTML = '<span></span><span></span><span></span>'; c.appendChild(w); }
+    else { var n = el('button', 'la-nuevo', 'Empezar otra conversación'); n.type = 'button'; n.onclick = function () { CHAT = []; verResumen = false; pintar(); inp.focus(); }; c.appendChild(n); }
     s.appendChild(c); body.appendChild(s);
     body.scrollTop = body.scrollHeight;
   }
-  function decir(texto) { CHAT.push({ rol: 'lanai', texto: texto }); esperando = false; send.disabled = false; pintarChat(); }
+  function decir(texto, calc) { CHAT.push({ rol: 'lanai', texto: limpio(texto), calc: !!calc }); esperando = false; send.disabled = false; pintarChat(); }
   function sinIA(t) {
     var f = responder(t);
     decir(f ? f.a : 'Todavía no sé responder eso. Escríbenos por WhatsApp al ' + wsp() + ' y te ayudamos al toque.');
   }
   function preguntar(t) {
     CHAT.push({ rol: 'yo', texto: t }); if (CHAT.length > 40) CHAT = CHAT.slice(-40);
+    var cuenta = calcular(t); if (cuenta) { decir(cuenta, true); return; }
     var url = ''; try { url = typeof apiBase === 'function' ? apiBase() : ''; } catch (e) {}
     if (!url) { sinIA(t); return; }
     esperando = true; send.disabled = true; pintarChat();
