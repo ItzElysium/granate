@@ -1055,7 +1055,7 @@ function defaultConfig() {
     empresa: { ...MASTER_STEEL },
     marca: { titulo: 'MASTER STEEL CALLAO S.A.C.', sub: 'Facturación electrónica' },
     vendedores: [],
-    soporte: { whatsapp: '51982098446', mensaje: 'Hola, necesito ayuda con el facturador electrónico de Master Steel.' },
+    soporte: { whatsapp: '51982098446', mensaje: 'Hola, necesito ayuda de un contador.' },
     series: { '01': 'F001', '03': 'B001', '07F': 'FC01', '07B': 'BC01', '08F': 'FD01', '08B': 'BD01', '09': 'T001', NV: 'NV01', COT: 'C001', OV: 'OV01' },
     igvRate: 0.18, incluyeIGV: false, tipoCambio: 3.5, validezDias: 15,
     condiciones: 'Precios en la moneda indicada. Tiempo de entrega a coordinar desde la orden de compra.',
@@ -1118,7 +1118,7 @@ function mergeCfg(c) {
   // datos de la demo anterior o sin emisor: pasa a Master Steel Callao
   if (!String(o.empresa?.ruc || '').trim() || o.empresa?.ruc === RUC_DEMO_VIEJO) { m.empresa = { ...MASTER_STEEL }; if (m.docs?.cot?.firmaCargo === 'Granate Demo') m.docs.cot.firmaCargo = MASTER_STEEL.comercial; }
   m.marca = { ...d.marca, ...(o.marca || {}) };
-  m.soporte = { ...d.soporte, ...(o.soporte || {}) }; if (String(m.soporte.whatsapp).replace(/\D/g, '') === '5198209844') m.soporte.whatsapp = d.soporte.whatsapp; m.vendedores = Array.isArray(o.vendedores) ? o.vendedores.filter(Boolean) : d.vendedores;
+  m.soporte = { ...d.soporte, ...(o.soporte || {}) }; if (m.soporte.mensaje === 'Hola, necesito ayuda con el facturador electrónico de Master Steel.') m.soporte.mensaje = d.soporte.mensaje; if (String(m.soporte.whatsapp).replace(/\D/g, '') === '5198209844') m.soporte.whatsapp = d.soporte.whatsapp; m.vendedores = Array.isArray(o.vendedores) ? o.vendedores.filter(Boolean) : d.vendedores;
   return m;
 }
 const empresaLista = cfg => validRUC(cfg.empresa.ruc) && cfg.empresa.razon.trim().length > 2 && cfg.empresa.direccion.trim().length > 3;
@@ -4134,7 +4134,7 @@ document.addEventListener('keydown', ev => { const t = ev.target; if (ev.key ===
 /* ================= BOTÓN FLOTANTE DE WHATSAPP (soporte, apoyo y consultas) ================= */
 function waSoporteURL() {
   const s = DB.cfg.soporte || {}, n = String(s.whatsapp || '').replace(/\D/g, '');
-  return n ? `https://wa.me/${n}?text=${encodeURIComponent(s.mensaje || 'Hola, necesito ayuda con el facturador electrónico.')}` : '';
+  return n ? `https://wa.me/${n}?text=${encodeURIComponent(s.mensaje || 'Hola, necesito ayuda de un contador.')}` : '';
 }
 function pintarWaFab() {
   const url = waSoporteURL(); let a = document.getElementById('wa-fab');
