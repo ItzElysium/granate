@@ -5198,9 +5198,14 @@ document.addEventListener('change', async ev => {
     var pedir = function (u) { return fetch(u + '/lanai', { method: 'POST', headers: h, body: cuerpo }).then(function (r) { return r.json().catch(function () { return {}; }).then(function (j) { return { st: r.status, j: j }; }); }); };
     /* Si la API guardada en este navegador no tiene a LanAI (otra API o una versión anterior), usa la de la web. */
     var def = ''; try { def = typeof apiDefault === 'function' ? apiDefault() : ''; } catch (e) {}
+    /* Un 503 sin mensaje propio es la API despertando o reiniciando (plan gratis): espera y reintenta una vez. */
+    var dormida = function (x) { return (x.st === 502 || x.st === 503) && !x.j.mensaje; };
+    var espera = function (ms) { return new Promise(function (ok) { setTimeout(ok, ms); }); };
     pedir(url).then(function (x) { return (x.st === 404 || x.st === 503) && def && def !== url ? pedir(def) : x; }, function (e) { if (def && def !== url) return pedir(def); throw e; })
+      .then(function (x) { return dormida(x) ? espera(8000).then(function () { return pedir(def || url); }) : x; })
       .then(function (x) {
         if (x.st === 200 && x.j.respuesta) decir(x.j.respuesta);
+        else if (dormida(x)) decir('Me estoy despertando. Dame un minuto y vuelve a preguntarme.');
         else if (x.st === 503 || x.st === 404) sinIA(t);
         else decir(x.j.mensaje || 'No pude responder ahora. Intenta de nuevo en un momento.');
       })
