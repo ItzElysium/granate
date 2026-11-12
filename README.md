@@ -3,7 +3,7 @@
 | Carpeta | Qué es |
 |---|---|
 | `web/granate.html` | La aplicación (un solo archivo). Publícala en tu dominio (Azure Static Web Apps, Netlify…). |
-| `web/granate-prueba.html` | La misma app en **modo prueba**: datos demo de todos los documentos, almacenamiento aparte y botón para reiniciar. Ábrela directo en el navegador. |
+| `web/FacturacionelectronicaLanAI.html` | La misma app en **modo prueba**: datos demo de todos los documentos, almacenamiento aparte y botón para reiniciar. Ábrela directo en el navegador. |
 | `api/` | API Node: envía comprobantes y guías a SUNAT, guarda **todas las transacciones** (SQLite: documentos, envíos con XML y CDR, bitácora, copias PDF) y sirve el **padrón RUC**. |
 | `padron/build_padron.py` | Convierte el padrón reducido de SUNAT en una base SQLite con búsqueda por RUC, DNI y razón social. |
 | `.github/workflows/padron-sunat.yml` | **Robot diario**: descarga el padrón de SUNAT, arma la base y la publica como Release. |

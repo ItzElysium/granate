@@ -4697,8 +4697,8 @@ async function subirDatosLocales(btn) {
 
 /* En la versión de prueba (sin usuarios) se explica cómo llegar a la versión con usuario y datos reales */
 function bannerPruebaHTML() {
-  if (typeof GRANATE_PRUEBA === 'undefined' || !GRANATE_PRUEBA || !/granate-prueba\.html$/.test(location.pathname)) return '';
-  const url = location.pathname.replace(/granate-prueba\.html$/, 'granate.html');
+  if (typeof GRANATE_PRUEBA === 'undefined' || !GRANATE_PRUEBA || !/FacturacionelectronicaLanAI\.html$/.test(location.pathname)) return '';
+  const url = location.pathname.replace(/FacturacionelectronicaLanAI\.html$/, 'granate.html');
   return `<div class="banner"><div class="b-ic">${icon('lock')}</div><div class="b-t"><b>Versión de prueba: no pide usuario</b><span>Lo que hagas aquí queda solo en este navegador. Para entrar con tu usuario y ver los datos reales de la empresa desde cualquier equipo, usa la versión principal.</span></div><a class="btn primary" href="${esc(url)}">Ir a la versión con usuario</a></div>`;
 }
 
