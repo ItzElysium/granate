@@ -1112,6 +1112,8 @@ function mergeCfg(c) {
   const m = { ...d, ...o, empresa: { ...d.empresa, ...(o.empresa || {}) }, series: { ...d.series, ...(o.series || {}) }, integracion: { ...d.integracion, ...(o.integracion || {}) }, reglas: { ...d.reglas, ...(o.reglas || {}) }, docs: mergeDocs(o.docs) };
   const def = apiDefault();
   if (def && !String(m.integracion.url || '').trim() && !m.integracion.manual) m.integracion.url = def;
+  // la API de pruebas anterior ya no es la de esta web: quien la tenía guardada pasa a la actual
+  if (def && /^https:\/\/granate-api\.onrender\.com\/?$/.test(String(m.integracion.url || '').trim())) m.integracion.url = def;
   // datos de la demo anterior o sin emisor: pasa a Master Steel Callao
   if (!String(o.empresa?.ruc || '').trim() || o.empresa?.ruc === RUC_DEMO_VIEJO) { m.empresa = { ...MASTER_STEEL }; if (m.docs?.cot?.firmaCargo === 'Granate Demo') m.docs.cot.firmaCargo = MASTER_STEEL.comercial; }
   m.marca = { ...d.marca, ...(o.marca || {}) };
