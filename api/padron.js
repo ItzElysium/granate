@@ -5,7 +5,7 @@
  *
  * Variables de entorno:
  *   PADRON_DB=./data/padron.db        ruta local de la base
- *   PADRON_REPO=dataprix-pe/granate   repositorio donde el robot publica los Releases
+ *   PADRON_REPO=renzotomascoronado-sudo/facturacionelectronica   repositorio donde el robot publica los Releases
  *   PADRON_GITHUB_TOKEN=github_pat_…  token de solo lectura (obligatorio si el repo es privado)
  *   PADRON_ACTUALIZAR_HORAS=6         cada cuánto revisar si hay versión nueva
  */

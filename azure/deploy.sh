@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # =====================================================================
 # Granate nube · despliegue en Azure (ejecutar en Azure Cloud Shell, Bash)
-#   git clone https://github.com/ItzElysium/granate.git ~/granate || git -C ~/granate pull
-#   bash ~/granate/azure/deploy.sh
+#   git clone https://github.com/renzotomascoronado-sudo/facturacionelectronica.git ~/facturacionelectronica || git -C ~/facturacionelectronica pull
+#   bash ~/facturacionelectronica/azure/deploy.sh
 # Crea (o actualiza) en la suscripción activa:
 #   - Grupo de recursos rg-granate
 #   - Cosmos DB (nivel gratis si está disponible; si no, modo serverless): base "granate", contenedores datos y cuentas
@@ -14,7 +14,7 @@
 set -euo pipefail
 DIR="$(cd "$(dirname "$0")" && pwd)"
 RG="${RG:-rg-granate}"
-ORIGEN="${ORIGEN:-https://itzelysium.github.io}"
+ORIGEN="${ORIGEN:-https://renzotomascoronado-sudo.github.io}"
 SUB="$(az account show --query id -o tsv)"
 SUF="$(printf '%s' "$SUB$RG" | sha1sum | cut -c1-6)"
 COS="granate-db-$SUF"; ST="granatest$SUF"; FN="granate-nube-$SUF"
