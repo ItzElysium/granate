@@ -19,11 +19,11 @@ El beta acepta el usuario `[RUC]MODDATOS` / `MODDATOS` y un certificado autofirm
 
 ### En la nube gratis (Render)
 
-Así está publicada la de pruebas: **https://granate-api.onrender.com** (`/health`, `/padron/estado`).
+Así está publicada la de pruebas: **https://granate-api-lanai.onrender.com** (`/health`, `/padron/estado`).
 
-1. Render → *New → Web Service* → *Public Git Repository* → `https://github.com/renzotomascoronado-sudo/facturacionelectronica`.
+1. Render → *New → Web Service* → *Public Git Repository* → `https://github.com/facturacionelectronicalanai/facturacionelectronica`.
 2. *Root Directory* `api` · *Build* `npm install` · *Start* `npm start` · *Health Check Path* `/health` · instancia *Free*.
-3. Variables: `SUNAT_AMBIENTE=beta`, `PADRON_REPO=renzotomascoronado-sudo/facturacionelectronica`, `NODE_VERSION=22`.
+3. Variables: `SUNAT_AMBIENTE=beta`, `PADRON_REPO=facturacionelectronicalanai/facturacionelectronica`, `NODE_VERSION=22`, `ALLOW_ORIGIN=https://facturacionelectronicalanai.github.io`.
 
 El plan gratis se duerme tras 15 min sin uso (despierta en ~1 min) y borra su disco al dormir: al despertar vuelve a bajar el padrón (~305 MB, 1–2 min) y la bitácora empieza de cero. La web ya lo maneja: despierta la API al abrirse y reintenta sola mientras el padrón carga. Para clientes reales usa un plan con disco persistente.
 
